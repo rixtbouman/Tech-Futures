@@ -828,8 +828,8 @@
     }
 
     function buildScenarioPrompt(promptData, archetypeId, archetypeDescription, mapping, sectorData) {
-      // Use the prompt from Supabase if available, otherwise use a default
-      let basePrompt = promptData?.prompt || promptData?.content || `
+      // Use the prompt from Supabase (column: prompt_text)
+      let basePrompt = promptData?.prompt_text || `
         Generate a future scenario for the Dutch Ministry of Justice and Security (JenV).
         The scenario should be vivid, concrete, and thought-provoking.
         Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
