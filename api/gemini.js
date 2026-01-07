@@ -3,6 +3,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -14,21 +15,25 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { prompt, image, type } = req.body;
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-  }
-
-  if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' });
-  }
-
-  // Build the request to Gemini (using Gemini 3 Flash)
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
   try {
+    // Parse body if needed
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const { prompt, image, type } = body || {};
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      console.error('GEMINI_API_KEY not found in environment');
+      return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
+    }
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    // Build the request to Gemini
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
     const parts = [{ text: prompt }];
 
     // Add image if provided (for vision tasks)
@@ -51,6 +56,8 @@ export default async function handler(req, res) {
       }
     };
 
+    console.log('Calling Gemini API...');
+
     const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -60,11 +67,24 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      console.error('Gemini API error:', data.error);
-      return res.status(500).json({ error: data.error.message });
+      console.error('Gemini API error:', JSON.stringify(data.error));
+      return res.status(500).json({
+        error: data.error.message || 'Gemini API error',
+        details: data.error
+      });
     }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    if (!text) {
+      console.error('No text in Gemini response:', JSON.stringify(data));
+      return res.status(500).json({
+        error: 'No response from Gemini',
+        details: data
+      });
+    }
+
+    console.log('Gemini response received, length:', text.length);
 
     return res.status(200).json({
       result: text,
@@ -72,7 +92,9 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Server error:', error);
-    return res.status(500).json({ error: error.message });
+    console.error('Server error:', error.message, error.stack);
+    return res.status(500).json({
+      error: error.message || 'Internal server error'
+    });
   }
 }
