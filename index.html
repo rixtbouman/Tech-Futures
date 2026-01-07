@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Futures Explorer - Quantum Delta NL</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ================================
+       QDNL Brand Colors & Variables
+       ================================ */
+    :root {
+      /* Primary Colors */
+      --black: #000000;
+      --red: #FF0000;
+      --blue: #0000FF;
+      --white: #FFFFFF;
+      --magenta: #FF00FF;
+
+      /* Background Colors */
+      --bg-grey: #EDF0F2;
+      --bg-red: #FFEBEB;
+      --bg-blue: #EBEBFF;
+      --bg-magenta: #FFE4FF;
+
+      /* Typography */
+      --font-mono: 'Roboto Mono', monospace;
+      --font-body: Arial, sans-serif; /* Fallback for Shape font */
+    }
+
+    /* ================================
+       Reset & Base Styles
+       ================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-grey);
+      color: var(--black);
+      min-height: 100vh;
+    }
+
+    /* ================================
+       Typography Styles (QDNL)
+       ================================ */
+    .label {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      text-decoration: underline;
+      letter-spacing: 0.1em;
+      font-size: 0.75rem;
+    }
+
+    .headline {
+      font-family: var(--font-body);
+      font-weight: 100;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+
+    .sub-headline {
+      font-family: var(--font-mono);
+      font-weight: 400;
+      font-size: 1.125rem;
+    }
+
+    .body-text {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .small-label {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.625rem;
+    }
+
+    /* ================================
+       Layout Components
+       ================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: var(--white);
+      border-bottom: 2px solid var(--black);
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+    }
+
+    .phase-indicator {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .phase-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--black);
+      background: var(--white);
+    }
+
+    .phase-dot.active {
+      background: var(--red);
+    }
+
+    .phase-dot.completed {
+      background: var(--blue);
+    }
+
+    /* ================================
+       Button Styles
+       ================================ */
+    .btn {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--black);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .btn:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      border-color: var(--red);
+    }
+
+    .btn-primary:hover {
+      background: var(--black);
+      border-color: var(--black);
+    }
+
+    .btn-secondary {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ================================
+       Card Styles
+       ================================ */
+    .card {
+      background: var(--white);
+      border: 2px solid var(--black);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--black);
+    }
+
+    /* ================================
+       Screen/View Styles
+       ================================ */
+    .screen {
+      display: none;
+      min-height: calc(100vh - 80px);
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* ================================
+       Language Selection Screen
+       ================================ */
+    #screen-start {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--white);
+    }
+
+    .start-content {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .language-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+
+    .language-btn {
+      padding: 1.5rem 3rem;
+      font-size: 1.125rem;
+    }
+
+    /* ================================
+       Status/Loading States
+       ================================ */
+    .status-message {
+      padding: 1rem;
+      margin: 1rem 0;
+      border: 2px solid var(--black);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+    }
+
+    .status-message.error {
+      background: var(--bg-red);
+      border-color: var(--red);
+    }
+
+    .status-message.success {
+      background: var(--bg-blue);
+      border-color: var(--blue);
+    }
+
+    .status-message.loading {
+      background: var(--bg-grey);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--black);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ================================
+       Debug Panel (Development)
+       ================================ */
+    #debug-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--black);
+      color: var(--white);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    #debug-panel.hidden {
+      display: none;
+    }
+
+    .debug-toggle {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================
+       Start Screen (Language Selection)
+       ================================ -->
+  <div id="screen-start" class="screen active">
+    <div class="start-content">
+      <p class="label">Quantum Delta NL</p>
+      <h1 class="headline" style="margin: 1rem 0;">Tech Futures Explorer</h1>
+      <p class="sub-headline" style="margin-bottom: 2rem;">
+        Emerging Technologies Futures Exploration Tool
+      </p>
+      <p class="body-text" id="start-description">
+        Verken hoe opkomende technologieën kunnen samenkomen en impact hebben op de samenleving.
+      </p>
+      <div class="language-buttons">
+        <button class="btn language-btn" onclick="startSession('nl')">
+          Nederlands
+        </button>
+        <button class="btn language-btn" onclick="startSession('en')">
+          English
+        </button>
+      </div>
+
+      <!-- Connection Status -->
+      <div id="connection-status" class="status-message loading" style="margin-top: 2rem;">
+        <span class="loading-spinner"></span>
+        Verbinding maken met database...
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================
+       Main App Screen
+       ================================ -->
+  <div id="screen-main" class="screen">
+    <header class="header">
+      <div class="logo">TECH FUTURES</div>
+      <div class="phase-indicator">
+        <div class="phase-dot active" data-phase="1" title="Phase 1: Scenario"></div>
+        <div class="phase-dot" data-phase="2" title="Phase 2: Disruption"></div>
+        <div class="phase-dot" data-phase="3" title="Phase 3: Consequences"></div>
+        <div class="phase-dot" data-phase="4" title="Phase 4: Strategy"></div>
+        <div class="phase-dot" data-phase="5" title="Phase 5: Export"></div>
+      </div>
+      <button class="btn" onclick="showDebugInfo()" data-i18n="debug">Debug</button>
+    </header>
+
+    <main class="container">
+      <!-- Phase 1: Scenario Foundation -->
+      <section id="phase-1" class="phase-content active">
+        <div class="card">
+          <div class="card-header">
+            <span class="label" data-i18n="phase1_title">Fase 1: Scenario Basis</span>
+          </div>
+          <p class="body-text" data-i18n="phase1_intro">
+            Maak een foto van de 3 binaire keuzkaarten (Resources, System, Dominant Value) om het basisscenario te bepalen.
+          </p>
+
+          <!-- Placeholder for photo capture (Phase 2-3 implementation) -->
+          <div style="margin: 2rem 0; padding: 2rem; border: 2px dashed var(--black); text-align: center;">
+            <p class="sub-headline" data-i18n="photo_placeholder">Foto capture wordt hier geïmplementeerd</p>
+          </div>
+
+          <!-- Manual Fallback -->
+          <div class="card" style="background: var(--bg-grey);">
+            <p class="small-label" data-i18n="manual_fallback">Handmatige invoer (fallback)</p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+              <div>
+                <label class="small-label">Resources</label>
+                <select id="select-resources" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="">-- Kies --</option>
+                  <option value="abundance">Abundance</option>
+                  <option value="limits">Limits</option>
+                </select>
+              </div>
+              <div>
+                <label class="small-label">System</label>
+                <select id="select-system" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="">-- Kies --</option>
+                  <option value="stable">Stable (evolves)</option>
+                  <option value="breakdown">Breakdown (breaks down)</option>
+                </select>
+              </div>
+              <div>
+                <label class="small-label">Dominant Value</label>
+                <select id="select-values" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="">-- Kies --</option>
+                  <option value="collective">Collective</option>
+                  <option value="individual">Individual</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="determineArchetype()" data-i18n="determine_archetype">
+              Bepaal Archetype
+            </button>
+          </div>
+
+          <!-- Archetype Result -->
+          <div id="archetype-result" class="card" style="display: none; background: var(--bg-blue);">
+            <p class="small-label" data-i18n="archetype">Archetype</p>
+            <h2 class="headline" id="archetype-name"></h2>
+            <p class="body-text" id="archetype-description" style="margin-top: 1rem;"></p>
+          </div>
+
+          <!-- Generated Scenario -->
+          <div id="scenario-result" class="card" style="display: none; background: var(--bg-magenta);">
+            <p class="small-label" data-i18n="generated_scenario">Gegenereerd Scenario</p>
+            <div class="body-text" id="scenario-text" style="margin-top: 1rem;"></div>
+            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="goToPhase(2)" data-i18n="continue_phase2">
+              Verder naar Fase 2
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 2-5 placeholders -->
+      <section id="phase-2" class="phase-content" style="display: none;">
+        <div class="card">
+          <p class="label">Phase 2: Disruption Introduction</p>
+          <p class="body-text">Coming in Session 4-5...</p>
+        </div>
+      </section>
+
+      <section id="phase-3" class="phase-content" style="display: none;">
+        <div class="card">
+          <p class="label">Phase 3: Consequences</p>
+          <p class="body-text">Coming in Session 4-5...</p>
+        </div>
+      </section>
+
+      <section id="phase-4" class="phase-content" style="display: none;">
+        <div class="card">
+          <p class="label">Phase 4: Strategic Focus</p>
+          <p class="body-text">Coming in Session 6-7...</p>
+        </div>
+      </section>
+
+      <section id="phase-5" class="phase-content" style="display: none;">
+        <div class="card">
+          <p class="label">Phase 5: Export</p>
+          <p class="body-text">Coming in Session 6-7...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Debug Toggle -->
+  <button class="btn debug-toggle" onclick="toggleDebug()">DB</button>
+
+  <!-- Debug Panel -->
+  <div id="debug-panel" class="hidden">
+    <strong>Debug Log:</strong>
+    <pre id="debug-log"></pre>
+  </div>
+
+  <!-- ================================
+       JavaScript Application
+       ================================ -->
+  <script>
+    // ================================
+    // Configuration
+    // ================================
+    const SUPABASE_URL = 'https://ccfyvpqtxypiawbbftgs.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZnl2cHF0eHlwaWF3YmJmdGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4MzIzOTYsImV4cCI6MjA4MjQwODM5Nn0.C-_T4ZmhcB1rihlcnpwUC_APohAOGEE9nQREmsXBTVg';
+
+    // ================================
+    // Global State
+    // ================================
+    const AppState = {
+      language: 'nl',
+      currentPhase: 1,
+      sessionId: null,
+      archetype: null,
+      archetypeMapping: null,
+      archetypeDescription: null,
+      scenario: null,
+      selectedTechnologies: [],
+      selectedActor: null,
+      selectedEvent: null,
+      whatIfQuestions: [],
+      selectedWhatIf: null,
+      consequences: null
+    };
+
+    // ================================
+    // Supabase Client
+    // ================================
+    let supabaseClient = null;
+
+    function initSupabase() {
+      try {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        debugLog('Supabase client initialized');
+        return true;
+      } catch (error) {
+        debugLog('Supabase init error: ' + error.message);
+        return false;
+      }
+    }
+
+    // ================================
+    // Language/i18n System
+    // ================================
+    const translations = {
+      nl: {
+        phase1_title: 'Fase 1: Scenario Basis',
+        phase1_intro: 'Maak een foto van de 3 binaire keuzkaarten (Resources, System, Dominant Value) om het basisscenario te bepalen.',
+        photo_placeholder: 'Foto capture wordt hier geïmplementeerd',
+        manual_fallback: 'Handmatige invoer (fallback)',
+        determine_archetype: 'Bepaal Archetype',
+        archetype: 'Archetype',
+        generated_scenario: 'Gegenereerd Scenario',
+        continue_phase2: 'Verder naar Fase 2',
+        debug: 'Debug',
+        connecting: 'Verbinding maken met database...',
+        connected: 'Verbonden met database',
+        connection_error: 'Kan geen verbinding maken met database',
+        select_all_options: 'Selecteer alle opties',
+        generating_scenario: 'Scenario genereren...',
+        error_archetype: 'Fout bij ophalen archetype'
+      },
+      en: {
+        phase1_title: 'Phase 1: Scenario Foundation',
+        phase1_intro: 'Take a photo of the 3 binary choice cards (Resources, System, Dominant Value) to determine the base scenario.',
+        photo_placeholder: 'Photo capture will be implemented here',
+        manual_fallback: 'Manual input (fallback)',
+        determine_archetype: 'Determine Archetype',
+        archetype: 'Archetype',
+        generated_scenario: 'Generated Scenario',
+        continue_phase2: 'Continue to Phase 2',
+        debug: 'Debug',
+        connecting: 'Connecting to database...',
+        connected: 'Connected to database',
+        connection_error: 'Cannot connect to database',
+        select_all_options: 'Please select all options',
+        generating_scenario: 'Generating scenario...',
+        error_archetype: 'Error fetching archetype'
+      }
+    };
+
+    function t(key) {
+      return translations[AppState.language]?.[key] || translations['en']?.[key] || key;
+    }
+
+    function updateUILanguage() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+      document.documentElement.lang = AppState.language;
+    }
+
+    // ================================
+    // Debug Utilities
+    // ================================
+    function debugLog(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEl = document.getElementById('debug-log');
+      if (logEl) {
+        logEl.textContent += `[${timestamp}] ${message}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      console.log(`[Debug] ${message}`);
+    }
+
+    function toggleDebug() {
+      document.getElementById('debug-panel').classList.toggle('hidden');
+    }
+
+    function showDebugInfo() {
+      debugLog('Current State: ' + JSON.stringify(AppState, null, 2));
+    }
+
+    // ================================
+    // Screen Navigation
+    // ================================
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId)?.classList.add('active');
+    }
+
+    function goToPhase(phase) {
+      AppState.currentPhase = phase;
+
+      // Update phase indicators
+      document.querySelectorAll('.phase-dot').forEach(dot => {
+        const dotPhase = parseInt(dot.dataset.phase);
+        dot.classList.remove('active', 'completed');
+        if (dotPhase === phase) dot.classList.add('active');
+        if (dotPhase < phase) dot.classList.add('completed');
+      });
+
+      // Show correct phase content
+      document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
+      document.getElementById(`phase-${phase}`).style.display = 'block';
+
+      debugLog(`Navigated to Phase ${phase}`);
+    }
+
+    // ================================
+    // Session Management
+    // ================================
+    async function startSession(language) {
+      AppState.language = language;
+      updateUILanguage();
+      showScreen('screen-main');
+      debugLog(`Session started with language: ${language}`);
+    }
+
+    // ================================
+    // Supabase Data Functions
+    // ================================
+    async function fetchArchetypeMapping(resources, system, values) {
+      debugLog(`Fetching archetype for: ${resources}, ${system}, ${values}`);
+
+      try {
+        // Table uses axis_a (resources), axis_b (system), axis_c (values)
+        const { data, error } = await supabaseClient
+          .from('Archetype_mapping')
+          .select('*')
+          .ilike('axis_a', resources)
+          .ilike('axis_b', system)
+          .ilike('axis_c', values);
+
+        if (error) throw error;
+
+        debugLog(`Archetype mapping result: ${JSON.stringify(data)}`);
+        return data?.[0] || null;
+      } catch (error) {
+        debugLog(`Error fetching archetype mapping: ${error.message}`);
+        return null;
+      }
+    }
+
+    async function fetchArchetypeDescription(archetypeId) {
+      debugLog(`Fetching description for archetype: ${archetypeId}`);
+
+      try {
+        // Table uses 'id' column for archetype identifier
+        const { data, error } = await supabaseClient
+          .from('Archetype description')
+          .select('*')
+          .eq('id', archetypeId);
+
+        if (error) throw error;
+
+        debugLog(`Archetype description result: ${JSON.stringify(data)}`);
+        return data?.[0] || null;
+      } catch (error) {
+        debugLog(`Error fetching archetype description: ${error.message}`);
+        return null;
+      }
+    }
+
+    async function fetchPrompt(promptName) {
+      debugLog(`Fetching prompt: ${promptName}`);
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('prompts')
+          .select('*')
+          .eq('name', promptName)
+          .single();
+
+        if (error) throw error;
+
+        debugLog(`Prompt fetched: ${promptName}`);
+        return data;
+      } catch (error) {
+        debugLog(`Error fetching prompt: ${error.message}`);
+        return null;
+      }
+    }
+
+    async function fetchSectorInfo() {
+      debugLog('Fetching sector information');
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('Sector information: JenV')
+          .select('*');
+
+        if (error) throw error;
+
+        debugLog(`Sector info fetched: ${data?.length} records`);
+        return data;
+      } catch (error) {
+        debugLog(`Error fetching sector info: ${error.message}`);
+        return null;
+      }
+    }
+
+    // ================================
+    // Gemini API Functions
+    // ================================
+    async function callGemini(prompt, image = null, type = 'text') {
+      debugLog(`Calling Gemini API (type: ${type})`);
+
+      try {
+        const response = await fetch('/api/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, image, type })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        debugLog('Gemini response received');
+        return data.result;
+      } catch (error) {
+        debugLog(`Gemini API error: ${error.message}`);
+        throw error;
+      }
+    }
+
+    // ================================
+    // Phase 1: Scenario Foundation
+    // ================================
+    async function determineArchetype() {
+      const resources = document.getElementById('select-resources').value;
+      const system = document.getElementById('select-system').value;
+      const values = document.getElementById('select-values').value;
+
+      if (!resources || !system || !values) {
+        alert(t('select_all_options'));
+        return;
+      }
+
+      debugLog(`Determining archetype for: ${resources}, ${system}, ${values}`);
+
+      // Show loading state
+      const resultEl = document.getElementById('archetype-result');
+      resultEl.style.display = 'block';
+      document.getElementById('archetype-name').textContent = '...';
+      document.getElementById('archetype-description').textContent = t('connecting');
+
+      try {
+        // Get archetype mapping
+        const mapping = await fetchArchetypeMapping(resources, system, values);
+
+        if (!mapping) {
+          throw new Error('No archetype mapping found');
+        }
+
+        // Mapping uses archetype_id and nuance_name/nuance_description
+        const archetypeId = mapping.archetype_id;
+        AppState.archetype = archetypeId;
+        AppState.archetypeMapping = mapping;
+
+        // Get archetype description from the description table
+        const description = await fetchArchetypeDescription(archetypeId);
+
+        // Display the archetype name and nuance
+        const displayName = description?.name || archetypeId;
+        const nuanceName = mapping.nuance_name;
+
+        document.getElementById('archetype-name').textContent = displayName;
+        document.getElementById('archetype-description').innerHTML = `
+          <strong>${nuanceName}</strong><br><br>
+          ${mapping.nuance_description || ''}<br><br>
+          <em>${description?.description || 'Description not found'}</em>
+        `;
+
+        debugLog(`Archetype determined: ${archetypeId} (${nuanceName})`);
+
+        // Generate scenario
+        await generateScenario(archetypeId, description, mapping);
+
+      } catch (error) {
+        debugLog(`Error: ${error.message}`);
+        document.getElementById('archetype-name').textContent = t('error_archetype');
+        document.getElementById('archetype-description').textContent = error.message;
+      }
+    }
+
+    async function generateScenario(archetypeId, archetypeDescription, mapping) {
+      debugLog('Generating scenario...');
+
+      const scenarioEl = document.getElementById('scenario-result');
+      const scenarioTextEl = document.getElementById('scenario-text');
+
+      scenarioEl.style.display = 'block';
+      scenarioTextEl.innerHTML = `<span class="loading-spinner"></span> ${t('generating_scenario')}`;
+
+      try {
+        // Fetch required data from Supabase
+        const [promptData, sectorData] = await Promise.all([
+          fetchPrompt('scenario_writing'),
+          fetchSectorInfo()
+        ]);
+
+        // Build the prompt for Gemini
+        const fullPrompt = buildScenarioPrompt(
+          promptData,
+          archetypeId,
+          archetypeDescription,
+          mapping,
+          sectorData
+        );
+
+        debugLog('Sending prompt to Gemini...');
+
+        // Call Gemini API
+        const scenario = await callGemini(fullPrompt, null, 'scenario');
+
+        AppState.scenario = scenario;
+        scenarioTextEl.innerHTML = scenario.replace(/\n/g, '<br>');
+
+        debugLog('Scenario generated successfully');
+
+      } catch (error) {
+        debugLog(`Scenario generation error: ${error.message}`);
+        scenarioTextEl.textContent = `Error generating scenario: ${error.message}`;
+      }
+    }
+
+    function buildScenarioPrompt(promptData, archetypeId, archetypeDescription, mapping, sectorData) {
+      // Use the prompt from Supabase if available, otherwise use a default
+      let basePrompt = promptData?.prompt || promptData?.content || `
+        Generate a future scenario for the Dutch Ministry of Justice and Security (JenV).
+        The scenario should be vivid, concrete, and thought-provoking.
+        Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
+        Length: 2-3 paragraphs.
+      `;
+
+      // Add context from archetype and mapping
+      const context = `
+## Archetype: ${archetypeDescription?.name || archetypeId}
+${archetypeDescription?.description || ''}
+
+## Specific Nuance: ${mapping?.nuance_name || ''}
+${mapping?.nuance_description || ''}
+
+## Writing Guidance:
+${archetypeDescription?.writing_guidance || ''}
+
+## Key Vocabulary to Use:
+${archetypeDescription?.key_vocabulary || ''}
+
+## Sector Context (Dutch Ministry of Justice and Security - JenV):
+${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
+
+## Language: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
+      `;
+
+      return `${basePrompt}\n\n${context}`;
+    }
+
+    // ================================
+    // Connection Test
+    // ================================
+    async function testConnection() {
+      const statusEl = document.getElementById('connection-status');
+
+      try {
+        // Test Supabase connection by fetching archetype mappings
+        const { data, error } = await supabaseClient
+          .from('Archetype_mapping')
+          .select('*')
+          .limit(1);
+
+        if (error) throw error;
+
+        statusEl.className = 'status-message success';
+        statusEl.innerHTML = `✓ ${t('connected')}`;
+        debugLog('Connection test successful');
+
+        // Log table info
+        debugLog(`Sample archetype mapping: ${JSON.stringify(data)}`);
+
+      } catch (error) {
+        statusEl.className = 'status-message error';
+        statusEl.innerHTML = `✗ ${t('connection_error')}: ${error.message}`;
+        debugLog(`Connection test failed: ${error.message}`);
+      }
+    }
+
+    // ================================
+    // Initialize Application
+    // ================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      debugLog('Application initializing...');
+
+      // Initialize Supabase
+      if (initSupabase()) {
+        // Test the connection
+        await testConnection();
+      }
+
+      debugLog('Application ready');
+    });
+  </script>
+
+</body>
+</html>
