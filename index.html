@@ -362,60 +362,58 @@
             <span class="label" data-i18n="phase1_title">Fase 1: Scenario Basis</span>
           </div>
           <p class="body-text" data-i18n="phase1_intro">
-            Maak een foto van de 3 binaire keuzkaarten (Resources, System, Dominant Value) om het basisscenario te bepalen.
+            Selecteer de 3 binaire keuzes om het basisscenario te bepalen.
           </p>
 
-          <!-- Placeholder for photo capture (Phase 2-3 implementation) -->
-          <div style="margin: 2rem 0; padding: 2rem; border: 2px dashed var(--black); text-align: center;">
-            <p class="sub-headline" data-i18n="photo_placeholder">Foto capture wordt hier geïmplementeerd</p>
-          </div>
-
-          <!-- Manual Fallback -->
-          <div class="card" style="background: var(--bg-grey);">
-            <p class="small-label" data-i18n="manual_fallback">Handmatige invoer (fallback)</p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+          <!-- Card Selection -->
+          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
               <div>
-                <label class="small-label">Resources</label>
+                <label class="small-label" data-i18n="card_resources">Resources</label>
                 <select id="select-resources" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                  <option value="">-- Kies --</option>
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
                   <option value="abundance">Abundance</option>
                   <option value="limits">Limits</option>
                 </select>
+                <p class="small-label" style="margin-top: 0.5rem; font-size: 0.6rem; text-transform: none; opacity: 0.7;" id="resources-hint"></p>
               </div>
               <div>
-                <label class="small-label">System</label>
+                <label class="small-label" data-i18n="card_system">System</label>
                 <select id="select-system" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                  <option value="">-- Kies --</option>
-                  <option value="stable">Stable (evolves)</option>
-                  <option value="breakdown">Breakdown (breaks down)</option>
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
+                  <option value="stable">Stable</option>
+                  <option value="breakdown">Breakdown</option>
                 </select>
+                <p class="small-label" style="margin-top: 0.5rem; font-size: 0.6rem; text-transform: none; opacity: 0.7;" id="system-hint"></p>
               </div>
               <div>
-                <label class="small-label">Dominant Value</label>
+                <label class="small-label" data-i18n="card_values">Values</label>
                 <select id="select-values" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                  <option value="">-- Kies --</option>
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
                   <option value="collective">Collective</option>
                   <option value="individual">Individual</option>
                 </select>
+                <p class="small-label" style="margin-top: 0.5rem; font-size: 0.6rem; text-transform: none; opacity: 0.7;" id="values-hint"></p>
               </div>
             </div>
-            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="determineArchetype()" data-i18n="determine_archetype">
+            <button class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="determineArchetype()" id="btn-determine" data-i18n="determine_archetype">
               Bepaal Archetype
             </button>
           </div>
 
           <!-- Archetype Result -->
-          <div id="archetype-result" class="card" style="display: none; background: var(--bg-blue);">
+          <div id="archetype-result" class="card" style="display: none; background: var(--bg-blue); margin-top: 1rem;">
             <p class="small-label" data-i18n="archetype">Archetype</p>
-            <h2 class="headline" id="archetype-name"></h2>
-            <p class="body-text" id="archetype-description" style="margin-top: 1rem;"></p>
+            <h2 class="headline" id="archetype-name" style="margin: 0.5rem 0;"></h2>
+            <p class="sub-headline" id="archetype-nuance" style="color: var(--blue);"></p>
+            <p class="body-text" id="archetype-summary" style="margin-top: 0.75rem;"></p>
           </div>
 
           <!-- Generated Scenario -->
-          <div id="scenario-result" class="card" style="display: none; background: var(--bg-magenta);">
+          <div id="scenario-result" class="card" style="display: none; background: var(--bg-magenta); margin-top: 1rem;">
             <p class="small-label" data-i18n="generated_scenario">Gegenereerd Scenario</p>
-            <div class="body-text" id="scenario-text" style="margin-top: 1rem;"></div>
-            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="goToPhase(2)" data-i18n="continue_phase2">
+            <div class="body-text" id="scenario-text" style="margin-top: 1rem; white-space: pre-line;"></div>
+            <button class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="goToPhase(2)" data-i18n="continue_phase2">
               Verder naar Fase 2
             </button>
           </div>
@@ -513,36 +511,42 @@
     const translations = {
       nl: {
         phase1_title: 'Fase 1: Scenario Basis',
-        phase1_intro: 'Maak een foto van de 3 binaire keuzkaarten (Resources, System, Dominant Value) om het basisscenario te bepalen.',
-        photo_placeholder: 'Foto capture wordt hier geïmplementeerd',
-        manual_fallback: 'Handmatige invoer (fallback)',
-        determine_archetype: 'Bepaal Archetype',
+        phase1_intro: 'Selecteer de 3 binaire keuzes om het basisscenario te bepalen.',
+        card_resources: 'Resources',
+        card_system: 'System',
+        card_values: 'Values',
+        select_placeholder: '-- Kies --',
+        determine_archetype: 'Genereer Scenario',
         archetype: 'Archetype',
         generated_scenario: 'Gegenereerd Scenario',
         continue_phase2: 'Verder naar Fase 2',
         debug: 'Debug',
-        connecting: 'Verbinding maken met database...',
+        connecting: 'Verbinding maken...',
         connected: 'Verbonden met database',
         connection_error: 'Kan geen verbinding maken met database',
-        select_all_options: 'Selecteer alle opties',
-        generating_scenario: 'Scenario genereren...',
+        select_all_options: 'Selecteer alle drie de opties',
+        generating_scenario: 'Scenario wordt gegenereerd...',
+        determining_archetype: 'Archetype bepalen...',
         error_archetype: 'Fout bij ophalen archetype'
       },
       en: {
         phase1_title: 'Phase 1: Scenario Foundation',
-        phase1_intro: 'Take a photo of the 3 binary choice cards (Resources, System, Dominant Value) to determine the base scenario.',
-        photo_placeholder: 'Photo capture will be implemented here',
-        manual_fallback: 'Manual input (fallback)',
-        determine_archetype: 'Determine Archetype',
+        phase1_intro: 'Select the 3 binary choices to determine the base scenario.',
+        card_resources: 'Resources',
+        card_system: 'System',
+        card_values: 'Values',
+        select_placeholder: '-- Select --',
+        determine_archetype: 'Generate Scenario',
         archetype: 'Archetype',
         generated_scenario: 'Generated Scenario',
         continue_phase2: 'Continue to Phase 2',
         debug: 'Debug',
-        connecting: 'Connecting to database...',
+        connecting: 'Connecting...',
         connected: 'Connected to database',
         connection_error: 'Cannot connect to database',
-        select_all_options: 'Please select all options',
+        select_all_options: 'Please select all three options',
         generating_scenario: 'Generating scenario...',
+        determining_archetype: 'Determining archetype...',
         error_archetype: 'Error fetching archetype'
       }
     };
@@ -661,19 +665,20 @@
       }
     }
 
-    async function fetchPrompt(promptName) {
-      debugLog(`Fetching prompt: ${promptName}`);
+    async function fetchPrompt(promptId) {
+      debugLog(`Fetching prompt: ${promptId}`);
 
       try {
+        // Prompts table uses 'id' column (e.g., 'scenario_writing')
         const { data, error } = await supabaseClient
           .from('prompts')
           .select('*')
-          .eq('name', promptName)
+          .eq('id', promptId)
           .single();
 
         if (error) throw error;
 
-        debugLog(`Prompt fetched: ${promptName}`);
+        debugLog(`Prompt fetched: ${promptId}`);
         return data;
       } catch (error) {
         debugLog(`Error fetching prompt: ${error.message}`);
@@ -741,11 +746,17 @@
 
       debugLog(`Determining archetype for: ${resources}, ${system}, ${values}`);
 
-      // Show loading state
+      // Disable button and show loading
+      const btnEl = document.getElementById('btn-determine');
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<span class="loading-spinner"></span> ${t('determining_archetype')}`;
+
+      // Show archetype result with loading state
       const resultEl = document.getElementById('archetype-result');
       resultEl.style.display = 'block';
       document.getElementById('archetype-name').textContent = '...';
-      document.getElementById('archetype-description').textContent = t('connecting');
+      document.getElementById('archetype-nuance').textContent = '';
+      document.getElementById('archetype-summary').textContent = t('connecting');
 
       try {
         // Get archetype mapping
@@ -762,17 +773,18 @@
 
         // Get archetype description from the description table
         const description = await fetchArchetypeDescription(archetypeId);
+        AppState.archetypeDescription = description;
 
-        // Display the archetype name and nuance
+        // Display the archetype - simplified view
         const displayName = description?.name || archetypeId;
         const nuanceName = mapping.nuance_name;
 
+        // Create a one-sentence summary from the nuance description
+        const summary = getFirstSentence(mapping.nuance_description);
+
         document.getElementById('archetype-name').textContent = displayName;
-        document.getElementById('archetype-description').innerHTML = `
-          <strong>${nuanceName}</strong><br><br>
-          ${mapping.nuance_description || ''}<br><br>
-          <em>${description?.description || 'Description not found'}</em>
-        `;
+        document.getElementById('archetype-nuance').textContent = nuanceName;
+        document.getElementById('archetype-summary').textContent = summary;
 
         debugLog(`Archetype determined: ${archetypeId} (${nuanceName})`);
 
@@ -782,8 +794,20 @@
       } catch (error) {
         debugLog(`Error: ${error.message}`);
         document.getElementById('archetype-name').textContent = t('error_archetype');
-        document.getElementById('archetype-description').textContent = error.message;
+        document.getElementById('archetype-summary').textContent = error.message;
+      } finally {
+        // Re-enable button
+        btnEl.disabled = false;
+        btnEl.textContent = t('determine_archetype');
       }
+    }
+
+    // Helper to extract first sentence
+    function getFirstSentence(text) {
+      if (!text) return '';
+      // Split on period followed by space or end of string
+      const match = text.match(/^[^.]+\./);
+      return match ? match[0].trim() : text.substring(0, 150) + '...';
     }
 
     async function generateScenario(archetypeId, archetypeDescription, mapping) {
@@ -793,7 +817,7 @@
       const scenarioTextEl = document.getElementById('scenario-text');
 
       scenarioEl.style.display = 'block';
-      scenarioTextEl.innerHTML = `<span class="loading-spinner"></span> ${t('generating_scenario')}`;
+      scenarioTextEl.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="loading-spinner"></span><br><br>${t('generating_scenario')}</div>`;
 
       try {
         // Fetch required data from Supabase
@@ -801,6 +825,9 @@
           fetchPrompt('scenario_writing'),
           fetchSectorInfo()
         ]);
+
+        debugLog(`Prompt data: ${promptData ? 'loaded' : 'missing'}`);
+        debugLog(`Sector data: ${sectorData?.length || 0} items`);
 
         // Build the prompt for Gemini
         const fullPrompt = buildScenarioPrompt(
@@ -812,51 +839,90 @@
         );
 
         debugLog('Sending prompt to Gemini...');
+        debugLog(`Prompt length: ${fullPrompt.length} chars`);
 
         // Call Gemini API
         const scenario = await callGemini(fullPrompt, null, 'scenario');
 
         AppState.scenario = scenario;
-        scenarioTextEl.innerHTML = scenario.replace(/\n/g, '<br>');
+
+        // Format the scenario for display (preserve markdown-like formatting)
+        scenarioTextEl.innerHTML = formatScenarioOutput(scenario);
 
         debugLog('Scenario generated successfully');
 
       } catch (error) {
         debugLog(`Scenario generation error: ${error.message}`);
-        scenarioTextEl.textContent = `Error generating scenario: ${error.message}`;
+        scenarioTextEl.innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
       }
     }
 
     function buildScenarioPrompt(promptData, archetypeId, archetypeDescription, mapping, sectorData) {
+      // Get the card choices for context
+      const resources = document.getElementById('select-resources').value;
+      const system = document.getElementById('select-system').value;
+      const values = document.getElementById('select-values').value;
+
       // Use the prompt from Supabase (column: prompt_text)
-      let basePrompt = promptData?.prompt_text || `
-        Generate a future scenario for the Dutch Ministry of Justice and Security (JenV).
-        The scenario should be vivid, concrete, and thought-provoking.
-        Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
-        Length: 2-3 paragraphs.
+      const basePrompt = promptData?.prompt_text || `
+Generate a future scenario for the Dutch Ministry of Justice and Security (JenV).
+The scenario should be vivid, concrete, and thought-provoking.
+Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
       `;
 
-      // Add context from archetype and mapping
+      // Build the context to inject into the prompt
       const context = `
-## Archetype: ${archetypeDescription?.name || archetypeId}
+═════════════════════════════════════════════════════════
+INPUT DATA
+═════════════════════════════════════════════════════════
+
+CARD CHOICES:
+- Resources: ${resources} (${mapping?.axis_a_label || ''})
+- System: ${system} (${mapping?.axis_b_label || ''})
+- Values: ${values} (${mapping?.axis_c_label || ''})
+
+ARCHETYPE: ${archetypeDescription?.name || archetypeId}
 ${archetypeDescription?.description || ''}
 
-## Specific Nuance: ${mapping?.nuance_name || ''}
+SPECIFIC NUANCE: ${mapping?.nuance_name || ''}
 ${mapping?.nuance_description || ''}
 
-## Writing Guidance:
+WRITING GUIDANCE:
 ${archetypeDescription?.writing_guidance || ''}
 
-## Key Vocabulary to Use:
+KEY VOCABULARY:
 ${archetypeDescription?.key_vocabulary || ''}
 
-## Sector Context (Dutch Ministry of Justice and Security - JenV):
+SECTOR KNOWLEDGE (Dutch Ministry of Justice and Security - JenV):
 ${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
 
-## Language: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
-      `;
+OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
+`;
 
       return `${basePrompt}\n\n${context}`;
+    }
+
+    function formatScenarioOutput(text) {
+      if (!text) return '';
+
+      // Convert markdown-style formatting to HTML
+      let formatted = text
+        // Bold: **text** -> <strong>text</strong>
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Italic: *text* -> <em>text</em>
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        // Headers
+        .replace(/^### (.+)$/gm, '<h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h4>')
+        .replace(/^## (.+)$/gm, '<h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h3>')
+        // Bullet points
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        // Wrap consecutive <li> in <ul>
+        .replace(/(<li>.*<\/li>\n?)+/g, '<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">$&</ul>')
+        // Line breaks
+        .replace(/\n\n/g, '</p><p style="margin-top: 1rem;">')
+        .replace(/\n/g, '<br>');
+
+      return `<p>${formatted}</p>`;
     }
 
     // ================================
