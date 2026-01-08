@@ -783,7 +783,26 @@
       line-height: 1.4;
     }
 
-    /* Narrative Vignette */
+    /* ================================
+       AI Output Styling - Simple & Clean
+       ================================ */
+
+    /* Section Headers (h3.section-header) */
+    h3.section-header,
+    .section-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0000FF;
+      margin: 1.5rem 0 0.5rem 0;
+      padding: 0;
+    }
+
+    .section-header:first-child,
+    h3.section-header:first-child {
+      margin-top: 0;
+    }
+
+    /* Narrative Vignette (italic blocks) */
     .narrative-vignette {
       background: #E8F4FC;
       border-left: 3px solid #0000FF;
@@ -793,38 +812,41 @@
       font-style: italic;
     }
 
-    .narrative-label {
-      display: block;
-      font-size: 0.7rem;
-      font-family: 'Roboto Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #0000FF;
-      margin-bottom: 0.5rem;
-      font-style: normal;
-    }
-
     .narrative-vignette p {
       line-height: 1.7;
       color: #333;
       margin: 0;
     }
 
-    /* Opportunities & Risks - simple styling */
-    .opportunities-section,
-    .risks-section {
-      margin-bottom: var(--space-md);
+    /* Styled Lists - clean single bullets */
+    .styled-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 1rem 0;
     }
 
-    .section-header {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--black);
-      margin: var(--space-lg) 0 var(--space-sm) 0;
+    .styled-list li {
+      padding: 0.4rem 0 0.4rem 1.25rem;
+      position: relative;
+      line-height: 1.6;
+      color: #333;
     }
 
-    .section-header:first-child {
-      margin-top: 0;
+    .styled-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #0000FF;
+      font-weight: bold;
+    }
+
+    /* Body paragraphs in output */
+    .formatted-content p,
+    #scenario-text p,
+    #consequences-text p {
+      line-height: 1.7;
+      margin: 0.75rem 0;
+      color: #333;
     }
 
     /* What-If Question Cards */
@@ -881,66 +903,6 @@
     .whatif-tag.domain {
       background: #F5F5F5;
       color: #666;
-    }
-
-    /* Consequences Sections */
-    .consequence-section {
-      margin-bottom: var(--space-lg);
-    }
-
-    .consequence-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .consequence-section li {
-      padding: var(--space-sm) 0;
-      padding-left: var(--space-md);
-      position: relative;
-      line-height: 1.6;
-      border-bottom: 1px solid #F0F0F0;
-    }
-
-    .consequence-section li:last-child {
-      border-bottom: none;
-    }
-
-    .consequence-section li::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: var(--blue);
-      font-weight: bold;
-    }
-
-    /* ELSA Labels */
-    .elsa-label {
-      font-weight: 600;
-      color: var(--black);
-    }
-
-    /* Winners/Losers */
-    .winners-section,
-    .losers-section {
-      margin-bottom: var(--space-md);
-    }
-
-    /* ELSA Section */
-    .elsa-section {
-      background: var(--bg-subtle);
-      padding: var(--space-md);
-      border-radius: 6px;
-    }
-
-    .elsa-section ul {
-      margin: 0;
-      padding-left: 1.25rem;
-    }
-
-    .elsa-section li {
-      margin-bottom: var(--space-sm);
-      line-height: 1.6;
     }
 
     /* Strategic Priority Items */
@@ -2020,285 +1982,130 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       return `${basePrompt}\n\n${context}`;
     }
 
-    function formatScenarioOutput(text) {
-      if (!text) return '';
-
-      // Basic markdown parsing
-      let formatted = text
-        // Bold: **text** -> <strong>text</strong>
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        // Italic: *text* -> <em>text</em>
-        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
-        // Headers
-        .replace(/^#### (.+)$/gm, '<div class="section-header">$1</div>')
-        .replace(/^### (.+)$/gm, '<div class="section-header">$1</div>')
-        .replace(/^## (.+)$/gm, '<h3 class="scenario-title">$1</h3>')
-        // Line breaks
-        .replace(/\n\n/g, '</p><p style="margin-top: 0.75rem;">')
-        .replace(/\n/g, '<br>');
-
-      // Convert bullet points
-      formatted = formatted.replace(/(<br>)?- (.+?)(<br>|<\/p>|$)/g, '<li>$2</li>$3');
-      formatted = formatted.replace(/(<li>.*?<\/li>)+/g, '<ul class="consequence-section">$&</ul>');
-
-      return `<div class="formatted-content"><p>${formatted}</p></div>`;
-    }
-
-    function formatScenarioWithSections(text) {
-      if (!text) return '';
-
-      const lang = AppState.language;
-      let html = '';
-
-      // Try to identify sections in the scenario
-      const lines = text.split('\n');
-      let currentSection = 'intro';
-      let narrativeContent = '';
-      let opportunitiesContent = '';
-      let risksContent = '';
-      let otherContent = '';
-
-      for (let line of lines) {
-        const lowerLine = line.toLowerCase();
-
-        // Detect section changes
-        if (lowerLine.includes('een dag uit het leven') || lowerLine.includes('a day in the life') || lowerLine.includes('day in a life') || lowerLine.includes('vignette') || lowerLine.includes('narrative') || (line.trim().startsWith('*') && line.trim().endsWith('*') && line.trim().length > 2)) {
-          currentSection = 'narrative';
-          continue;
-        } else if (lowerLine.includes('kansen') || lowerLine.includes('opportunities') || lowerLine.includes('mogelijkheden')) {
-          currentSection = 'opportunities';
-          continue;
-        } else if (lowerLine.includes('risico') || lowerLine.includes('risks') || lowerLine.includes('bedreigingen') || lowerLine.includes('threats')) {
-          currentSection = 'risks';
-          continue;
-        }
-
-        // Add content to appropriate section
-        if (currentSection === 'narrative') {
-          narrativeContent += line + '\n';
-        } else if (currentSection === 'opportunities') {
-          opportunitiesContent += line + '\n';
-        } else if (currentSection === 'risks') {
-          risksContent += line + '\n';
-        } else {
-          otherContent += line + '\n';
-        }
-      }
-
-      // Build HTML
-      if (otherContent.trim()) {
-        html += `<div class="scenario-intro">${parseMarkdown(otherContent)}</div>`;
-      }
-
-      if (narrativeContent.trim()) {
-        const label = lang === 'nl' ? 'EEN DAG UIT HET LEVEN' : 'A DAY IN THE LIFE';
-        html += `<div class="narrative-vignette">
-          <span class="narrative-label">${label}</span>
-          <p>${parseMarkdown(narrativeContent)}</p>
-        </div>`;
-      }
-
-      if (opportunitiesContent.trim()) {
-        const label = lang === 'nl' ? 'KANSEN' : 'OPPORTUNITIES';
-        html += `<div class="opportunities-section">
-          <strong>${label}</strong>
-          ${parseMarkdownList(opportunitiesContent)}
-        </div>`;
-      }
-
-      if (risksContent.trim()) {
-        const label = lang === 'nl' ? "RISICO'S" : 'RISKS';
-        html += `<div class="risks-section">
-          <strong>${label}</strong>
-          ${parseMarkdownList(risksContent)}
-        </div>`;
-      }
-
-      return html || formatScenarioOutput(text);
-    }
+    // ================================
+    // SIMPLE MARKDOWN PARSER
+    // ================================
 
     function parseMarkdown(text) {
       if (!text) return '';
-      return text
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .trim();
-    }
 
-    function parseMarkdownList(text) {
-      if (!text) return '';
-      const lines = text.split('\n').filter(l => l.trim());
-      let html = '<ul class="consequence-section">';
-      for (let line of lines) {
-        let content = line.replace(/^[-•*]\s*/, '').trim();
-        if (content) {
-          content = content
-            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-            .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
-          html += `<li>${content}</li>`;
-        }
-      }
-      html += '</ul>';
-      return html;
-    }
-
-    function formatWhatIfQuestions(questions) {
-      if (!questions || !questions.length) return '';
-
-      let html = '';
-      questions.forEach((q, index) => {
-        const questionText = q.question || q;
-        const techCombo = q.technologies || '';
-        const domain = q.domain || q.impact_domain || '';
-        const tension = q.tension || q.value_tension || '';
-
-        html += `<div class="whatif-card" onclick="selectWhatIf(${index})" data-index="${index}">
-          <div class="whatif-question">${parseMarkdown(questionText)}</div>
-          <div class="whatif-meta">
-            ${techCombo ? `<span class="whatif-tag tech">${techCombo}</span>` : ''}
-            ${domain ? `<span class="whatif-tag domain">${domain}</span>` : ''}
-            ${tension ? `<span class="whatif-tag">${tension}</span>` : ''}
-          </div>
-        </div>`;
-      });
-
-      return html;
-    }
-
-    function formatConsequencesOutput(text) {
-      if (!text) return formatScenarioOutput(text);
-
-      const lang = AppState.language;
-      let html = '';
-
-      // Section header patterns - must be at start of line (with optional markdown like ## or **)
-      const sectionPatterns = {
-        'what_happens': /^(?:#{1,3}\s*)?(?:\*\*)?(?:wat gebeurt er|what happens|direct effects?|directe effecten)/i,
-        'second_order': /^(?:#{1,3}\s*)?(?:\*\*)?(?:tweede[- ]orde|second[- ]order|2nd order)/i,
-        'third_order': /^(?:#{1,3}\s*)?(?:\*\*)?(?:derde[- ]orde|third[- ]order|3rd order)/i,
-        'applications': /^(?:#{1,3}\s*)?(?:\*\*)?(?:nieuwe toepassingen|new applications|potential applications)/i,
-        'elsa': /^(?:#{1,3}\s*)?(?:\*\*)?(?:elsa|ethical[,\s]+legal|ethische[,\s]+juridische)/i,
-        'winners_losers': /^(?:#{1,3}\s*)?(?:\*\*)?(?:wie wint|who wins|winners?\s*(and|&|,)\s*losers?|winnaars?\s*(en|&|,)\s*verliezers?)/i
-      };
-
-      const sectionLabels = {
-        'what_happens': lang === 'nl' ? 'WAT GEBEURT ER?' : 'WHAT HAPPENS?',
-        'second_order': lang === 'nl' ? 'TWEEDE-ORDE EFFECTEN' : 'SECOND-ORDER EFFECTS',
-        'third_order': lang === 'nl' ? 'DERDE-ORDE EFFECTEN' : 'THIRD-ORDER EFFECTS',
-        'applications': lang === 'nl' ? 'NIEUWE TOEPASSINGEN' : 'NEW APPLICATIONS',
-        'elsa': lang === 'nl' ? 'ELSA IMPLICATIES' : 'ELSA IMPLICATIONS',
-        'winners_losers': lang === 'nl' ? 'WIE WINT, WIE VERLIEST?' : 'WHO WINS, WHO LOSES?'
-      };
-
-      // Parse text into sections
       const lines = text.split('\n');
-      let sections = {};
-      let currentSection = 'intro';
-      let sectionOrder = ['intro'];
+      let html = '';
+      let inList = false;
+      let inVignette = false;
+      let vignetteContent = '';
 
-      for (let line of lines) {
-        const trimmedLine = line.trim();
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        const trimmed = line.trim();
 
-        // Check for section headers (must be at start of line)
-        let foundSection = null;
-        for (let [key, pattern] of Object.entries(sectionPatterns)) {
-          if (pattern.test(trimmedLine)) {
-            foundSection = key;
-            break;
+        // Skip empty lines (but close list if open)
+        if (!trimmed) {
+          if (inList) {
+            html += '</ul>';
+            inList = false;
           }
-        }
-
-        if (foundSection) {
-          currentSection = foundSection;
-          if (!sections[currentSection]) {
-            sections[currentSection] = [];
-            sectionOrder.push(currentSection);
-          }
+          html += '<br>';
           continue;
         }
 
-        if (!sections[currentSection]) sections[currentSection] = [];
-        if (trimmedLine) sections[currentSection].push(line);
-      }
-
-      // Build HTML for each section in order
-      for (let key of sectionOrder) {
-        const content = sections[key];
-        if (!content || !content.length) continue;
-
-        if (key === 'intro') {
-          html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
-        } else if (key === 'winners_losers') {
-          html += `<div class="section-header">${sectionLabels[key]}</div>`;
-          const contentText = content.join('\n');
-
-          // Split by Winners/Losers labels
-          const winnersPart = [];
-          const losersPart = [];
-          let currentPart = 'winners';
-
-          for (let line of content) {
-            const lowerLine = line.toLowerCase();
-            if (lowerLine.includes('losers') || lowerLine.includes('verliezers') || lowerLine.includes('wie verliest')) {
-              currentPart = 'losers';
-              continue;
-            }
-            if (lowerLine.includes('winners') || lowerLine.includes('winnaars') || lowerLine.includes('wie wint')) {
-              continue;
-            }
-            if (currentPart === 'winners') {
-              winnersPart.push(line);
-            } else {
-              losersPart.push(line);
-            }
+        // Detect italic block start/end (vignette)
+        if (trimmed.startsWith('*') && !trimmed.startsWith('**')) {
+          // Check if this is a multi-line italic block
+          if (trimmed.endsWith('*') && trimmed.length > 2) {
+            // Single line italic - treat as vignette
+            const content = trimmed.slice(1, -1);
+            html += `<div class="narrative-vignette"><p>${formatInlineMarkdown(content)}</p></div>`;
+            continue;
           }
-
-          if (winnersPart.length) {
-            const label = lang === 'nl' ? 'Winnaars' : 'Winners';
-            html += `<div class="winners-section"><strong>${label}</strong>${parseMarkdownList(winnersPart.join('\n'))}</div>`;
-          }
-          if (losersPart.length) {
-            const label = lang === 'nl' ? 'Verliezers' : 'Losers';
-            html += `<div class="losers-section"><strong>${label}</strong>${parseMarkdownList(losersPart.join('\n'))}</div>`;
-          }
-          if (!winnersPart.length && !losersPart.length) {
-            html += parseMarkdownList(contentText);
-          }
-        } else if (key === 'elsa') {
-          html += `<div class="section-header">${sectionLabels[key]}</div>`;
-          html += `<div class="elsa-section">${formatElsaSection(content.join('\n'))}</div>`;
-        } else {
-          html += `<div class="section-header">${sectionLabels[key]}</div>`;
-          html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
         }
+
+        // Headers: ### or ## or lines that are ALL CAPS or end with :
+        if (trimmed.startsWith('###')) {
+          if (inList) { html += '</ul>'; inList = false; }
+          const headerText = trimmed.replace(/^#{1,4}\s*/, '').replace(/\*\*/g, '');
+          html += `<h3 class="section-header">${headerText}</h3>`;
+          continue;
+        }
+        if (trimmed.startsWith('##')) {
+          if (inList) { html += '</ul>'; inList = false; }
+          const headerText = trimmed.replace(/^#{1,4}\s*/, '').replace(/\*\*/g, '');
+          html += `<h3 class="section-header">${headerText}</h3>`;
+          continue;
+        }
+
+        // ALL CAPS lines or **Header** lines or lines ending with : → section header
+        const isAllCaps = trimmed === trimmed.toUpperCase() && trimmed.length > 3 && /[A-Z]/.test(trimmed);
+        const isBoldHeader = trimmed.startsWith('**') && trimmed.endsWith('**');
+        const endsWithColon = trimmed.endsWith(':') && trimmed.length > 5;
+
+        if (isAllCaps || isBoldHeader || endsWithColon) {
+          if (inList) { html += '</ul>'; inList = false; }
+          const headerText = trimmed.replace(/\*\*/g, '').replace(/:$/, '');
+          html += `<h3 class="section-header">${headerText}</h3>`;
+          continue;
+        }
+
+        // Bullet points: - or • or *  (but not *italic*)
+        if (trimmed.match(/^[-•]\s/) || (trimmed.startsWith('* ') && !trimmed.endsWith('*'))) {
+          if (!inList) {
+            html += '<ul class="styled-list">';
+            inList = true;
+          }
+          const content = trimmed.replace(/^[-•*]\s*/, '');
+          html += `<li>${formatInlineMarkdown(content)}</li>`;
+          continue;
+        }
+
+        // Numbered lists: 1. or 1)
+        if (trimmed.match(/^\d+[.)]\s/)) {
+          if (!inList) {
+            html += '<ul class="styled-list">';
+            inList = true;
+          }
+          const content = trimmed.replace(/^\d+[.)]\s*/, '');
+          html += `<li>${formatInlineMarkdown(content)}</li>`;
+          continue;
+        }
+
+        // Regular paragraph
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${formatInlineMarkdown(trimmed)}</p>`;
       }
 
-      return html || formatScenarioOutput(text);
+      // Close any open list
+      if (inList) html += '</ul>';
+
+      return html;
     }
 
-    function formatElsaSection(text) {
-      let html = '<ul class="consequence-section">';
-      const lines = text.split('\n').filter(l => l.trim());
+    function formatInlineMarkdown(text) {
+      if (!text) return '';
+      return text
+        // Bold: **text**
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Italic: *text* (but not inside bold)
+        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+    }
 
-      for (let line of lines) {
-        let content = line.replace(/^[-•*]\s*/, '').trim();
-        // Make ELSA labels bold
-        content = content
-          .replace(/^(Ethical|Ethisch|Ethische?):?\s*/i, '<span class="elsa-label">Ethical:</span> ')
-          .replace(/^(Legal|Juridisch|Juridische?):?\s*/i, '<span class="elsa-label">Legal:</span> ')
-          .replace(/^(Social|Sociaal|Sociale?|Societal|Maatschappelijk):?\s*/i, '<span class="elsa-label">Social:</span> ')
-          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+    // ================================
+    // PHASE 1: SCENARIO OUTPUT
+    // ================================
 
-        if (content) {
-          html += `<li>${content}</li>`;
-        }
-      }
+    function formatScenarioOutput(text) {
+      return parseMarkdown(text);
+    }
 
-      html += '</ul>';
-      return html;
+    function formatScenarioWithSections(text) {
+      return parseMarkdown(text);
+    }
+
+    // ================================
+    // PHASE 3: CONSEQUENCES OUTPUT
+    // ================================
+
+    function formatConsequencesOutput(text) {
+      return parseMarkdown(text);
     }
 
     // ================================
@@ -2712,15 +2519,11 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       let html = '';
       items.forEach((item, i) => {
-        const sourceLabel = item.source || '';
         html += `
           <div class="priority-item" onclick="togglePriority(${i})">
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
               <input type="checkbox" id="priority-${i}" value="${i}" onchange="updateStrategicSummary()" style="margin-top: 0.25rem; flex-shrink: 0;">
-              <div style="flex: 1;">
-                ${sourceLabel ? `<div class="priority-source">${sourceLabel}</div>` : ''}
-                <div class="priority-text">${item.text || item}</div>
-              </div>
+              <div class="priority-text">${item.text || item}</div>
             </label>
           </div>
         `;
@@ -2738,89 +2541,34 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       if (!text) return [];
 
       const items = [];
-      const lang = AppState.language;
-
-      // Section labels for source tagging
-      const sectionLabels = {
-        'what_happens': lang === 'nl' ? 'Directe Effecten' : 'Direct Effects',
-        'second_order': lang === 'nl' ? 'Tweede-orde' : '2nd Order',
-        'third_order': lang === 'nl' ? 'Derde-orde' : '3rd Order',
-        'applications': lang === 'nl' ? 'Toepassingen' : 'Applications',
-        'elsa': 'ELSA',
-        'winners': lang === 'nl' ? 'Winnaars' : 'Winners',
-        'losers': lang === 'nl' ? 'Verliezers' : 'Losers'
-      };
-
-      // Section markers
-      const sectionMarkers = {
-        'what_happens': ['wat gebeurt er', 'what happens', 'direct effects'],
-        'second_order': ['tweede-orde', 'second-order', '2nd order'],
-        'third_order': ['derde-orde', 'third-order', '3rd order'],
-        'applications': ['nieuwe toepassingen', 'new applications'],
-        'elsa': ['elsa', 'ethical', 'ethisch'],
-        'winners': ['winners', 'winnaars', 'wie wint'],
-        'losers': ['losers', 'verliezers', 'wie verliest']
-      };
-
-      // Parse with section tracking
       const lines = text.split('\n');
-      let currentSection = 'intro';
-      let currentItem = '';
 
       for (const line of lines) {
         const trimmed = line.trim();
-        const lowerLine = trimmed.toLowerCase();
 
-        // Check for section markers
-        let foundSection = null;
-        for (let [key, markers] of Object.entries(sectionMarkers)) {
-          if (markers.some(m => lowerLine.includes(m))) {
-            foundSection = key;
-            break;
-          }
-        }
+        // Skip empty lines and headers
+        if (!trimmed) continue;
+        if (trimmed.startsWith('#')) continue;
+        if (trimmed.startsWith('**') && trimmed.endsWith('**')) continue;
+        if (trimmed === trimmed.toUpperCase() && trimmed.length > 3) continue;
+        if (trimmed.endsWith(':')) continue;
 
-        if (foundSection) {
-          if (currentItem) {
-            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
-          }
-          currentSection = foundSection;
-          currentItem = '';
-          continue;
-        }
-
-        // Check for bullet points or numbered items
-        if (trimmed.match(/^[-•*]\s+/) || trimmed.match(/^\d+[.)]\s+/)) {
-          if (currentItem) {
-            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
-          }
-          currentItem = trimmed.replace(/^[-•*]\s+/, '').replace(/^\d+[.)]\s+/, '');
-        } else if (trimmed.match(/^#{1,4}\s+/) || trimmed.match(/^\*\*[^*]+\*\*/)) {
-          // Headers - skip as grouping titles
-          if (currentItem) {
-            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
-          }
-          currentItem = '';
-        } else if (trimmed && currentItem) {
-          // Continuation of previous item
-          currentItem += ' ' + trimmed;
-        }
-      }
-
-      if (currentItem) {
-        items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
-      }
-
-      // Clean up markdown from text
-      return items
-        .filter(item => (item.text || '').length > 15)
-        .map(item => ({
-          text: (item.text || '')
+        // Extract bullet points and numbered items
+        if (trimmed.match(/^[-•]\s/) || trimmed.match(/^\d+[.)]\s/) || trimmed.startsWith('* ')) {
+          const content = trimmed
+            .replace(/^[-•*]\s*/, '')
+            .replace(/^\d+[.)]\s*/, '')
             .replace(/\*\*([^*]+)\*\*/g, '$1')
-            .replace(/\*([^*]+)\*/g, '$1'),
-          source: item.source
-        }))
-        .slice(0, 15);
+            .replace(/\*([^*]+)\*/g, '$1')
+            .trim();
+
+          if (content.length > 15) {
+            items.push({ text: content });
+          }
+        }
+      }
+
+      return items.slice(0, 15);
     }
 
     function togglePriority(index) {
