@@ -789,6 +789,7 @@
       padding: var(--space-md);
       border-radius: 6px;
       margin-bottom: var(--space-lg);
+      border-left: 3px solid var(--blue);
     }
 
     .narrative-label {
@@ -818,12 +819,10 @@
 
     .opportunities-section {
       background: rgba(0, 0, 255, 0.05);
-      border-left: 3px solid var(--blue);
     }
 
     .risks-section {
       background: rgba(255, 0, 0, 0.05);
-      border-left: 3px solid var(--red);
     }
 
     .section-header {
@@ -947,6 +946,23 @@
       background: rgba(255, 0, 0, 0.05);
       padding: var(--space-md);
       border-radius: 6px;
+    }
+
+    /* ELSA Section */
+    .elsa-section {
+      background: var(--bg-subtle);
+      padding: var(--space-md);
+      border-radius: 6px;
+    }
+
+    .elsa-section ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .elsa-section li {
+      margin-bottom: var(--space-sm);
+      line-height: 1.6;
     }
 
     /* Strategic Priority Items */
@@ -1266,14 +1282,14 @@
 
           <!-- Consequence Selection -->
           <div id="strategic-consequences" class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
-            <p class="small-label" data-i18n="select_strategic">Selecteer strategische prioriteiten</p>
+            <p class="small-label" data-i18n="select_strategic">Selecteer strategische focuspunten</p>
             <div id="consequence-items" style="margin-top: 1rem;">
               <!-- Populated dynamically -->
             </div>
           </div>
 
-          <!-- Strategic Notes -->
-          <div class="card" style="background: var(--bg-blue); margin-top: 1rem;">
+          <!-- Strategic Notes - shown after selection -->
+          <div id="strategic-notes-section" class="card" style="background: var(--bg-blue); margin-top: 1rem; display: none;">
             <p class="small-label" data-i18n="strategic_notes">Strategische Notities</p>
             <textarea id="input-strategic-notes" class="btn" placeholder="Notities voor de strategie discussie..." style="width: 100%; height: 120px; margin-top: 0.5rem; resize: vertical; text-transform: none;"></textarea>
           </div>
@@ -1284,7 +1300,13 @@
             <div id="strategic-summary-list" style="margin-top: 0.5rem;"></div>
           </div>
 
-          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="goToPhase(5)" data-i18n="continue_phase5">
+          <!-- Prompt to select - shown when no selection -->
+          <p id="phase4-select-prompt" class="body-text" style="text-align: center; color: #666; margin-top: 1.5rem;" data-i18n="select_focus_prompt">
+            Klik op de items hierboven om strategische focuspunten te selecteren
+          </p>
+
+          <!-- Continue button - hidden until selection -->
+          <button id="phase4-continue-btn" class="btn btn-primary" style="margin-top: 1rem; width: 100%; display: none;" onclick="goToPhase(5)" data-i18n="continue_phase5">
             Verder naar Export
           </button>
         </div>
@@ -1525,7 +1547,8 @@
         // Phase 4
         phase4_title: 'Fase 4: Strategische Focus',
         phase4_intro: 'Selecteer de belangrijkste consequenties om strategisch te bespreken. Markeer items die aandacht vereisen.',
-        select_strategic: 'Selecteer strategische prioriteiten',
+        select_strategic: 'Selecteer strategische focuspunten',
+        select_focus_prompt: 'Klik op de items hierboven om strategische focuspunten te selecteren',
         strategic_notes: 'Strategische Notities',
         strategic_summary: 'Geselecteerde Prioriteiten',
         continue_phase5: 'Verder naar Export',
@@ -1596,7 +1619,8 @@
         // Phase 4
         phase4_title: 'Phase 4: Strategic Focus',
         phase4_intro: 'Select the key consequences for strategic discussion. Mark items requiring attention.',
-        select_strategic: 'Select strategic priorities',
+        select_strategic: 'Select strategic focus points',
+        select_focus_prompt: 'Click on items above to select strategic focus points',
         strategic_notes: 'Strategic Notes',
         strategic_summary: 'Selected Priorities',
         continue_phase5: 'Continue to Export',
@@ -2171,14 +2195,14 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       const lang = AppState.language;
       let html = '';
 
-      // Section markers to look for
-      const sectionMarkers = {
-        'what_happens': ['wat gebeurt er', 'what happens', 'direct effects', 'directe effecten'],
-        'second_order': ['tweede-orde', 'second-order', '2nd order', 'tweede orde'],
-        'third_order': ['derde-orde', 'third-order', '3rd order', 'derde orde'],
-        'applications': ['nieuwe toepassingen', 'new applications', 'toepassingen', 'applications'],
-        'elsa': ['elsa', 'ethical', 'ethisch', 'legal', 'juridisch', 'social', 'sociaal'],
-        'winners_losers': ['wie wint', 'who wins', 'winners', 'losers', 'winnaars', 'verliezers']
+      // Section header patterns - must be at start of line (with optional markdown like ## or **)
+      const sectionPatterns = {
+        'what_happens': /^(?:#{1,3}\s*)?(?:\*\*)?(?:wat gebeurt er|what happens|direct effects?|directe effecten)/i,
+        'second_order': /^(?:#{1,3}\s*)?(?:\*\*)?(?:tweede[- ]orde|second[- ]order|2nd order)/i,
+        'third_order': /^(?:#{1,3}\s*)?(?:\*\*)?(?:derde[- ]orde|third[- ]order|3rd order)/i,
+        'applications': /^(?:#{1,3}\s*)?(?:\*\*)?(?:nieuwe toepassingen|new applications|potential applications)/i,
+        'elsa': /^(?:#{1,3}\s*)?(?:\*\*)?(?:elsa|ethical[,\s]+legal|ethische[,\s]+juridische)/i,
+        'winners_losers': /^(?:#{1,3}\s*)?(?:\*\*)?(?:wie wint|who wins|winners?\s*(and|&|,)\s*losers?|winnaars?\s*(en|&|,)\s*verliezers?)/i
       };
 
       const sectionLabels = {
@@ -2194,14 +2218,15 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       const lines = text.split('\n');
       let sections = {};
       let currentSection = 'intro';
+      let sectionOrder = ['intro'];
 
       for (let line of lines) {
-        const lowerLine = line.toLowerCase();
+        const trimmedLine = line.trim();
 
-        // Check for section markers
+        // Check for section headers (must be at start of line)
         let foundSection = null;
-        for (let [key, markers] of Object.entries(sectionMarkers)) {
-          if (markers.some(m => lowerLine.includes(m))) {
+        for (let [key, pattern] of Object.entries(sectionPatterns)) {
+          if (pattern.test(trimmedLine)) {
             foundSection = key;
             break;
           }
@@ -2209,38 +2234,63 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
         if (foundSection) {
           currentSection = foundSection;
-          if (!sections[currentSection]) sections[currentSection] = [];
+          if (!sections[currentSection]) {
+            sections[currentSection] = [];
+            sectionOrder.push(currentSection);
+          }
           continue;
         }
 
         if (!sections[currentSection]) sections[currentSection] = [];
-        if (line.trim()) sections[currentSection].push(line);
+        if (trimmedLine) sections[currentSection].push(line);
       }
 
-      // Build HTML for each section
-      for (let [key, content] of Object.entries(sections)) {
-        if (!content.length) continue;
+      // Build HTML for each section in order
+      for (let key of sectionOrder) {
+        const content = sections[key];
+        if (!content || !content.length) continue;
 
         if (key === 'intro') {
           html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
         } else if (key === 'winners_losers') {
           html += `<div class="section-header">${sectionLabels[key]}</div>`;
           const contentText = content.join('\n');
-          const winnersMatch = contentText.match(/winners?:?\s*([\s\S]*?)(?=losers?:|verliezers?:|$)/i);
-          const losersMatch = contentText.match(/losers?:?\s*([\s\S]*?)$/i) || contentText.match(/verliezers?:?\s*([\s\S]*?)$/i);
 
-          if (winnersMatch) {
-            html += `<div class="winners-section">${parseMarkdownList(winnersMatch[1])}</div>`;
+          // Split by Winners/Losers labels
+          const winnersPart = [];
+          const losersPart = [];
+          let currentPart = 'winners';
+
+          for (let line of content) {
+            const lowerLine = line.toLowerCase();
+            if (lowerLine.includes('losers') || lowerLine.includes('verliezers') || lowerLine.includes('wie verliest')) {
+              currentPart = 'losers';
+              continue;
+            }
+            if (lowerLine.includes('winners') || lowerLine.includes('winnaars') || lowerLine.includes('wie wint')) {
+              continue;
+            }
+            if (currentPart === 'winners') {
+              winnersPart.push(line);
+            } else {
+              losersPart.push(line);
+            }
           }
-          if (losersMatch) {
-            html += `<div class="losers-section">${parseMarkdownList(losersMatch[1])}</div>`;
+
+          if (winnersPart.length) {
+            const label = lang === 'nl' ? 'Winnaars' : 'Winners';
+            html += `<div class="winners-section"><strong style="color: var(--blue);">${label}</strong>${parseMarkdownList(winnersPart.join('\n'))}</div>`;
           }
-          if (!winnersMatch && !losersMatch) {
+          if (losersPart.length) {
+            const label = lang === 'nl' ? 'Verliezers' : 'Losers';
+            html += `<div class="losers-section"><strong style="color: var(--red);">${label}</strong>${parseMarkdownList(losersPart.join('\n'))}</div>`;
+          }
+          if (!winnersPart.length && !losersPart.length) {
             html += parseMarkdownList(contentText);
           }
         } else if (key === 'elsa') {
           html += `<div class="section-header">${sectionLabels[key]}</div>`;
-          html += `<div class="consequence-section">${formatElsaSection(content.join('\n'))}</div>`;
+          html += `<div class="elsa-section">${formatElsaSection(content.join('\n'))}</div>`;
         } else {
           html += `<div class="section-header">${sectionLabels[key]}</div>`;
           html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
@@ -2493,14 +2543,21 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       let html = '';
       questions.forEach((q, i) => {
+        // Parse markdown from question text
+        const questionText = (q.text || '')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+
         html += `
-          <div class="card" style="background: var(--white); margin-bottom: 0.75rem; cursor: pointer;" onclick="selectWhatIf(${i})">
+          <div class="whatif-card" onclick="selectWhatIf(${i})">
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
-              <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.25rem;">
-              <div>
-                <p class="body-text" style="margin: 0;">${q.text}</p>
-                ${q.impactDomain ? `<p class="small-label" style="margin-top: 0.5rem; opacity: 0.7;">Impact: ${q.impactDomain}</p>` : ''}
-                ${q.valueTension ? `<p class="small-label" style="opacity: 0.7;">Tension: ${q.valueTension}</p>` : ''}
+              <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.35rem; flex-shrink: 0;">
+              <div style="flex: 1;">
+                <div class="whatif-question">${questionText}</div>
+                <div class="whatif-meta">
+                  ${q.impactDomain ? `<span class="whatif-tag domain">${q.impactDomain}</span>` : ''}
+                  ${q.valueTension ? `<span class="whatif-tag">${q.valueTension}</span>` : ''}
+                </div>
               </div>
             </label>
           </div>
@@ -2792,14 +2849,41 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       const summaryEl = document.getElementById('strategic-summary');
       const summaryList = document.getElementById('strategic-summary-list');
+      const notesSection = document.getElementById('strategic-notes-section');
+      const selectPrompt = document.getElementById('phase4-select-prompt');
+      const continueBtn = document.getElementById('phase4-continue-btn');
 
       if (selected.length > 0) {
+        // Show summary, notes, and continue button
         summaryEl.style.display = 'block';
-        summaryList.innerHTML = selected.map(s =>
-          `<p class="body-text" style="margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid var(--magenta);">${s}</p>`
-        ).join('');
+        summaryList.innerHTML = selected.map(s => {
+          const text = s.text || s;
+          return `<p class="body-text" style="margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid var(--blue);">${text}</p>`;
+        }).join('');
+
+        if (notesSection) notesSection.style.display = 'block';
+        if (selectPrompt) selectPrompt.style.display = 'none';
+        if (continueBtn) continueBtn.style.display = 'block';
+
+        // Update priority item visual state
+        document.querySelectorAll('.priority-item').forEach((item, i) => {
+          const checkbox = item.querySelector('input[type="checkbox"]');
+          if (checkbox?.checked) {
+            item.classList.add('selected');
+          } else {
+            item.classList.remove('selected');
+          }
+        });
       } else {
+        // Hide summary, notes, and continue button
         summaryEl.style.display = 'none';
+        if (notesSection) notesSection.style.display = 'none';
+        if (selectPrompt) selectPrompt.style.display = 'block';
+        if (continueBtn) continueBtn.style.display = 'none';
+
+        document.querySelectorAll('.priority-item').forEach(item => {
+          item.classList.remove('selected');
+        });
       }
 
       debugLog(`Strategic priorities updated: ${selected.length} items selected`);
