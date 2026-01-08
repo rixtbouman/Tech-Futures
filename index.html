@@ -786,24 +786,25 @@
     /* Narrative Vignette */
     .narrative-vignette {
       background: #E8F4FC;
-      padding: var(--space-md);
-      border-radius: 6px;
-      margin-bottom: var(--space-lg);
-      border-left: 3px solid var(--blue);
+      border-left: 3px solid #0000FF;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+      font-style: italic;
     }
 
     .narrative-label {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #666;
-      margin-bottom: var(--space-sm);
       display: block;
+      font-size: 0.7rem;
+      font-family: 'Roboto Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #0000FF;
+      margin-bottom: 0.5rem;
+      font-style: normal;
     }
 
     .narrative-vignette p {
-      font-style: italic;
       line-height: 1.7;
       color: #333;
       margin: 0;
@@ -2061,7 +2062,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         const lowerLine = line.toLowerCase();
 
         // Detect section changes
-        if (lowerLine.includes('een dag uit het leven') || lowerLine.includes('a day in the life') || lowerLine.includes('vignette') || lowerLine.includes('narrative')) {
+        if (lowerLine.includes('een dag uit het leven') || lowerLine.includes('a day in the life') || lowerLine.includes('day in a life') || lowerLine.includes('vignette') || lowerLine.includes('narrative') || (line.trim().startsWith('*') && line.trim().endsWith('*') && line.trim().length > 2)) {
           currentSection = 'narrative';
           continue;
         } else if (lowerLine.includes('kansen') || lowerLine.includes('opportunities') || lowerLine.includes('mogelijkheden')) {
@@ -2546,7 +2547,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
               <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.35rem; flex-shrink: 0;">
               <div style="flex: 1;">
-                <div class="whatif-question"><strong>${questionLabel} ${i + 1}:</strong> ${questionText}</div>
+                <div class="whatif-question">${questionText}</div>
                 <div class="whatif-meta">
                   ${q.impactDomain ? `<span class="whatif-tag"><strong>Domain:</strong> ${q.impactDomain}</span>` : ''}
                   ${q.valueTension ? `<span class="whatif-tag"><strong>Value Tension:</strong> ${q.valueTension}</span>` : ''}
