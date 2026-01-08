@@ -561,17 +561,123 @@
         </div>
       </section>
 
+      <!-- Phase 4: Strategic Focus -->
       <section id="phase-4" class="phase-content" style="display: none;">
         <div class="card">
-          <p class="label">Phase 4: Strategic Focus</p>
-          <p class="body-text">Coming in Session 6-7...</p>
+          <div class="card-header">
+            <span class="label" data-i18n="phase4_title">Fase 4: Strategische Focus</span>
+          </div>
+          <p class="body-text" data-i18n="phase4_intro">
+            Selecteer de belangrijkste consequenties om strategisch te bespreken. Markeer items die aandacht vereisen.
+          </p>
+
+          <!-- Consequence Selection -->
+          <div id="strategic-consequences" class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+            <p class="small-label" data-i18n="select_strategic">Selecteer strategische prioriteiten</p>
+            <div id="consequence-items" style="margin-top: 1rem;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Strategic Notes -->
+          <div class="card" style="background: var(--bg-blue); margin-top: 1rem;">
+            <p class="small-label" data-i18n="strategic_notes">Strategische Notities</p>
+            <textarea id="input-strategic-notes" class="btn" placeholder="Notities voor de strategie discussie..." style="width: 100%; height: 120px; margin-top: 0.5rem; resize: vertical; text-transform: none;"></textarea>
+          </div>
+
+          <!-- Summary of selected items -->
+          <div id="strategic-summary" class="card" style="background: var(--bg-magenta); margin-top: 1rem; display: none;">
+            <p class="small-label" data-i18n="strategic_summary">Geselecteerde Prioriteiten</p>
+            <div id="strategic-summary-list" style="margin-top: 0.5rem;"></div>
+          </div>
+
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="goToPhase(5)" data-i18n="continue_phase5">
+            Verder naar Export
+          </button>
         </div>
       </section>
 
+      <!-- Phase 5: Export -->
       <section id="phase-5" class="phase-content" style="display: none;">
         <div class="card">
-          <p class="label">Phase 5: Export</p>
-          <p class="body-text">Coming in Session 6-7...</p>
+          <div class="card-header">
+            <span class="label" data-i18n="phase5_title">Fase 5: Export & Opslaan</span>
+          </div>
+          <p class="body-text" data-i18n="phase5_intro">
+            Bekijk de volledige sessie samenvatting en exporteer of sla op voor later gebruik.
+          </p>
+
+          <!-- Session Summary -->
+          <div id="session-summary" class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+            <p class="small-label" data-i18n="session_summary">Sessie Samenvatting</p>
+
+            <!-- Archetype & Scenario -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--blue);">ARCHETYPE</p>
+              <p class="sub-headline" id="summary-archetype"></p>
+              <p class="body-text" id="summary-nuance" style="margin-top: 0.25rem; font-size: 0.875rem; opacity: 0.8;"></p>
+            </div>
+
+            <!-- Scenario Preview -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--magenta);">SCENARIO</p>
+              <p class="body-text" id="summary-scenario" style="margin-top: 0.5rem; max-height: 150px; overflow-y: auto;"></p>
+            </div>
+
+            <!-- What-If Question -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--blue);">WHAT-IF</p>
+              <p class="body-text" id="summary-whatif" style="margin-top: 0.5rem;"></p>
+            </div>
+
+            <!-- Technologies & Context -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--red);">CONTEXT</p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                <p class="body-text"><strong>Technologies:</strong> <span id="summary-techs"></span></p>
+                <p class="body-text"><strong>Actor:</strong> <span id="summary-actor"></span></p>
+                <p class="body-text"><strong>Trigger:</strong> <span id="summary-trigger"></span></p>
+              </div>
+            </div>
+
+            <!-- Strategic Priorities -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--magenta);">STRATEGISCHE PRIORITEITEN</p>
+              <div id="summary-priorities" style="margin-top: 0.5rem;"></div>
+              <div id="summary-notes" style="margin-top: 0.5rem; font-style: italic;"></div>
+            </div>
+          </div>
+
+          <!-- Export Options -->
+          <div class="card" style="background: var(--bg-blue); margin-top: 1rem;">
+            <p class="small-label" data-i18n="export_options">Export Opties</p>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+              <button class="btn btn-secondary" onclick="exportToPDF()" data-i18n="export_pdf">
+                Download PDF
+              </button>
+              <button class="btn btn-secondary" onclick="copyToClipboard()" data-i18n="copy_summary">
+                Kopieer Tekst
+              </button>
+            </div>
+          </div>
+
+          <!-- Save to Database -->
+          <div class="card" style="background: var(--bg-magenta); margin-top: 1rem;">
+            <p class="small-label" data-i18n="save_session">Sessie Opslaan</p>
+            <div style="margin-top: 0.75rem;">
+              <label class="small-label" data-i18n="session_name">Sessie Naam</label>
+              <input type="text" id="input-session-name" class="btn" placeholder="Geef een naam aan deze sessie..." style="width: 100%; margin-top: 0.5rem; text-transform: none;">
+            </div>
+            <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="saveSession()" id="btn-save-session" data-i18n="save_to_database">
+              Opslaan in Database
+            </button>
+            <div id="save-status" style="margin-top: 0.75rem;"></div>
+          </div>
+
+          <!-- New Session Button -->
+          <button class="btn" style="margin-top: 1.5rem; width: 100%;" onclick="startNewSession()" data-i18n="start_new">
+            Start Nieuwe Sessie
+          </button>
         </div>
       </section>
     </main>
@@ -612,7 +718,10 @@
       selectedEvent: null,
       whatIfQuestions: [],
       selectedWhatIf: null,
-      consequences: null
+      consequences: null,
+      strategicPriorities: [],
+      strategicNotes: '',
+      savedSessionId: null
     };
 
     // ================================
@@ -672,7 +781,31 @@
         selected_whatif: 'Geselecteerde What-If Vraag',
         consequences: 'Consequenties',
         generating_consequences: 'Consequenties genereren...',
-        continue_phase4: 'Verder naar Fase 4'
+        continue_phase4: 'Verder naar Fase 4',
+        // Phase 4
+        phase4_title: 'Fase 4: Strategische Focus',
+        phase4_intro: 'Selecteer de belangrijkste consequenties om strategisch te bespreken. Markeer items die aandacht vereisen.',
+        select_strategic: 'Selecteer strategische prioriteiten',
+        strategic_notes: 'Strategische Notities',
+        strategic_summary: 'Geselecteerde Prioriteiten',
+        continue_phase5: 'Verder naar Export',
+        no_consequences: 'Geen consequenties beschikbaar. Ga terug naar Fase 3.',
+        // Phase 5
+        phase5_title: 'Fase 5: Export & Opslaan',
+        phase5_intro: 'Bekijk de volledige sessie samenvatting en exporteer of sla op voor later gebruik.',
+        session_summary: 'Sessie Samenvatting',
+        export_options: 'Export Opties',
+        export_pdf: 'Download PDF',
+        copy_summary: 'Kopieer Tekst',
+        save_session: 'Sessie Opslaan',
+        session_name: 'Sessie Naam',
+        save_to_database: 'Opslaan in Database',
+        start_new: 'Start Nieuwe Sessie',
+        copied_success: 'Gekopieerd naar klembord!',
+        save_success: 'Sessie opgeslagen!',
+        save_error: 'Fout bij opslaan',
+        no_priorities: 'Geen prioriteiten geselecteerd',
+        pdf_generating: 'PDF genereren...'
       },
       en: {
         phase1_title: 'Phase 1: Scenario Foundation',
@@ -711,7 +844,31 @@
         selected_whatif: 'Selected What-If Question',
         consequences: 'Consequences',
         generating_consequences: 'Generating consequences...',
-        continue_phase4: 'Continue to Phase 4'
+        continue_phase4: 'Continue to Phase 4',
+        // Phase 4
+        phase4_title: 'Phase 4: Strategic Focus',
+        phase4_intro: 'Select the key consequences for strategic discussion. Mark items requiring attention.',
+        select_strategic: 'Select strategic priorities',
+        strategic_notes: 'Strategic Notes',
+        strategic_summary: 'Selected Priorities',
+        continue_phase5: 'Continue to Export',
+        no_consequences: 'No consequences available. Go back to Phase 3.',
+        // Phase 5
+        phase5_title: 'Phase 5: Export & Save',
+        phase5_intro: 'Review the full session summary and export or save for later use.',
+        session_summary: 'Session Summary',
+        export_options: 'Export Options',
+        export_pdf: 'Download PDF',
+        copy_summary: 'Copy Text',
+        save_session: 'Save Session',
+        session_name: 'Session Name',
+        save_to_database: 'Save to Database',
+        start_new: 'Start New Session',
+        copied_success: 'Copied to clipboard!',
+        save_success: 'Session saved!',
+        save_error: 'Error saving',
+        no_priorities: 'No priorities selected',
+        pdf_generating: 'Generating PDF...'
       }
     };
 
@@ -770,6 +927,10 @@
       // Show correct phase content
       document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
       document.getElementById(`phase-${phase}`).style.display = 'block';
+
+      // Initialize phase-specific content
+      if (phase === 4) initPhase4();
+      if (phase === 5) initPhase5();
 
       debugLog(`Navigated to Phase ${phase}`);
     }
@@ -1466,6 +1627,392 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 `;
 
       return `${basePrompt}\n\n${context}`;
+    }
+
+    // ================================
+    // Phase 4: Strategic Focus
+    // ================================
+
+    function initPhase4() {
+      debugLog('Initializing Phase 4...');
+
+      // Parse consequences into selectable items
+      const consequences = AppState.consequences || '';
+      const items = parseConsequencesForSelection(consequences);
+
+      const container = document.getElementById('consequence-items');
+
+      if (items.length === 0) {
+        container.innerHTML = `<p class="body-text">${t('no_consequences')}</p>`;
+        return;
+      }
+
+      let html = '';
+      items.forEach((item, i) => {
+        html += `
+          <div class="card" style="background: var(--white); margin-bottom: 0.5rem; cursor: pointer;" onclick="togglePriority(${i})">
+            <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
+              <input type="checkbox" id="priority-${i}" value="${i}" onchange="updateStrategicSummary()" style="margin-top: 0.25rem;">
+              <span class="body-text" style="font-size: 0.9rem;">${item}</span>
+            </label>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      // Store parsed items for later reference
+      AppState.parsedConsequences = items;
+
+      debugLog(`Phase 4 initialized with ${items.length} consequence items`);
+    }
+
+    function parseConsequencesForSelection(text) {
+      if (!text) return [];
+
+      const items = [];
+
+      // Try to extract bullet points and numbered items
+      const lines = text.split('\n');
+      let currentItem = '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+
+        // Check for bullet points, numbered items, or headers
+        if (trimmed.match(/^[-•*]\s+/) || trimmed.match(/^\d+[.)]\s+/)) {
+          if (currentItem) items.push(currentItem.trim());
+          currentItem = trimmed.replace(/^[-•*]\s+/, '').replace(/^\d+[.)]\s+/, '');
+        } else if (trimmed.match(/^#{1,4}\s+/) || trimmed.match(/^\*\*[^*]+\*\*/)) {
+          // Headers - skip as grouping titles
+          if (currentItem) items.push(currentItem.trim());
+          currentItem = '';
+        } else if (trimmed && currentItem) {
+          // Continuation of previous item
+          currentItem += ' ' + trimmed;
+        }
+      }
+
+      if (currentItem) items.push(currentItem.trim());
+
+      // If no structured items found, split by sentences
+      if (items.length === 0) {
+        const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+        sentences.forEach(s => {
+          const cleaned = s.trim();
+          if (cleaned.length > 20) items.push(cleaned);
+        });
+      }
+
+      // Limit to reasonable number and filter short items
+      return items.filter(item => item.length > 15).slice(0, 15);
+    }
+
+    function togglePriority(index) {
+      const checkbox = document.getElementById(`priority-${index}`);
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        updateStrategicSummary();
+      }
+    }
+
+    function updateStrategicSummary() {
+      const selected = [];
+      const checkboxes = document.querySelectorAll('#consequence-items input[type="checkbox"]:checked');
+
+      checkboxes.forEach(cb => {
+        const index = parseInt(cb.value);
+        if (AppState.parsedConsequences && AppState.parsedConsequences[index]) {
+          selected.push(AppState.parsedConsequences[index]);
+        }
+      });
+
+      AppState.strategicPriorities = selected;
+
+      const summaryEl = document.getElementById('strategic-summary');
+      const summaryList = document.getElementById('strategic-summary-list');
+
+      if (selected.length > 0) {
+        summaryEl.style.display = 'block';
+        summaryList.innerHTML = selected.map(s =>
+          `<p class="body-text" style="margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid var(--magenta);">${s}</p>`
+        ).join('');
+      } else {
+        summaryEl.style.display = 'none';
+      }
+
+      debugLog(`Strategic priorities updated: ${selected.length} items selected`);
+    }
+
+    // ================================
+    // Phase 5: Export & Save
+    // ================================
+
+    function initPhase5() {
+      debugLog('Initializing Phase 5...');
+
+      // Save strategic notes
+      AppState.strategicNotes = document.getElementById('input-strategic-notes')?.value || '';
+
+      // Populate summary
+      const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+
+      document.getElementById('summary-archetype').textContent =
+        AppState.archetypeDescription?.name || AppState.archetype || '-';
+
+      document.getElementById('summary-nuance').textContent =
+        AppState.archetypeMapping?.nuance_name || '';
+
+      document.getElementById('summary-scenario').textContent =
+        (AppState.scenario || '-').substring(0, 500) + (AppState.scenario?.length > 500 ? '...' : '');
+
+      document.getElementById('summary-whatif').textContent =
+        AppState.selectedWhatIf || '-';
+
+      document.getElementById('summary-techs').textContent =
+        AppState.selectedTechnologies.map(formatTech).join(', ') || '-';
+
+      document.getElementById('summary-actor').textContent =
+        formatTech(AppState.selectedActor) || '-';
+
+      document.getElementById('summary-trigger').textContent =
+        formatTech(AppState.selectedEvent) || '-';
+
+      // Strategic priorities
+      const prioritiesEl = document.getElementById('summary-priorities');
+      if (AppState.strategicPriorities.length > 0) {
+        prioritiesEl.innerHTML = AppState.strategicPriorities.map(p =>
+          `<p class="body-text" style="margin-bottom: 0.25rem;">• ${p}</p>`
+        ).join('');
+      } else {
+        prioritiesEl.innerHTML = `<p class="body-text" style="opacity: 0.7;">${t('no_priorities')}</p>`;
+      }
+
+      // Notes
+      const notesEl = document.getElementById('summary-notes');
+      if (AppState.strategicNotes) {
+        notesEl.innerHTML = `<p class="body-text">"${AppState.strategicNotes}"</p>`;
+      } else {
+        notesEl.innerHTML = '';
+      }
+
+      debugLog('Phase 5 summary populated');
+    }
+
+    function buildExportText() {
+      const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+      const lang = AppState.language;
+
+      let text = `
+═══════════════════════════════════════════════════════════════
+TECH FUTURES EXPLORER - ${lang === 'nl' ? 'SESSIE RAPPORT' : 'SESSION REPORT'}
+═══════════════════════════════════════════════════════════════
+
+${lang === 'nl' ? 'ARCHETYPE' : 'ARCHETYPE'}: ${AppState.archetypeDescription?.name || AppState.archetype}
+${lang === 'nl' ? 'Nuance' : 'Nuance'}: ${AppState.archetypeMapping?.nuance_name || '-'}
+
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'SCENARIO' : 'SCENARIO'}
+───────────────────────────────────────────────────────────────
+${AppState.scenario || '-'}
+
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'TECHNOLOGIEËN & CONTEXT' : 'TECHNOLOGIES & CONTEXT'}
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'Technologieën' : 'Technologies'}: ${AppState.selectedTechnologies.map(formatTech).join(', ')}
+Actor: ${formatTech(AppState.selectedActor)}
+Trigger: ${formatTech(AppState.selectedEvent)}
+
+───────────────────────────────────────────────────────────────
+WHAT-IF
+───────────────────────────────────────────────────────────────
+${AppState.selectedWhatIf || '-'}
+
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'CONSEQUENTIES' : 'CONSEQUENCES'}
+───────────────────────────────────────────────────────────────
+${AppState.consequences || '-'}
+
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'STRATEGISCHE PRIORITEITEN' : 'STRATEGIC PRIORITIES'}
+───────────────────────────────────────────────────────────────
+${AppState.strategicPriorities.length > 0 ?
+        AppState.strategicPriorities.map((p, i) => `${i + 1}. ${p}`).join('\n') :
+        (lang === 'nl' ? 'Geen prioriteiten geselecteerd' : 'No priorities selected')}
+
+${AppState.strategicNotes ? `
+───────────────────────────────────────────────────────────────
+${lang === 'nl' ? 'NOTITIES' : 'NOTES'}
+───────────────────────────────────────────────────────────────
+${AppState.strategicNotes}
+` : ''}
+
+═══════════════════════════════════════════════════════════════
+${lang === 'nl' ? 'Gegenereerd op' : 'Generated on'}: ${new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-US')}
+Tech Futures Explorer - Quantum Delta NL
+═══════════════════════════════════════════════════════════════
+`;
+
+      return text.trim();
+    }
+
+    async function copyToClipboard() {
+      const text = buildExportText();
+
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(t('copied_success'));
+        debugLog('Text copied to clipboard');
+      } catch (error) {
+        debugLog(`Clipboard error: ${error.message}`);
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert(t('copied_success'));
+      }
+    }
+
+    function exportToPDF() {
+      debugLog('Generating PDF...');
+
+      // Create a printable version
+      const text = buildExportText();
+
+      // Open print dialog with formatted content
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Tech Futures Explorer - Export</title>
+          <style>
+            body {
+              font-family: 'Courier New', monospace;
+              padding: 2rem;
+              max-width: 800px;
+              margin: 0 auto;
+              font-size: 12px;
+              line-height: 1.6;
+            }
+            pre {
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            }
+            @media print {
+              body { padding: 1rem; }
+            }
+          </style>
+        </head>
+        <body>
+          <pre>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    async function saveSession() {
+      const sessionName = document.getElementById('input-session-name').value.trim();
+      const statusEl = document.getElementById('save-status');
+      const btnEl = document.getElementById('btn-save-session');
+
+      if (!sessionName) {
+        statusEl.innerHTML = `<p class="status-message error">${AppState.language === 'nl' ? 'Voer een sessie naam in' : 'Enter a session name'}</p>`;
+        return;
+      }
+
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<span class="loading-spinner"></span>`;
+      statusEl.innerHTML = '';
+
+      try {
+        const sessionData = {
+          name: sessionName,
+          language: AppState.language,
+          archetype_id: AppState.archetype,
+          archetype_name: AppState.archetypeDescription?.name,
+          nuance_name: AppState.archetypeMapping?.nuance_name,
+          scenario: AppState.scenario,
+          technologies: AppState.selectedTechnologies,
+          actor: AppState.selectedActor,
+          trigger_event: AppState.selectedEvent,
+          whatif_question: AppState.selectedWhatIf,
+          consequences: AppState.consequences,
+          strategic_priorities: AppState.strategicPriorities,
+          strategic_notes: AppState.strategicNotes,
+          created_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabaseClient
+          .from('sessions')
+          .insert([sessionData])
+          .select();
+
+        if (error) throw error;
+
+        AppState.savedSessionId = data?.[0]?.id;
+
+        statusEl.innerHTML = `<p class="status-message success">✓ ${t('save_success')} (ID: ${AppState.savedSessionId || 'saved'})</p>`;
+        debugLog(`Session saved with ID: ${AppState.savedSessionId}`);
+
+      } catch (error) {
+        debugLog(`Save error: ${error.message}`);
+        statusEl.innerHTML = `<p class="status-message error">${t('save_error')}: ${error.message}</p>`;
+      } finally {
+        btnEl.disabled = false;
+        btnEl.textContent = t('save_to_database');
+      }
+    }
+
+    function startNewSession() {
+      // Reset AppState
+      AppState.currentPhase = 1;
+      AppState.archetype = null;
+      AppState.archetypeMapping = null;
+      AppState.archetypeDescription = null;
+      AppState.scenario = null;
+      AppState.selectedTechnologies = [];
+      AppState.selectedActor = null;
+      AppState.selectedEvent = null;
+      AppState.whatIfQuestions = [];
+      AppState.selectedWhatIf = null;
+      AppState.consequences = null;
+      AppState.strategicPriorities = [];
+      AppState.strategicNotes = '';
+      AppState.savedSessionId = null;
+
+      // Reset form elements
+      document.getElementById('select-resources').value = '';
+      document.getElementById('select-system').value = '';
+      document.getElementById('select-values').value = '';
+      document.getElementById('select-tech-2').value = '';
+      document.getElementById('select-tech-3').value = '';
+      document.getElementById('select-actor').value = '';
+      document.getElementById('select-event').value = '';
+      document.getElementById('input-custom-whatif').value = '';
+      document.getElementById('input-strategic-notes').value = '';
+      document.getElementById('input-session-name').value = '';
+
+      // Hide result sections
+      document.getElementById('archetype-result').style.display = 'none';
+      document.getElementById('scenario-result').style.display = 'none';
+      document.getElementById('whatif-result').style.display = 'none';
+      document.getElementById('strategic-summary').style.display = 'none';
+      document.getElementById('save-status').innerHTML = '';
+
+      // Go to start screen
+      showScreen('screen-start');
+
+      debugLog('New session started - state reset');
     }
 
     // ================================
