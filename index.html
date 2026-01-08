@@ -419,6 +419,35 @@
       font-size: 0.75rem;
       text-transform: uppercase;
     }
+
+    /* ================================
+       Back Button Styles
+       ================================ */
+    .back-button {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--black);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      margin-bottom: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: opacity 0.2s ease;
+    }
+
+    .back-button:hover {
+      opacity: 0.6;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -544,6 +573,7 @@
       <!-- Phase 2: Disruption Introduction -->
       <section id="phase-2" class="phase-content" style="display: none;">
         <div class="card">
+          <button class="back-button" onclick="goToPhase(1)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase2_title">Fase 2: Disruptie</span>
           </div>
@@ -661,6 +691,7 @@
       <!-- Phase 3: Consequences -->
       <section id="phase-3" class="phase-content" style="display: none;">
         <div class="card">
+          <button class="back-button" onclick="goToPhase(2)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase3_title">Fase 3: Consequenties</span>
           </div>
@@ -691,6 +722,7 @@
       <!-- Phase 4: Strategic Focus -->
       <section id="phase-4" class="phase-content" style="display: none;">
         <div class="card">
+          <button class="back-button" onclick="goToPhase(3)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase4_title">Fase 4: Strategische Focus</span>
           </div>
@@ -727,6 +759,7 @@
       <!-- Phase 5: Export -->
       <section id="phase-5" class="phase-content" style="display: none;">
         <div class="card">
+          <button class="back-button" onclick="goToPhase(4)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase5_title">Fase 5: Export & Opslaan</span>
           </div>
@@ -1116,6 +1149,27 @@
       // Show correct phase content
       document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
       document.getElementById(`phase-${phase}`).style.display = 'block';
+
+      // Restore previously generated content when navigating back
+      if (phase === 1) {
+        // Show archetype and scenario if they exist
+        if (AppState.archetype) {
+          document.getElementById('archetype-result').style.display = 'block';
+        }
+        if (AppState.scenario) {
+          document.getElementById('scenario-result').style.display = 'block';
+        }
+      } else if (phase === 2) {
+        // Show what-if questions if they exist
+        if (AppState.whatIfQuestions.length > 0) {
+          document.getElementById('whatif-result').style.display = 'block';
+        }
+      } else if (phase === 3) {
+        // Show consequences if they exist
+        if (AppState.consequences) {
+          document.getElementById('consequences-text').innerHTML = formatScenarioOutput(AppState.consequences);
+        }
+      }
 
       // Initialize phase-specific content
       if (phase === 4) initPhase4();
