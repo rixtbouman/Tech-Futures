@@ -809,32 +809,17 @@
       margin: 0;
     }
 
-    /* Opportunities & Risks */
+    /* Opportunities & Risks - simple styling */
     .opportunities-section,
     .risks-section {
-      padding: var(--space-md);
-      border-radius: 6px;
       margin-bottom: var(--space-md);
     }
 
-    .opportunities-section {
-      background: rgba(0, 0, 255, 0.05);
-    }
-
-    .risks-section {
-      background: rgba(255, 0, 0, 0.05);
-    }
-
     .section-header {
-      background: #F0F0F0;
-      padding: var(--space-sm) var(--space-md);
-      margin: var(--space-lg) calc(-1 * var(--space-md)) var(--space-md);
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #555;
-      font-weight: 500;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--black);
+      margin: var(--space-lg) 0 var(--space-sm) 0;
     }
 
     .section-header:first-child {
@@ -935,17 +920,9 @@
     }
 
     /* Winners/Losers */
-    .winners-section {
-      background: rgba(0, 0, 255, 0.05);
-      padding: var(--space-md);
-      border-radius: 6px;
-      margin-bottom: var(--space-sm);
-    }
-
+    .winners-section,
     .losers-section {
-      background: rgba(255, 0, 0, 0.05);
-      padding: var(--space-md);
-      border-radius: 6px;
+      margin-bottom: var(--space-md);
     }
 
     /* ELSA Section */
@@ -2279,11 +2256,11 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
           if (winnersPart.length) {
             const label = lang === 'nl' ? 'Winnaars' : 'Winners';
-            html += `<div class="winners-section"><strong style="color: var(--blue);">${label}</strong>${parseMarkdownList(winnersPart.join('\n'))}</div>`;
+            html += `<div class="winners-section"><strong>${label}</strong>${parseMarkdownList(winnersPart.join('\n'))}</div>`;
           }
           if (losersPart.length) {
             const label = lang === 'nl' ? 'Verliezers' : 'Losers';
-            html += `<div class="losers-section"><strong style="color: var(--red);">${label}</strong>${parseMarkdownList(losersPart.join('\n'))}</div>`;
+            html += `<div class="losers-section"><strong>${label}</strong>${parseMarkdownList(losersPart.join('\n'))}</div>`;
           }
           if (!winnersPart.length && !losersPart.length) {
             html += parseMarkdownList(contentText);
@@ -2541,22 +2518,38 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         return;
       }
 
+      // Get selected technologies for bold highlighting
+      const techs = (AppState.selectedTechnologies || []).map(t =>
+        t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+      );
+
+      const lang = AppState.language;
+      const questionLabel = lang === 'nl' ? 'Vraag' : 'Question';
+
       let html = '';
       questions.forEach((q, i) => {
-        // Parse markdown from question text
-        const questionText = (q.text || '')
+        // Parse question text and make technology names bold
+        let questionText = (q.text || '')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+
+        // Make technology names bold in the question text
+        techs.forEach(tech => {
+          if (tech) {
+            const regex = new RegExp(`(${tech})`, 'gi');
+            questionText = questionText.replace(regex, '<strong>$1</strong>');
+          }
+        });
 
         html += `
           <div class="whatif-card" onclick="selectWhatIf(${i})">
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
               <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.35rem; flex-shrink: 0;">
               <div style="flex: 1;">
-                <div class="whatif-question">${questionText}</div>
+                <div class="whatif-question"><strong>${questionLabel} ${i + 1}:</strong> ${questionText}</div>
                 <div class="whatif-meta">
-                  ${q.impactDomain ? `<span class="whatif-tag domain">${q.impactDomain}</span>` : ''}
-                  ${q.valueTension ? `<span class="whatif-tag">${q.valueTension}</span>` : ''}
+                  ${q.impactDomain ? `<span class="whatif-tag"><strong>Domain:</strong> ${q.impactDomain}</span>` : ''}
+                  ${q.valueTension ? `<span class="whatif-tag"><strong>Value Tension:</strong> ${q.valueTension}</span>` : ''}
                 </div>
               </div>
             </label>
