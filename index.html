@@ -849,7 +849,7 @@
 
     .whatif-question {
       font-size: 1.05rem;
-      font-weight: 600;
+      font-weight: 400;
       color: var(--black);
       margin-bottom: var(--space-sm);
       line-height: 1.5;
@@ -2100,7 +2100,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       if (opportunitiesContent.trim()) {
         const label = lang === 'nl' ? 'KANSEN' : 'OPPORTUNITIES';
         html += `<div class="opportunities-section">
-          <strong style="color: var(--blue);">${label}</strong>
+          <strong>${label}</strong>
           ${parseMarkdownList(opportunitiesContent)}
         </div>`;
       }
@@ -2108,7 +2108,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       if (risksContent.trim()) {
         const label = lang === 'nl' ? "RISICO'S" : 'RISKS';
         html += `<div class="risks-section">
-          <strong style="color: var(--red);">${label}</strong>
+          <strong>${label}</strong>
           ${parseMarkdownList(risksContent)}
         </div>`;
       }
@@ -2605,8 +2605,11 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     async function generateConsequences() {
       debugLog('Generating consequences...');
 
-      // Display selected what-if
-      document.getElementById('selected-whatif-display').textContent = AppState.selectedWhatIf;
+      // Display selected what-if (parse markdown to remove **)
+      const whatIfDisplay = (AppState.selectedWhatIf || '')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\*([^*]+)\*/g, '$1');
+      document.getElementById('selected-whatif-display').textContent = whatIfDisplay;
 
       const resultEl = document.getElementById('consequences-text');
       resultEl.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="loading-spinner"></span><br><br>${t('generating_consequences')}</div>`;
