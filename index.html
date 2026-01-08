@@ -420,18 +420,144 @@
         </div>
       </section>
 
-      <!-- Phase 2-5 placeholders -->
+      <!-- Phase 2: Disruption Introduction -->
       <section id="phase-2" class="phase-content" style="display: none;">
         <div class="card">
-          <p class="label">Phase 2: Disruption Introduction</p>
-          <p class="body-text">Coming in Session 4-5...</p>
+          <div class="card-header">
+            <span class="label" data-i18n="phase2_title">Fase 2: Disruptie</span>
+          </div>
+          <p class="body-text" data-i18n="phase2_intro">
+            Selecteer technologieën, een actor en een trigger om what-if vragen te genereren.
+          </p>
+
+          <!-- Technology Selection -->
+          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+            <p class="small-label" data-i18n="select_technologies">Technologieën (3, inclusief quantum)</p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.75rem;">
+              <div>
+                <label class="small-label">Quantum Tech</label>
+                <select id="select-tech-quantum" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="quantum_sensing">Quantum Sensing</option>
+                  <option value="quantum_computing">Quantum Computing</option>
+                  <option value="quantum_communication">Quantum Communication</option>
+                </select>
+              </div>
+              <div>
+                <label class="small-label">Technology 2</label>
+                <select id="select-tech-2" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
+                  <option value="climate_tech">Climate Tech</option>
+                  <option value="biotech">Biotech</option>
+                  <option value="neurotech">Neurotech</option>
+                  <option value="space_tech">Space Tech</option>
+                  <option value="agi">AGI</option>
+                  <option value="asi">ASI</option>
+                  <option value="robotics">Robotics</option>
+                </select>
+              </div>
+              <div>
+                <label class="small-label">Technology 3</label>
+                <select id="select-tech-3" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
+                  <option value="climate_tech">Climate Tech</option>
+                  <option value="biotech">Biotech</option>
+                  <option value="neurotech">Neurotech</option>
+                  <option value="space_tech">Space Tech</option>
+                  <option value="agi">AGI</option>
+                  <option value="asi">ASI</option>
+                  <option value="robotics">Robotics</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Actor and Event -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem;">
+              <div>
+                <label class="small-label" data-i18n="select_actor">Actor</label>
+                <select id="select-actor" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
+                  <option value="criminal_networks">Criminal networks</option>
+                  <option value="foreign_states">Foreign states</option>
+                  <option value="big_tech">Big Tech</option>
+                  <option value="research_institutions">Research institutions</option>
+                  <option value="ngos">NGOs</option>
+                  <option value="citizens">Citizens</option>
+                  <option value="journalists">Journalists</option>
+                  <option value="startups">Startups</option>
+                  <option value="insurance_companies">Insurance companies</option>
+                  <option value="custom">Custom (enter below)</option>
+                </select>
+                <input type="text" id="input-actor-custom" class="btn" placeholder="Custom actor..." style="width: 100%; margin-top: 0.5rem; display: none;">
+              </div>
+              <div>
+                <label class="small-label" data-i18n="select_event">Trigger Event</label>
+                <select id="select-event" class="btn" style="width: 100%; margin-top: 0.5rem;">
+                  <option value="" data-i18n="select_placeholder">-- Kies --</option>
+                  <option value="major_breakthrough">Major breakthrough</option>
+                  <option value="security_breach">Security breach</option>
+                  <option value="regulatory_shift">Regulatory shift</option>
+                  <option value="talent_exodus">Talent exodus</option>
+                  <option value="international_treaty">International treaty</option>
+                  <option value="maturity_tipping_point">Maturity tipping point</option>
+                  <option value="loss_of_control">Loss of control</option>
+                  <option value="public_scandal">Public scandal</option>
+                  <option value="market_collapse">Market collapse</option>
+                  <option value="custom">Custom (enter below)</option>
+                </select>
+                <input type="text" id="input-event-custom" class="btn" placeholder="Custom event..." style="width: 100%; margin-top: 0.5rem; display: none;">
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="generateWhatIfQuestions()" id="btn-generate-whatif" data-i18n="generate_whatif">
+              Genereer What-If Vragen
+            </button>
+          </div>
+
+          <!-- What-If Questions Result -->
+          <div id="whatif-result" class="card" style="display: none; background: var(--bg-blue); margin-top: 1rem;">
+            <p class="small-label" data-i18n="whatif_questions">What-If Vragen</p>
+            <div id="whatif-questions-list" style="margin-top: 1rem;"></div>
+
+            <!-- Custom What-If Input -->
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--black);">
+              <p class="small-label" data-i18n="or_custom_whatif">Of voer een eigen vraag in:</p>
+              <textarea id="input-custom-whatif" class="btn" placeholder="What if..." style="width: 100%; height: 80px; margin-top: 0.5rem; resize: vertical; text-transform: none;"></textarea>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="proceedToPhase3()" id="btn-proceed-phase3" data-i18n="continue_phase3">
+              Verder met geselecteerde vraag
+            </button>
+          </div>
         </div>
       </section>
 
+      <!-- Phase 3: Consequences -->
       <section id="phase-3" class="phase-content" style="display: none;">
         <div class="card">
-          <p class="label">Phase 3: Consequences</p>
-          <p class="body-text">Coming in Session 4-5...</p>
+          <div class="card-header">
+            <span class="label" data-i18n="phase3_title">Fase 3: Consequenties</span>
+          </div>
+
+          <!-- Selected What-If Display -->
+          <div class="card" style="background: var(--bg-blue); margin-bottom: 1rem;">
+            <p class="small-label" data-i18n="selected_whatif">Geselecteerde What-If Vraag</p>
+            <p class="sub-headline" id="selected-whatif-display" style="margin-top: 0.5rem;"></p>
+          </div>
+
+          <!-- Consequences Result -->
+          <div id="consequences-result" class="card" style="background: var(--bg-magenta);">
+            <p class="small-label" data-i18n="consequences">Consequenties</p>
+            <div class="body-text" id="consequences-text" style="margin-top: 1rem; white-space: pre-line;">
+              <div style="text-align: center; padding: 2rem;">
+                <span class="loading-spinner"></span><br><br>
+                <span data-i18n="generating_consequences">Consequenties genereren...</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="goToPhase(4)" data-i18n="continue_phase4">
+            Verder naar Fase 4
+          </button>
         </div>
       </section>
 
@@ -527,7 +653,26 @@
         select_all_options: 'Selecteer alle drie de opties',
         generating_scenario: 'Scenario wordt gegenereerd...',
         determining_archetype: 'Archetype bepalen...',
-        error_archetype: 'Fout bij ophalen archetype'
+        error_archetype: 'Fout bij ophalen archetype',
+        // Phase 2
+        phase2_title: 'Fase 2: Disruptie',
+        phase2_intro: 'Selecteer technologieën, een actor en een trigger om what-if vragen te genereren.',
+        select_technologies: 'Technologieën (3, inclusief quantum)',
+        select_actor: 'Actor',
+        select_event: 'Trigger Event',
+        generate_whatif: 'Genereer What-If Vragen',
+        generating_whatif: 'What-if vragen genereren...',
+        whatif_questions: 'What-If Vragen',
+        or_custom_whatif: 'Of voer een eigen vraag in:',
+        continue_phase3: 'Verder met geselecteerde vraag',
+        select_whatif_error: 'Selecteer een what-if vraag of voer een eigen vraag in',
+        select_tech_actor_event: 'Selecteer alle technologieën, actor en event',
+        // Phase 3
+        phase3_title: 'Fase 3: Consequenties',
+        selected_whatif: 'Geselecteerde What-If Vraag',
+        consequences: 'Consequenties',
+        generating_consequences: 'Consequenties genereren...',
+        continue_phase4: 'Verder naar Fase 4'
       },
       en: {
         phase1_title: 'Phase 1: Scenario Foundation',
@@ -547,7 +692,26 @@
         select_all_options: 'Please select all three options',
         generating_scenario: 'Generating scenario...',
         determining_archetype: 'Determining archetype...',
-        error_archetype: 'Error fetching archetype'
+        error_archetype: 'Error fetching archetype',
+        // Phase 2
+        phase2_title: 'Phase 2: Disruption',
+        phase2_intro: 'Select technologies, an actor, and a trigger to generate what-if questions.',
+        select_technologies: 'Technologies (3, including quantum)',
+        select_actor: 'Actor',
+        select_event: 'Trigger Event',
+        generate_whatif: 'Generate What-If Questions',
+        generating_whatif: 'Generating what-if questions...',
+        whatif_questions: 'What-If Questions',
+        or_custom_whatif: 'Or enter your own question:',
+        continue_phase3: 'Continue with selected question',
+        select_whatif_error: 'Select a what-if question or enter your own',
+        select_tech_actor_event: 'Select all technologies, actor, and event',
+        // Phase 3
+        phase3_title: 'Phase 3: Consequences',
+        selected_whatif: 'Selected What-If Question',
+        consequences: 'Consequences',
+        generating_consequences: 'Generating consequences...',
+        continue_phase4: 'Continue to Phase 4'
       }
     };
 
@@ -937,6 +1101,371 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         .replace(/\n/g, '<br>');
 
       return `<p>${formatted}</p>`;
+    }
+
+    // ================================
+    // Phase 2: What-If Generation
+    // ================================
+
+    // Show/hide custom input fields based on dropdown selection
+    document.addEventListener('DOMContentLoaded', () => {
+      const actorSelect = document.getElementById('select-actor');
+      const eventSelect = document.getElementById('select-event');
+
+      if (actorSelect) {
+        actorSelect.addEventListener('change', (e) => {
+          const customInput = document.getElementById('input-actor-custom');
+          customInput.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+      }
+
+      if (eventSelect) {
+        eventSelect.addEventListener('change', (e) => {
+          const customInput = document.getElementById('input-event-custom');
+          customInput.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+      }
+    });
+
+    async function fetchTechnologyKnowledge() {
+      debugLog('Fetching technology knowledge');
+      try {
+        const { data, error } = await supabaseClient
+          .from('technology_knowledge')
+          .select('*');
+        if (error) throw error;
+        debugLog(`Technology knowledge fetched: ${data?.length || 0} items`);
+        return data || [];
+      } catch (error) {
+        debugLog(`Error fetching technology knowledge: ${error.message}`);
+        return [];
+      }
+    }
+
+    async function generateWhatIfQuestions() {
+      // Get selections
+      const techQuantum = document.getElementById('select-tech-quantum').value;
+      const tech2 = document.getElementById('select-tech-2').value;
+      const tech3 = document.getElementById('select-tech-3').value;
+
+      let actor = document.getElementById('select-actor').value;
+      if (actor === 'custom') {
+        actor = document.getElementById('input-actor-custom').value;
+      }
+
+      let event = document.getElementById('select-event').value;
+      if (event === 'custom') {
+        event = document.getElementById('input-event-custom').value;
+      }
+
+      // Validate
+      if (!tech2 || !tech3 || !actor || !event) {
+        alert(t('select_tech_actor_event'));
+        return;
+      }
+
+      // Store in AppState
+      AppState.selectedTechnologies = [techQuantum, tech2, tech3];
+      AppState.selectedActor = actor;
+      AppState.selectedEvent = event;
+
+      debugLog(`Generating what-if questions for: ${techQuantum}, ${tech2}, ${tech3}, ${actor}, ${event}`);
+
+      // Show loading
+      const btnEl = document.getElementById('btn-generate-whatif');
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<span class="loading-spinner"></span> ${t('generating_whatif')}`;
+
+      const resultEl = document.getElementById('whatif-result');
+      resultEl.style.display = 'block';
+      document.getElementById('whatif-questions-list').innerHTML = `<div style="text-align: center; padding: 1rem;"><span class="loading-spinner"></span></div>`;
+
+      try {
+        // Fetch data from Supabase
+        const [promptData, sectorData, techData] = await Promise.all([
+          fetchPrompt('whatif_generation'),
+          fetchSectorInfo(),
+          fetchTechnologyKnowledge()
+        ]);
+
+        // Build prompt
+        const fullPrompt = buildWhatIfPrompt(promptData, sectorData, techData);
+
+        debugLog('Sending what-if prompt to Gemini...');
+
+        // Call Gemini
+        const response = await callGemini(fullPrompt, null, 'whatif');
+
+        // Parse the response into questions
+        const questions = parseWhatIfResponse(response);
+        AppState.whatIfQuestions = questions;
+
+        // Display questions with radio buttons
+        displayWhatIfQuestions(questions);
+
+        debugLog(`Generated ${questions.length} what-if questions`);
+
+      } catch (error) {
+        debugLog(`What-if generation error: ${error.message}`);
+        document.getElementById('whatif-questions-list').innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+      } finally {
+        btnEl.disabled = false;
+        btnEl.textContent = t('generate_whatif');
+      }
+    }
+
+    function buildWhatIfPrompt(promptData, sectorData, techData) {
+      const [techQuantum, tech2, tech3] = AppState.selectedTechnologies;
+      const actor = AppState.selectedActor;
+      const event = AppState.selectedEvent;
+
+      // Format technology names for display
+      const formatTech = (t) => t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+      const basePrompt = promptData?.prompt_text || `
+Generate 3 what-if questions based on the selected technologies, actor, and trigger event.
+Each question should be provocative and challenge assumptions about the future.
+Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
+      `;
+
+      // Replace placeholders in the prompt
+      let prompt = basePrompt
+        .replace(/\[TECH_1\]/g, formatTech(tech2))
+        .replace(/\[TECH_2\]/g, formatTech(tech3))
+        .replace(/\[ACTOR\]/g, formatTech(actor))
+        .replace(/\[TRIGGER\]/g, formatTech(event));
+
+      const context = `
+═════════════════════════════════════════════════════════
+INPUT DATA
+═════════════════════════════════════════════════════════
+
+SELECTED TECHNOLOGIES:
+1. Quantum: ${formatTech(techQuantum)}
+2. Technology 2: ${formatTech(tech2)}
+3. Technology 3: ${formatTech(tech3)}
+
+ACTOR: ${formatTech(actor)}
+
+TRIGGER EVENT: ${formatTech(event)}
+
+ARCHETYPE CONTEXT: ${AppState.archetypeDescription?.name || AppState.archetype}
+${AppState.archetypeMapping?.nuance_description || ''}
+
+TECHNOLOGY KNOWLEDGE:
+${techData?.map(t => `- ${t.name || t.technology}: ${t.description || t.content || ''}`).join('\n') || 'Use general knowledge about the selected technologies.'}
+
+SECTOR KNOWLEDGE (JenV):
+${sectorData?.slice(0, 15).map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
+
+OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
+`;
+
+      return `${prompt}\n\n${context}`;
+    }
+
+    function parseWhatIfResponse(response) {
+      // Try to extract questions from the response
+      const questions = [];
+      const lines = response.split('\n');
+
+      let currentQuestion = null;
+      let currentMeta = {};
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+
+        // Look for "Question X" or "What if" patterns
+        if (trimmed.match(/^(Question\s*\d|What if)/i) || trimmed.startsWith('What if')) {
+          if (currentQuestion) {
+            questions.push({ text: currentQuestion, ...currentMeta });
+          }
+          currentQuestion = trimmed.replace(/^Question\s*\d[:\s]*/i, '');
+          currentMeta = {};
+        } else if (trimmed.startsWith('- Impact Domain:')) {
+          currentMeta.impactDomain = trimmed.replace('- Impact Domain:', '').trim();
+        } else if (trimmed.startsWith('- Value Tension:')) {
+          currentMeta.valueTension = trimmed.replace('- Value Tension:', '').trim();
+        } else if (currentQuestion && trimmed && !trimmed.startsWith('-') && !trimmed.startsWith('Impact') && !trimmed.startsWith('Value')) {
+          // Continue the question if it spans multiple lines
+          if (!currentQuestion.endsWith('?')) {
+            currentQuestion += ' ' + trimmed;
+          }
+        }
+      }
+
+      // Add the last question
+      if (currentQuestion) {
+        questions.push({ text: currentQuestion, ...currentMeta });
+      }
+
+      // If parsing failed, just split by double newlines
+      if (questions.length === 0) {
+        const parts = response.split(/\n\n+/);
+        parts.forEach((part, i) => {
+          const cleaned = part.trim();
+          if (cleaned.toLowerCase().includes('what if') || cleaned.includes('?')) {
+            questions.push({ text: cleaned });
+          }
+        });
+      }
+
+      return questions.slice(0, 3); // Return max 3 questions
+    }
+
+    function displayWhatIfQuestions(questions) {
+      const container = document.getElementById('whatif-questions-list');
+
+      if (questions.length === 0) {
+        container.innerHTML = '<p class="body-text">No questions generated. Try again or enter a custom question.</p>';
+        return;
+      }
+
+      let html = '';
+      questions.forEach((q, i) => {
+        html += `
+          <div class="card" style="background: var(--white); margin-bottom: 0.75rem; cursor: pointer;" onclick="selectWhatIf(${i})">
+            <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
+              <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.25rem;">
+              <div>
+                <p class="body-text" style="margin: 0;">${q.text}</p>
+                ${q.impactDomain ? `<p class="small-label" style="margin-top: 0.5rem; opacity: 0.7;">Impact: ${q.impactDomain}</p>` : ''}
+                ${q.valueTension ? `<p class="small-label" style="opacity: 0.7;">Tension: ${q.valueTension}</p>` : ''}
+              </div>
+            </label>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function selectWhatIf(index) {
+      // Clear custom input when selecting a generated question
+      document.getElementById('input-custom-whatif').value = '';
+
+      // Select the radio button
+      const radios = document.querySelectorAll('input[name="whatif-selection"]');
+      if (radios[index]) {
+        radios[index].checked = true;
+      }
+    }
+
+    function proceedToPhase3() {
+      // Get selected question
+      const selectedRadio = document.querySelector('input[name="whatif-selection"]:checked');
+      const customInput = document.getElementById('input-custom-whatif').value.trim();
+
+      let selectedQuestion = null;
+
+      if (customInput) {
+        selectedQuestion = customInput;
+      } else if (selectedRadio) {
+        const index = parseInt(selectedRadio.value);
+        selectedQuestion = AppState.whatIfQuestions[index]?.text;
+      }
+
+      if (!selectedQuestion) {
+        alert(t('select_whatif_error'));
+        return;
+      }
+
+      AppState.selectedWhatIf = selectedQuestion;
+      debugLog(`Selected what-if: ${selectedQuestion}`);
+
+      // Navigate to Phase 3 and generate consequences
+      goToPhase(3);
+      generateConsequences();
+    }
+
+    // ================================
+    // Phase 3: Consequences
+    // ================================
+
+    async function generateConsequences() {
+      debugLog('Generating consequences...');
+
+      // Display selected what-if
+      document.getElementById('selected-whatif-display').textContent = AppState.selectedWhatIf;
+
+      const resultEl = document.getElementById('consequences-text');
+      resultEl.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="loading-spinner"></span><br><br>${t('generating_consequences')}</div>`;
+
+      try {
+        // Fetch data from Supabase
+        const [promptData, sectorData, techData] = await Promise.all([
+          fetchPrompt('consequence_generation'),
+          fetchSectorInfo(),
+          fetchTechnologyKnowledge()
+        ]);
+
+        // Build prompt
+        const fullPrompt = buildConsequencePrompt(promptData, sectorData, techData);
+
+        debugLog('Sending consequence prompt to Gemini...');
+        debugLog(`Prompt length: ${fullPrompt.length} chars`);
+
+        // Call Gemini
+        const response = await callGemini(fullPrompt, null, 'consequences');
+
+        AppState.consequences = response;
+
+        // Format and display
+        resultEl.innerHTML = formatScenarioOutput(response);
+
+        debugLog('Consequences generated successfully');
+
+      } catch (error) {
+        debugLog(`Consequence generation error: ${error.message}`);
+        resultEl.innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+      }
+    }
+
+    function buildConsequencePrompt(promptData, sectorData, techData) {
+      const [techQuantum, tech2, tech3] = AppState.selectedTechnologies;
+      const formatTech = (t) => t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+      const basePrompt = promptData?.prompt_text || `
+Generate consequences for the selected what-if question, including 2nd and 3rd order effects,
+new technology applications, ELSA implications, and who wins/loses.
+Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
+      `;
+
+      const context = `
+═════════════════════════════════════════════════════════
+INPUT DATA
+═════════════════════════════════════════════════════════
+
+SELECTED WHAT-IF QUESTION:
+${AppState.selectedWhatIf}
+
+PHASE 1 SCENARIO:
+${AppState.scenario || 'No scenario available'}
+
+ARCHETYPE: ${AppState.archetypeDescription?.name || AppState.archetype}
+${AppState.archetypeDescription?.description || ''}
+
+NUANCE: ${AppState.archetypeMapping?.nuance_name || ''}
+${AppState.archetypeMapping?.nuance_description || ''}
+
+SELECTED TECHNOLOGIES:
+1. ${formatTech(techQuantum)}
+2. ${formatTech(tech2)}
+3. ${formatTech(tech3)}
+
+ACTOR: ${formatTech(AppState.selectedActor)}
+TRIGGER: ${formatTech(AppState.selectedEvent)}
+
+TECHNOLOGY KNOWLEDGE:
+${techData?.map(t => `- ${t.name || t.technology}: ${t.description || t.content || ''}`).join('\n') || 'Use general knowledge about the selected technologies.'}
+
+SECTOR KNOWLEDGE (JenV):
+${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
+
+OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
+`;
+
+      return `${basePrompt}\n\n${context}`;
     }
 
     // ================================
