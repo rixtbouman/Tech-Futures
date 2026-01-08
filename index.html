@@ -857,11 +857,25 @@
       }
     }
 
+    // Filter out quantum-related entries from sector data (for Phase 1)
+    function filterOutQuantum(sectorData) {
+      if (!sectorData) return [];
+      const quantumKeywords = ['quantum', 'q-day', 'pqc', 'qkd', 'qutech'];
+      return sectorData.filter(item => {
+        const text = `${item.title} ${item.content}`.toLowerCase();
+        return !quantumKeywords.some(keyword => text.includes(keyword));
+      });
+    }
+
     function buildScenarioPrompt(promptData, archetypeId, archetypeDescription, mapping, sectorData) {
       // Get the card choices for context
       const resources = document.getElementById('select-resources').value;
       const system = document.getElementById('select-system').value;
       const values = document.getElementById('select-values').value;
+
+      // Filter out quantum content for Phase 1 scenarios
+      const filteredSectorData = filterOutQuantum(sectorData);
+      debugLog(`Sector data: ${sectorData?.length || 0} total, ${filteredSectorData.length} after quantum filter`);
 
       // Use the prompt from Supabase (column: prompt_text)
       const basePrompt = promptData?.prompt_text || `
@@ -894,7 +908,7 @@ KEY VOCABULARY:
 ${archetypeDescription?.key_vocabulary || ''}
 
 SECTOR KNOWLEDGE (Dutch Ministry of Justice and Security - JenV):
-${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
+${filteredSectorData.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
 
 OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
 `;
