@@ -769,6 +769,220 @@
         display: none;
       }
     }
+
+    /* ================================
+       AI Generated Content Styling
+       ================================ */
+
+    /* Scenario Title */
+    .scenario-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: var(--space-lg);
+      line-height: 1.4;
+    }
+
+    /* Narrative Vignette */
+    .narrative-vignette {
+      background: #E8F4FC;
+      padding: var(--space-md);
+      border-radius: 6px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .narrative-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+
+    .narrative-vignette p {
+      font-style: italic;
+      line-height: 1.7;
+      color: #333;
+      margin: 0;
+    }
+
+    /* Opportunities & Risks */
+    .opportunities-section,
+    .risks-section {
+      padding: var(--space-md);
+      border-radius: 6px;
+      margin-bottom: var(--space-md);
+    }
+
+    .opportunities-section {
+      background: rgba(0, 0, 255, 0.05);
+      border-left: 3px solid var(--blue);
+    }
+
+    .risks-section {
+      background: rgba(255, 0, 0, 0.05);
+      border-left: 3px solid var(--red);
+    }
+
+    .section-header {
+      background: #F0F0F0;
+      padding: var(--space-sm) var(--space-md);
+      margin: var(--space-lg) calc(-1 * var(--space-md)) var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .section-header:first-child {
+      margin-top: 0;
+    }
+
+    /* What-If Question Cards */
+    .whatif-card {
+      background: var(--white);
+      border: 1px solid #E0E0E0;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .whatif-card:hover {
+      border-color: var(--blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .whatif-card.selected {
+      border-color: var(--blue);
+      background: rgba(0, 0, 255, 0.03);
+    }
+
+    .whatif-question {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: var(--space-sm);
+      line-height: 1.5;
+    }
+
+    .whatif-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    .whatif-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      background: #F0F0F0;
+    }
+
+    .whatif-tag.tech {
+      background: rgba(0, 0, 255, 0.1);
+      color: var(--blue);
+    }
+
+    .whatif-tag.domain {
+      background: #F5F5F5;
+      color: #666;
+    }
+
+    /* Consequences Sections */
+    .consequence-section {
+      margin-bottom: var(--space-lg);
+    }
+
+    .consequence-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .consequence-section li {
+      padding: var(--space-sm) 0;
+      padding-left: var(--space-md);
+      position: relative;
+      line-height: 1.6;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .consequence-section li:last-child {
+      border-bottom: none;
+    }
+
+    .consequence-section li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--blue);
+      font-weight: bold;
+    }
+
+    /* ELSA Labels */
+    .elsa-label {
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    /* Winners/Losers */
+    .winners-section {
+      background: rgba(0, 0, 255, 0.05);
+      padding: var(--space-md);
+      border-radius: 6px;
+      margin-bottom: var(--space-sm);
+    }
+
+    .losers-section {
+      background: rgba(255, 0, 0, 0.05);
+      padding: var(--space-md);
+      border-radius: 6px;
+    }
+
+    /* Strategic Priority Items */
+    .priority-item {
+      background: var(--white);
+      border: 1px solid #E0E0E0;
+      border-radius: var(--radius-sm);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .priority-item:hover {
+      border-color: #CCC;
+    }
+
+    .priority-item.selected {
+      border-color: var(--blue);
+      background: rgba(0, 0, 255, 0.03);
+    }
+
+    .priority-source {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #888;
+      margin-bottom: var(--space-xs);
+    }
+
+    .priority-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -1487,7 +1701,7 @@
       } else if (phase === 3) {
         // Show consequences if they exist
         if (AppState.consequences) {
-          document.getElementById('consequences-text').innerHTML = formatScenarioOutput(AppState.consequences);
+          document.getElementById('consequences-text').innerHTML = formatConsequencesOutput(AppState.consequences);
         }
       }
 
@@ -1734,8 +1948,8 @@
 
         AppState.scenario = scenario;
 
-        // Format the scenario for display (preserve markdown-like formatting)
-        scenarioTextEl.innerHTML = formatScenarioOutput(scenario);
+        // Format the scenario for display with styled sections
+        scenarioTextEl.innerHTML = formatScenarioWithSections(scenario);
 
         debugLog('Scenario generated successfully');
 
@@ -1807,24 +2021,256 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     function formatScenarioOutput(text) {
       if (!text) return '';
 
-      // Convert markdown-style formatting to HTML
+      // Basic markdown parsing
       let formatted = text
         // Bold: **text** -> <strong>text</strong>
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         // Italic: *text* -> <em>text</em>
-        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
         // Headers
-        .replace(/^### (.+)$/gm, '<h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h4>')
-        .replace(/^## (.+)$/gm, '<h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h3>')
-        // Bullet points
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        // Wrap consecutive <li> in <ul>
-        .replace(/(<li>.*<\/li>\n?)+/g, '<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">$&</ul>')
+        .replace(/^#### (.+)$/gm, '<div class="section-header">$1</div>')
+        .replace(/^### (.+)$/gm, '<div class="section-header">$1</div>')
+        .replace(/^## (.+)$/gm, '<h3 class="scenario-title">$1</h3>')
         // Line breaks
-        .replace(/\n\n/g, '</p><p style="margin-top: 1rem;">')
+        .replace(/\n\n/g, '</p><p style="margin-top: 0.75rem;">')
         .replace(/\n/g, '<br>');
 
-      return `<p>${formatted}</p>`;
+      // Convert bullet points
+      formatted = formatted.replace(/(<br>)?- (.+?)(<br>|<\/p>|$)/g, '<li>$2</li>$3');
+      formatted = formatted.replace(/(<li>.*?<\/li>)+/g, '<ul class="consequence-section">$&</ul>');
+
+      return `<div class="formatted-content"><p>${formatted}</p></div>`;
+    }
+
+    function formatScenarioWithSections(text) {
+      if (!text) return '';
+
+      const lang = AppState.language;
+      let html = '';
+
+      // Try to identify sections in the scenario
+      const lines = text.split('\n');
+      let currentSection = 'intro';
+      let narrativeContent = '';
+      let opportunitiesContent = '';
+      let risksContent = '';
+      let otherContent = '';
+
+      for (let line of lines) {
+        const lowerLine = line.toLowerCase();
+
+        // Detect section changes
+        if (lowerLine.includes('een dag uit het leven') || lowerLine.includes('a day in the life') || lowerLine.includes('vignette') || lowerLine.includes('narrative')) {
+          currentSection = 'narrative';
+          continue;
+        } else if (lowerLine.includes('kansen') || lowerLine.includes('opportunities') || lowerLine.includes('mogelijkheden')) {
+          currentSection = 'opportunities';
+          continue;
+        } else if (lowerLine.includes('risico') || lowerLine.includes('risks') || lowerLine.includes('bedreigingen') || lowerLine.includes('threats')) {
+          currentSection = 'risks';
+          continue;
+        }
+
+        // Add content to appropriate section
+        if (currentSection === 'narrative') {
+          narrativeContent += line + '\n';
+        } else if (currentSection === 'opportunities') {
+          opportunitiesContent += line + '\n';
+        } else if (currentSection === 'risks') {
+          risksContent += line + '\n';
+        } else {
+          otherContent += line + '\n';
+        }
+      }
+
+      // Build HTML
+      if (otherContent.trim()) {
+        html += `<div class="scenario-intro">${parseMarkdown(otherContent)}</div>`;
+      }
+
+      if (narrativeContent.trim()) {
+        const label = lang === 'nl' ? 'EEN DAG UIT HET LEVEN' : 'A DAY IN THE LIFE';
+        html += `<div class="narrative-vignette">
+          <span class="narrative-label">${label}</span>
+          <p>${parseMarkdown(narrativeContent)}</p>
+        </div>`;
+      }
+
+      if (opportunitiesContent.trim()) {
+        const label = lang === 'nl' ? 'KANSEN' : 'OPPORTUNITIES';
+        html += `<div class="opportunities-section">
+          <strong style="color: var(--blue);">${label}</strong>
+          ${parseMarkdownList(opportunitiesContent)}
+        </div>`;
+      }
+
+      if (risksContent.trim()) {
+        const label = lang === 'nl' ? "RISICO'S" : 'RISKS';
+        html += `<div class="risks-section">
+          <strong style="color: var(--red);">${label}</strong>
+          ${parseMarkdownList(risksContent)}
+        </div>`;
+      }
+
+      return html || formatScenarioOutput(text);
+    }
+
+    function parseMarkdown(text) {
+      if (!text) return '';
+      return text
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .trim();
+    }
+
+    function parseMarkdownList(text) {
+      if (!text) return '';
+      const lines = text.split('\n').filter(l => l.trim());
+      let html = '<ul class="consequence-section">';
+      for (let line of lines) {
+        let content = line.replace(/^[-•*]\s*/, '').trim();
+        if (content) {
+          content = content
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+          html += `<li>${content}</li>`;
+        }
+      }
+      html += '</ul>';
+      return html;
+    }
+
+    function formatWhatIfQuestions(questions) {
+      if (!questions || !questions.length) return '';
+
+      let html = '';
+      questions.forEach((q, index) => {
+        const questionText = q.question || q;
+        const techCombo = q.technologies || '';
+        const domain = q.domain || q.impact_domain || '';
+        const tension = q.tension || q.value_tension || '';
+
+        html += `<div class="whatif-card" onclick="selectWhatIf(${index})" data-index="${index}">
+          <div class="whatif-question">${parseMarkdown(questionText)}</div>
+          <div class="whatif-meta">
+            ${techCombo ? `<span class="whatif-tag tech">${techCombo}</span>` : ''}
+            ${domain ? `<span class="whatif-tag domain">${domain}</span>` : ''}
+            ${tension ? `<span class="whatif-tag">${tension}</span>` : ''}
+          </div>
+        </div>`;
+      });
+
+      return html;
+    }
+
+    function formatConsequencesOutput(text) {
+      if (!text) return formatScenarioOutput(text);
+
+      const lang = AppState.language;
+      let html = '';
+
+      // Section markers to look for
+      const sectionMarkers = {
+        'what_happens': ['wat gebeurt er', 'what happens', 'direct effects', 'directe effecten'],
+        'second_order': ['tweede-orde', 'second-order', '2nd order', 'tweede orde'],
+        'third_order': ['derde-orde', 'third-order', '3rd order', 'derde orde'],
+        'applications': ['nieuwe toepassingen', 'new applications', 'toepassingen', 'applications'],
+        'elsa': ['elsa', 'ethical', 'ethisch', 'legal', 'juridisch', 'social', 'sociaal'],
+        'winners_losers': ['wie wint', 'who wins', 'winners', 'losers', 'winnaars', 'verliezers']
+      };
+
+      const sectionLabels = {
+        'what_happens': lang === 'nl' ? 'WAT GEBEURT ER?' : 'WHAT HAPPENS?',
+        'second_order': lang === 'nl' ? 'TWEEDE-ORDE EFFECTEN' : 'SECOND-ORDER EFFECTS',
+        'third_order': lang === 'nl' ? 'DERDE-ORDE EFFECTEN' : 'THIRD-ORDER EFFECTS',
+        'applications': lang === 'nl' ? 'NIEUWE TOEPASSINGEN' : 'NEW APPLICATIONS',
+        'elsa': lang === 'nl' ? 'ELSA IMPLICATIES' : 'ELSA IMPLICATIONS',
+        'winners_losers': lang === 'nl' ? 'WIE WINT, WIE VERLIEST?' : 'WHO WINS, WHO LOSES?'
+      };
+
+      // Parse text into sections
+      const lines = text.split('\n');
+      let sections = {};
+      let currentSection = 'intro';
+
+      for (let line of lines) {
+        const lowerLine = line.toLowerCase();
+
+        // Check for section markers
+        let foundSection = null;
+        for (let [key, markers] of Object.entries(sectionMarkers)) {
+          if (markers.some(m => lowerLine.includes(m))) {
+            foundSection = key;
+            break;
+          }
+        }
+
+        if (foundSection) {
+          currentSection = foundSection;
+          if (!sections[currentSection]) sections[currentSection] = [];
+          continue;
+        }
+
+        if (!sections[currentSection]) sections[currentSection] = [];
+        if (line.trim()) sections[currentSection].push(line);
+      }
+
+      // Build HTML for each section
+      for (let [key, content] of Object.entries(sections)) {
+        if (!content.length) continue;
+
+        if (key === 'intro') {
+          html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
+        } else if (key === 'winners_losers') {
+          html += `<div class="section-header">${sectionLabels[key]}</div>`;
+          const contentText = content.join('\n');
+          const winnersMatch = contentText.match(/winners?:?\s*([\s\S]*?)(?=losers?:|verliezers?:|$)/i);
+          const losersMatch = contentText.match(/losers?:?\s*([\s\S]*?)$/i) || contentText.match(/verliezers?:?\s*([\s\S]*?)$/i);
+
+          if (winnersMatch) {
+            html += `<div class="winners-section">${parseMarkdownList(winnersMatch[1])}</div>`;
+          }
+          if (losersMatch) {
+            html += `<div class="losers-section">${parseMarkdownList(losersMatch[1])}</div>`;
+          }
+          if (!winnersMatch && !losersMatch) {
+            html += parseMarkdownList(contentText);
+          }
+        } else if (key === 'elsa') {
+          html += `<div class="section-header">${sectionLabels[key]}</div>`;
+          html += `<div class="consequence-section">${formatElsaSection(content.join('\n'))}</div>`;
+        } else {
+          html += `<div class="section-header">${sectionLabels[key]}</div>`;
+          html += `<div class="consequence-section">${parseMarkdownList(content.join('\n'))}</div>`;
+        }
+      }
+
+      return html || formatScenarioOutput(text);
+    }
+
+    function formatElsaSection(text) {
+      let html = '<ul class="consequence-section">';
+      const lines = text.split('\n').filter(l => l.trim());
+
+      for (let line of lines) {
+        let content = line.replace(/^[-•*]\s*/, '').trim();
+        // Make ELSA labels bold
+        content = content
+          .replace(/^(Ethical|Ethisch|Ethische?):?\s*/i, '<span class="elsa-label">Ethical:</span> ')
+          .replace(/^(Legal|Juridisch|Juridische?):?\s*/i, '<span class="elsa-label">Legal:</span> ')
+          .replace(/^(Social|Sociaal|Sociale?|Societal|Maatschappelijk):?\s*/i, '<span class="elsa-label">Social:</span> ')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+
+        if (content) {
+          html += `<li>${content}</li>`;
+        }
+      }
+
+      html += '</ul>';
+      return html;
     }
 
     // ================================
@@ -2134,8 +2580,8 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
         AppState.consequences = response;
 
-        // Format and display
-        resultEl.innerHTML = formatScenarioOutput(response);
+        // Format and display with styled sections
+        resultEl.innerHTML = formatConsequencesOutput(response);
 
         debugLog('Consequences generated successfully');
 
@@ -2199,7 +2645,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     function initPhase4() {
       debugLog('Initializing Phase 4...');
 
-      // Parse consequences into selectable items
+      // Parse consequences into selectable items with source sections
       const consequences = AppState.consequences || '';
       const items = parseConsequencesForSelection(consequences);
 
@@ -2212,11 +2658,15 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       let html = '';
       items.forEach((item, i) => {
+        const sourceLabel = item.source || '';
         html += `
-          <div class="card" style="background: var(--white); margin-bottom: 0.5rem; cursor: pointer;" onclick="togglePriority(${i})">
+          <div class="priority-item" onclick="togglePriority(${i})">
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
-              <input type="checkbox" id="priority-${i}" value="${i}" onchange="updateStrategicSummary()" style="margin-top: 0.25rem;">
-              <span class="body-text" style="font-size: 0.9rem;">${item}</span>
+              <input type="checkbox" id="priority-${i}" value="${i}" onchange="updateStrategicSummary()" style="margin-top: 0.25rem; flex-shrink: 0;">
+              <div style="flex: 1;">
+                ${sourceLabel ? `<div class="priority-source">${sourceLabel}</div>` : ''}
+                <div class="priority-text">${item.text || item}</div>
+              </div>
             </label>
           </div>
         `;
@@ -2234,21 +2684,68 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       if (!text) return [];
 
       const items = [];
+      const lang = AppState.language;
 
-      // Try to extract bullet points and numbered items
+      // Section labels for source tagging
+      const sectionLabels = {
+        'what_happens': lang === 'nl' ? 'Directe Effecten' : 'Direct Effects',
+        'second_order': lang === 'nl' ? 'Tweede-orde' : '2nd Order',
+        'third_order': lang === 'nl' ? 'Derde-orde' : '3rd Order',
+        'applications': lang === 'nl' ? 'Toepassingen' : 'Applications',
+        'elsa': 'ELSA',
+        'winners': lang === 'nl' ? 'Winnaars' : 'Winners',
+        'losers': lang === 'nl' ? 'Verliezers' : 'Losers'
+      };
+
+      // Section markers
+      const sectionMarkers = {
+        'what_happens': ['wat gebeurt er', 'what happens', 'direct effects'],
+        'second_order': ['tweede-orde', 'second-order', '2nd order'],
+        'third_order': ['derde-orde', 'third-order', '3rd order'],
+        'applications': ['nieuwe toepassingen', 'new applications'],
+        'elsa': ['elsa', 'ethical', 'ethisch'],
+        'winners': ['winners', 'winnaars', 'wie wint'],
+        'losers': ['losers', 'verliezers', 'wie verliest']
+      };
+
+      // Parse with section tracking
       const lines = text.split('\n');
+      let currentSection = 'intro';
       let currentItem = '';
 
       for (const line of lines) {
         const trimmed = line.trim();
+        const lowerLine = trimmed.toLowerCase();
 
-        // Check for bullet points, numbered items, or headers
+        // Check for section markers
+        let foundSection = null;
+        for (let [key, markers] of Object.entries(sectionMarkers)) {
+          if (markers.some(m => lowerLine.includes(m))) {
+            foundSection = key;
+            break;
+          }
+        }
+
+        if (foundSection) {
+          if (currentItem) {
+            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
+          }
+          currentSection = foundSection;
+          currentItem = '';
+          continue;
+        }
+
+        // Check for bullet points or numbered items
         if (trimmed.match(/^[-•*]\s+/) || trimmed.match(/^\d+[.)]\s+/)) {
-          if (currentItem) items.push(currentItem.trim());
+          if (currentItem) {
+            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
+          }
           currentItem = trimmed.replace(/^[-•*]\s+/, '').replace(/^\d+[.)]\s+/, '');
         } else if (trimmed.match(/^#{1,4}\s+/) || trimmed.match(/^\*\*[^*]+\*\*/)) {
           // Headers - skip as grouping titles
-          if (currentItem) items.push(currentItem.trim());
+          if (currentItem) {
+            items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
+          }
           currentItem = '';
         } else if (trimmed && currentItem) {
           // Continuation of previous item
@@ -2256,19 +2753,20 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         }
       }
 
-      if (currentItem) items.push(currentItem.trim());
-
-      // If no structured items found, split by sentences
-      if (items.length === 0) {
-        const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-        sentences.forEach(s => {
-          const cleaned = s.trim();
-          if (cleaned.length > 20) items.push(cleaned);
-        });
+      if (currentItem) {
+        items.push({ text: currentItem.trim(), source: sectionLabels[currentSection] || '' });
       }
 
-      // Limit to reasonable number and filter short items
-      return items.filter(item => item.length > 15).slice(0, 15);
+      // Clean up markdown from text
+      return items
+        .filter(item => (item.text || '').length > 15)
+        .map(item => ({
+          text: (item.text || '')
+            .replace(/\*\*([^*]+)\*\*/g, '$1')
+            .replace(/\*([^*]+)\*/g, '$1'),
+          source: item.source
+        }))
+        .slice(0, 15);
     }
 
     function togglePriority(index) {
