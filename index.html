@@ -1015,24 +1015,24 @@
                 <label class="field-label" data-i18n="card_resources">Resources</label>
                 <select id="select-resources" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="abundance">Abundance</option>
-                  <option value="limits">Limits</option>
+                  <option value="Abundance">Abundance</option>
+                  <option value="Limits">Limits</option>
                 </select>
               </div>
               <div class="field-group">
                 <label class="field-label" data-i18n="card_system">System</label>
                 <select id="select-system" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="stable">Stable</option>
-                  <option value="breakdown">Breakdown</option>
+                  <option value="Stable">Stable</option>
+                  <option value="Breaks">Breaks</option>
                 </select>
               </div>
               <div class="field-group">
                 <label class="field-label" data-i18n="card_values">Values</label>
                 <select id="select-values" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="collective">Collective</option>
-                  <option value="individual">Individual</option>
+                  <option value="Collective">Collective</option>
+                  <option value="Individual">Individual</option>
                 </select>
               </div>
             </div>
@@ -1683,44 +1683,25 @@
     // ================================
     // Supabase Data Functions
     // ================================
-    async function fetchArchetypeMapping(resources, system, values) {
-      debugLog(`Fetching archetype for: ${resources}, ${system}, ${values}`);
+    async function fetchArchetypeContext(resources, system, values) {
+      debugLog(`Fetching archetype context for: ${resources}, ${system}, ${values}`);
 
       try {
-        // Table uses axis_a (resources), axis_b (system), axis_c (values)
+        // New combined table: archetype_context
+        // Columns: id, scenario_name, axis_a, axis_b, axis_d, archetype, key_vocabulary (JSONB), description
         const { data, error } = await supabaseClient
-          .from('Archetype_mapping')
+          .from('archetype_context')
           .select('*')
-          .ilike('axis_a', resources)
-          .ilike('axis_b', system)
-          .ilike('axis_c', values);
+          .eq('axis_a', resources)
+          .eq('axis_b', system)
+          .eq('axis_d', values);
 
         if (error) throw error;
 
-        debugLog(`Archetype mapping result: ${JSON.stringify(data)}`);
+        debugLog(`Archetype context result: ${JSON.stringify(data)}`);
         return data?.[0] || null;
       } catch (error) {
-        debugLog(`Error fetching archetype mapping: ${error.message}`);
-        return null;
-      }
-    }
-
-    async function fetchArchetypeDescription(archetypeId) {
-      debugLog(`Fetching description for archetype: ${archetypeId}`);
-
-      try {
-        // Table uses 'id' column for archetype identifier
-        const { data, error } = await supabaseClient
-          .from('Archetype description')
-          .select('*')
-          .eq('id', archetypeId);
-
-        if (error) throw error;
-
-        debugLog(`Archetype description result: ${JSON.stringify(data)}`);
-        return data?.[0] || null;
-      } catch (error) {
-        debugLog(`Error fetching archetype description: ${error.message}`);
+        debugLog(`Error fetching archetype context: ${error.message}`);
         return null;
       }
     }
@@ -1819,37 +1800,29 @@
       document.getElementById('archetype-summary').textContent = t('connecting');
 
       try {
-        // Get archetype mapping
-        const mapping = await fetchArchetypeMapping(resources, system, values);
+        // Get archetype context from combined table
+        const archetypeContext = await fetchArchetypeContext(resources, system, values);
 
-        if (!mapping) {
-          throw new Error('No archetype mapping found');
+        if (!archetypeContext) {
+          throw new Error('No archetype context found for this combination');
         }
 
-        // Mapping uses archetype_id and nuance_name/nuance_description
-        const archetypeId = mapping.archetype_id;
-        AppState.archetype = archetypeId;
-        AppState.archetypeMapping = mapping;
+        // Store in AppState for use in prompts
+        AppState.archetype = archetypeContext.archetype;
+        AppState.archetypeContext = archetypeContext;
 
-        // Get archetype description from the description table
-        const description = await fetchArchetypeDescription(archetypeId);
-        AppState.archetypeDescription = description;
-
-        // Display the archetype - simplified view
-        const displayName = description?.name || archetypeId;
-        const nuanceName = mapping.nuance_name;
-
-        // Create a one-sentence summary from the nuance description
-        const summary = getFirstSentence(mapping.nuance_description);
+        // Display the archetype - using new column names
+        const displayName = archetypeContext.scenario_name || archetypeContext.archetype;
+        const summary = getFirstSentence(archetypeContext.description);
 
         document.getElementById('archetype-name').textContent = displayName;
-        document.getElementById('archetype-nuance').textContent = nuanceName;
+        document.getElementById('archetype-nuance').textContent = archetypeContext.archetype;
         document.getElementById('archetype-summary').textContent = summary;
 
-        debugLog(`Archetype determined: ${archetypeId} (${nuanceName})`);
+        debugLog(`Archetype determined: ${archetypeContext.archetype} (${archetypeContext.scenario_name})`);
 
         // Generate scenario
-        await generateScenario(archetypeId, description, mapping);
+        await generateScenario(archetypeContext);
 
       } catch (error) {
         debugLog(`Error: ${error.message}`);
@@ -1870,7 +1843,7 @@
       return match ? match[0].trim() : text.substring(0, 150) + '...';
     }
 
-    async function generateScenario(archetypeId, archetypeDescription, mapping) {
+    async function generateScenario(archetypeContext) {
       debugLog('Generating scenario...');
 
       const scenarioEl = document.getElementById('scenario-result');
@@ -1890,13 +1863,7 @@
         debugLog(`Sector data: ${sectorData?.length || 0} items`);
 
         // Build the prompt for Gemini
-        const fullPrompt = buildScenarioPrompt(
-          promptData,
-          archetypeId,
-          archetypeDescription,
-          mapping,
-          sectorData
-        );
+        const fullPrompt = buildScenarioPrompt(promptData, archetypeContext, sectorData);
 
         debugLog('Sending prompt to Gemini...');
         debugLog(`Prompt length: ${fullPrompt.length} chars`);
@@ -1927,7 +1894,7 @@
       });
     }
 
-    function buildScenarioPrompt(promptData, archetypeId, archetypeDescription, mapping, sectorData) {
+    function buildScenarioPrompt(promptData, archetypeContext, sectorData) {
       // Get the card choices for context
       const resources = document.getElementById('select-resources').value;
       const system = document.getElementById('select-system').value;
@@ -1936,6 +1903,11 @@
       // Filter out quantum content for Phase 1 scenarios
       const filteredSectorData = filterOutQuantum(sectorData);
       debugLog(`Sector data: ${sectorData?.length || 0} total, ${filteredSectorData.length} after quantum filter`);
+
+      // Format key_vocabulary (JSONB array) as comma-separated string
+      const vocabulary = Array.isArray(archetypeContext?.key_vocabulary)
+        ? archetypeContext.key_vocabulary.join(', ')
+        : archetypeContext?.key_vocabulary || '';
 
       // Use the prompt from Supabase (column: prompt_text)
       const basePrompt = promptData?.prompt_text || `
@@ -1951,21 +1923,18 @@ INPUT DATA
 ═════════════════════════════════════════════════════════
 
 CARD CHOICES:
-- Resources: ${resources} (${mapping?.axis_a_label || ''})
-- System: ${system} (${mapping?.axis_b_label || ''})
-- Values: ${values} (${mapping?.axis_c_label || ''})
+- Resources: ${resources}
+- System: ${system}
+- Values: ${values}
 
-ARCHETYPE: ${archetypeDescription?.name || archetypeId}
-${archetypeDescription?.description || ''}
+SCENARIO: ${archetypeContext?.scenario_name || ''}
+ARCHETYPE: ${archetypeContext?.archetype || ''}
 
-SPECIFIC NUANCE: ${mapping?.nuance_name || ''}
-${mapping?.nuance_description || ''}
-
-WRITING GUIDANCE:
-${archetypeDescription?.writing_guidance || ''}
+ARCHETYPE DESCRIPTION:
+${archetypeContext?.description || ''}
 
 KEY VOCABULARY:
-${archetypeDescription?.key_vocabulary || ''}
+${vocabulary}
 
 SECTOR KNOWLEDGE (Dutch Ministry of Justice and Security - JenV):
 ${filteredSectorData.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
@@ -3096,14 +3065,14 @@ Tech Futures Explorer - Quantum Delta NL
           prompt = `Analyze this image of cards from a futures workshop.
 Identify the 3 binary choice cards shown:
 1. RESOURCES axis: Look for a card showing either "Abundance" or "Limits"
-2. SYSTEM axis: Look for a card showing either "Stable" or "Breakdown"
+2. SYSTEM axis: Look for a card showing either "Stable" or "Breaks"
 3. VALUES axis: Look for a card showing either "Collective" or "Individual"
 
 Respond in JSON format only:
 {
-  "resources": "abundance" or "limits",
-  "system": "stable" or "breakdown",
-  "values": "collective" or "individual",
+  "resources": "Abundance" or "Limits",
+  "system": "Stable" or "Breaks",
+  "values": "Collective" or "Individual",
   "confidence": "high", "medium", or "low"
 }
 
@@ -3190,15 +3159,15 @@ If you cannot identify a card clearly, use null for that value.`;
 
     function applyCardScanResults(result) {
       if (currentCameraPhase === 'phase1') {
-        // Apply Phase 1 results (lowercase values)
+        // Apply Phase 1 results (capitalized values match Supabase archetype_context)
         if (result.resources) {
-          document.getElementById('select-resources').value = result.resources.toLowerCase();
+          document.getElementById('select-resources').value = result.resources;
         }
         if (result.system) {
-          document.getElementById('select-system').value = result.system.toLowerCase();
+          document.getElementById('select-system').value = result.system;
         }
         if (result.values) {
-          document.getElementById('select-values').value = result.values.toLowerCase();
+          document.getElementById('select-values').value = result.values;
         }
         debugLog(`Phase 1 cards applied: resources=${result.resources}, system=${result.system}, values=${result.values}`);
       } else {
@@ -3236,9 +3205,9 @@ If you cannot identify a card clearly, use null for that value.`;
       const statusEl = document.getElementById('connection-status');
 
       try {
-        // Test Supabase connection by fetching archetype mappings
+        // Test Supabase connection by fetching archetype context
         const { data, error } = await supabaseClient
-          .from('Archetype_mapping')
+          .from('archetype_context')
           .select('*')
           .limit(1);
 
@@ -3249,7 +3218,7 @@ If you cannot identify a card clearly, use null for that value.`;
         debugLog('Connection test successful');
 
         // Log table info
-        debugLog(`Sample archetype mapping: ${JSON.stringify(data)}`);
+        debugLog(`Sample archetype context: ${JSON.stringify(data)}`);
 
       } catch (error) {
         statusEl.className = 'status-message error';
