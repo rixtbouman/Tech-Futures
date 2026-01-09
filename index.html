@@ -1688,7 +1688,7 @@
 
       try {
         // New combined table: archetype_context
-        // Columns: id, scenario_name, axis_a, axis_b, axis_d, archetype, key_vocabulary (JSONB), description
+        // Columns: id, scenario_name, axis_a, axis_b, axis_d, archetype, key_vocabulary (JSONB), description, opportunity, risk
         const { data, error } = await supabaseClient
           .from('archetype_context')
           .select('*')
@@ -1935,6 +1935,12 @@ ${archetypeContext?.description || ''}
 
 KEY VOCABULARY:
 ${vocabulary}
+
+OPPORTUNITY:
+${archetypeContext?.opportunity || ''}
+
+RISK/TENSION:
+${archetypeContext?.risk || ''}
 
 SECTOR KNOWLEDGE (Dutch Ministry of Justice and Security - JenV):
 ${filteredSectorData.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
