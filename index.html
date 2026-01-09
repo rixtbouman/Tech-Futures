@@ -1084,35 +1084,29 @@
               <div class="field-group">
                 <label class="field-label">Quantum Tech</label>
                 <select id="select-tech-quantum" class="btn">
-                  <option value="quantum_sensing">Quantum Sensing</option>
-                  <option value="quantum_computing">Quantum Computing</option>
-                  <option value="quantum_communication">Quantum Communication</option>
+                  <option value="quantum">Quantum</option>
                 </select>
               </div>
               <div class="field-group">
                 <label class="field-label">Technology 2</label>
                 <select id="select-tech-2" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="climate_tech">Climate Tech</option>
-                  <option value="biotech">Biotech</option>
-                  <option value="neurotech">Neurotech</option>
-                  <option value="space_tech">Space Tech</option>
-                  <option value="agi">AGI</option>
-                  <option value="asi">ASI</option>
-                  <option value="robotics">Robotics</option>
+                  <option value="Neuro tech">Neuro tech</option>
+                  <option value="AGI">AGI</option>
+                  <option value="Climate tech">Climate tech</option>
+                  <option value="Robotics">Robotics</option>
+                  <option value="Space tech">Space tech</option>
                 </select>
               </div>
               <div class="field-group">
                 <label class="field-label">Technology 3</label>
                 <select id="select-tech-3" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="climate_tech">Climate Tech</option>
-                  <option value="biotech">Biotech</option>
-                  <option value="neurotech">Neurotech</option>
-                  <option value="space_tech">Space Tech</option>
-                  <option value="agi">AGI</option>
-                  <option value="asi">ASI</option>
-                  <option value="robotics">Robotics</option>
+                  <option value="Neuro tech">Neuro tech</option>
+                  <option value="AGI">AGI</option>
+                  <option value="Climate tech">Climate tech</option>
+                  <option value="Robotics">Robotics</option>
+                  <option value="Space tech">Space tech</option>
                 </select>
               </div>
             </div>
@@ -2132,14 +2126,24 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       }
     });
 
-    async function fetchTechnologyKnowledge() {
-      debugLog('Fetching technology knowledge');
+    async function fetchTechnologyKnowledge(parentTechs = []) {
+      debugLog(`Fetching technology knowledge for: ${parentTechs.join(', ')}`);
       try {
+        // Filter out empty values
+        const validTechs = parentTechs.filter(t => t && t.trim());
+
+        if (validTechs.length === 0) {
+          debugLog('No technologies selected, returning empty array');
+          return [];
+        }
+
         const { data, error } = await supabaseClient
           .from('technology_knowledge')
-          .select('*');
+          .select('*')
+          .in('parent_tech', validTechs);
+
         if (error) throw error;
-        debugLog(`Technology knowledge fetched: ${data?.length || 0} items`);
+        debugLog(`Technology knowledge fetched: ${data?.length || 0} items for ${validTechs.length} parent_techs`);
         return data || [];
       } catch (error) {
         debugLog(`Error fetching technology knowledge: ${error.message}`);
@@ -2186,11 +2190,12 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       document.getElementById('whatif-questions-list').innerHTML = `<div style="text-align: center; padding: 1rem;"><span class="loading-spinner"></span></div>`;
 
       try {
-        // Fetch data from Supabase
+        // Fetch data from Supabase (filter tech knowledge by selected parent_techs)
+        const selectedTechs = [techQuantum, tech2, tech3];
         const [promptData, sectorData, techData] = await Promise.all([
           fetchPrompt('whatif_generation'),
           fetchSectorInfo(),
-          fetchTechnologyKnowledge()
+          fetchTechnologyKnowledge(selectedTechs)
         ]);
 
         // Build prompt
@@ -2217,6 +2222,35 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         btnEl.disabled = false;
         btnEl.textContent = t('generate_whatif');
       }
+    }
+
+    // Format technology knowledge data for prompts (grouped by parent_tech)
+    function formatTechDataForPrompt(techData) {
+      if (!techData || techData.length === 0) {
+        return 'Use general knowledge about the selected technologies.';
+      }
+
+      // Group by parent_tech
+      const grouped = {};
+      for (const item of techData) {
+        const parent = item.parent_tech || 'Other';
+        if (!grouped[parent]) grouped[parent] = [];
+        grouped[parent].push(item);
+      }
+
+      // Format each group
+      let result = '';
+      for (const [parent, items] of Object.entries(grouped)) {
+        result += `\n${parent.toUpperCase()}:\n`;
+        for (const item of items) {
+          const subUse = item.sub_use ? `[${item.sub_use}]` : '';
+          const category = item.category ? `(${item.category})` : '';
+          const title = item.title || '';
+          const desc = item.description || '';
+          result += `- ${subUse} ${title} ${category}: ${desc}\n`;
+        }
+      }
+      return result.trim();
     }
 
     function buildWhatIfPrompt(promptData, sectorData, techData) {
@@ -2258,7 +2292,7 @@ ARCHETYPE CONTEXT: ${AppState.archetypeDescription?.name || AppState.archetype}
 ${AppState.archetypeMapping?.nuance_description || ''}
 
 TECHNOLOGY KNOWLEDGE:
-${techData?.map(t => `- ${t.name || t.technology}: ${t.description || t.content || ''}`).join('\n') || 'Use general knowledge about the selected technologies.'}
+${formatTechDataForPrompt(techData)}
 
 SECTOR KNOWLEDGE (JenV):
 ${sectorData?.slice(0, 15).map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
@@ -2423,11 +2457,11 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       resultEl.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="loading-spinner"></span><br><br>${t('generating_consequences')}</div>`;
 
       try {
-        // Fetch data from Supabase
+        // Fetch data from Supabase (filter tech knowledge by selected parent_techs)
         const [promptData, sectorData, techData] = await Promise.all([
           fetchPrompt('consequence_generation'),
           fetchSectorInfo(),
-          fetchTechnologyKnowledge()
+          fetchTechnologyKnowledge(AppState.selectedTechnologies || [])
         ]);
 
         // Build prompt
@@ -2488,7 +2522,7 @@ ACTOR: ${formatTech(AppState.selectedActor)}
 TRIGGER: ${formatTech(AppState.selectedEvent)}
 
 TECHNOLOGY KNOWLEDGE:
-${techData?.map(t => `- ${t.name || t.technology}: ${t.description || t.content || ''}`).join('\n') || 'Use general knowledge about the selected technologies.'}
+${formatTechDataForPrompt(techData)}
 
 SECTOR KNOWLEDGE (JenV):
 ${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
