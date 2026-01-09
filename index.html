@@ -1406,8 +1406,7 @@
       currentPhase: 1,
       sessionId: null,
       archetype: null,
-      archetypeMapping: null,
-      archetypeDescription: null,
+      archetypeContext: null,
       scenario: null,
       selectedTechnologies: [],
       selectedActor: null,
@@ -2263,8 +2262,8 @@ ACTOR: ${formatTech(actor)}
 
 TRIGGER EVENT: ${formatTech(event)}
 
-ARCHETYPE CONTEXT: ${AppState.archetypeDescription?.name || AppState.archetype}
-${AppState.archetypeMapping?.nuance_description || ''}
+ARCHETYPE CONTEXT: ${AppState.archetypeContext?.scenario_name || AppState.archetype}
+${AppState.archetypeContext?.description || ''}
 
 TECHNOLOGY KNOWLEDGE:
 ${formatTechDataForPrompt(techData)}
@@ -2482,11 +2481,8 @@ ${AppState.selectedWhatIf}
 PHASE 1 SCENARIO:
 ${AppState.scenario || 'No scenario available'}
 
-ARCHETYPE: ${AppState.archetypeDescription?.name || AppState.archetype}
-${AppState.archetypeDescription?.description || ''}
-
-NUANCE: ${AppState.archetypeMapping?.nuance_name || ''}
-${AppState.archetypeMapping?.nuance_description || ''}
+ARCHETYPE: ${AppState.archetypeContext?.scenario_name || AppState.archetype}
+${AppState.archetypeContext?.description || ''}
 
 SELECTED TECHNOLOGIES:
 1. ${formatTech(techQuantum)}
@@ -2657,10 +2653,10 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
 
       document.getElementById('summary-archetype').textContent =
-        AppState.archetypeDescription?.name || AppState.archetype || '-';
+        AppState.archetypeContext?.scenario_name || AppState.archetype || '-';
 
       document.getElementById('summary-nuance').textContent =
-        AppState.archetypeMapping?.nuance_name || '';
+        AppState.archetypeContext?.archetype || '';
 
       document.getElementById('summary-scenario').textContent =
         (AppState.scenario || '-').substring(0, 500) + (AppState.scenario?.length > 500 ? '...' : '');
@@ -2707,8 +2703,8 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 TECH FUTURES EXPLORER - ${lang === 'nl' ? 'SESSIE RAPPORT' : 'SESSION REPORT'}
 ═══════════════════════════════════════════════════════════════
 
-${lang === 'nl' ? 'ARCHETYPE' : 'ARCHETYPE'}: ${AppState.archetypeDescription?.name || AppState.archetype}
-${lang === 'nl' ? 'Nuance' : 'Nuance'}: ${AppState.archetypeMapping?.nuance_name || '-'}
+${lang === 'nl' ? 'SCENARIO' : 'SCENARIO'}: ${AppState.archetypeContext?.scenario_name || '-'}
+${lang === 'nl' ? 'ARCHETYPE' : 'ARCHETYPE'}: ${AppState.archetypeContext?.archetype || AppState.archetype || '-'}
 
 ───────────────────────────────────────────────────────────────
 ${lang === 'nl' ? 'SCENARIO' : 'SCENARIO'}
@@ -2838,8 +2834,8 @@ Tech Futures Explorer - Quantum Delta NL
           name: sessionName,
           language: AppState.language,
           archetype_id: AppState.archetype,
-          archetype_name: AppState.archetypeDescription?.name,
-          nuance_name: AppState.archetypeMapping?.nuance_name,
+          scenario_name: AppState.archetypeContext?.scenario_name,
+          archetype_name: AppState.archetypeContext?.archetype,
           scenario: AppState.scenario,
           technologies: AppState.selectedTechnologies,
           actor: AppState.selectedActor,
@@ -2876,8 +2872,7 @@ Tech Futures Explorer - Quantum Delta NL
       // Reset AppState
       AppState.currentPhase = 1;
       AppState.archetype = null;
-      AppState.archetypeMapping = null;
-      AppState.archetypeDescription = null;
+      AppState.archetypeContext = null;
       AppState.scenario = null;
       AppState.selectedTechnologies = [];
       AppState.selectedActor = null;
