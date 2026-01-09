@@ -3111,17 +3111,17 @@ If you cannot identify a card clearly, use null for that value.`;
         } else {
           prompt = `Analyze this image of cards from a futures workshop.
 Identify 5 cards shown:
-1. QUANTUM TECHNOLOGY: One of "quantum_sensing", "quantum_computing", or "quantum_communication"
-2. TECHNOLOGY 2: One of "climate_tech", "biotech", "neurotech", "space_tech", "agi", "asi", "robotics"
-3. TECHNOLOGY 3: One of "climate_tech", "biotech", "neurotech", "space_tech", "agi", "asi", "robotics"
+1. QUANTUM TECHNOLOGY: Always "quantum" (this is fixed)
+2. TECHNOLOGY 2: One of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech"
+3. TECHNOLOGY 3: One of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech"
 4. ACTOR: One of "criminal_networks", "foreign_states", "big_tech", "research_institutions", "ngos", "citizens", "journalists", "startups", "insurance_companies"
 5. TRIGGER EVENT: One of "major_breakthrough", "security_breach", "regulatory_shift", "talent_exodus", "international_treaty", "maturity_tipping_point", "loss_of_control", "public_scandal", "market_collapse"
 
 Respond in JSON format only:
 {
-  "quantum_tech": "quantum_sensing" or "quantum_computing" or "quantum_communication",
-  "tech_2": one of the technology values,
-  "tech_3": one of the technology values,
+  "quantum_tech": "quantum",
+  "tech_2": one of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech",
+  "tech_3": one of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech",
   "actor": one of the actor values,
   "event": one of the event values,
   "confidence": "high", "medium", or "low"
@@ -3190,7 +3190,7 @@ If you cannot identify a card clearly, use null for that value.`;
 
     function applyCardScanResults(result) {
       if (currentCameraPhase === 'phase1') {
-        // Apply Phase 1 results
+        // Apply Phase 1 results (lowercase values)
         if (result.resources) {
           document.getElementById('select-resources').value = result.resources.toLowerCase();
         }
@@ -3203,15 +3203,18 @@ If you cannot identify a card clearly, use null for that value.`;
         debugLog(`Phase 1 cards applied: resources=${result.resources}, system=${result.system}, values=${result.values}`);
       } else {
         // Apply Phase 2 results
+        // Quantum is always "quantum"
         if (result.quantum_tech) {
-          document.getElementById('select-tech-quantum').value = result.quantum_tech.toLowerCase();
+          document.getElementById('select-tech-quantum').value = 'quantum';
         }
+        // Tech 2 & 3 use exact case-sensitive values (match Supabase parent_tech)
         if (result.tech_2) {
-          document.getElementById('select-tech-2').value = result.tech_2.toLowerCase();
+          document.getElementById('select-tech-2').value = result.tech_2;
         }
         if (result.tech_3) {
-          document.getElementById('select-tech-3').value = result.tech_3.toLowerCase();
+          document.getElementById('select-tech-3').value = result.tech_3;
         }
+        // Actor and event use lowercase values
         if (result.actor) {
           document.getElementById('select-actor').value = result.actor.toLowerCase();
           // Hide custom input if visible
