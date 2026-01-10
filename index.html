@@ -1091,22 +1091,22 @@
                 <label class="field-label">Technology 2</label>
                 <select id="select-tech-2" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="Neuro tech">Neuro tech</option>
                   <option value="AGI">AGI</option>
-                  <option value="Climate tech">Climate tech</option>
+                  <option value="Neuro tech">Neuro tech</option>
+                  <option value="biotech">biotech</option>
                   <option value="Robotics">Robotics</option>
-                  <option value="Space tech">Space tech</option>
+                  <option value="Climate tech">Climate tech</option>
                 </select>
               </div>
               <div class="field-group">
                 <label class="field-label">Technology 3</label>
                 <select id="select-tech-3" class="btn">
                   <option value="" data-i18n="select_placeholder">-- Kies --</option>
-                  <option value="Neuro tech">Neuro tech</option>
                   <option value="AGI">AGI</option>
-                  <option value="Climate tech">Climate tech</option>
+                  <option value="Neuro tech">Neuro tech</option>
+                  <option value="biotech">biotech</option>
                   <option value="Robotics">Robotics</option>
-                  <option value="Space tech">Space tech</option>
+                  <option value="Climate tech">Climate tech</option>
                 </select>
               </div>
             </div>
@@ -1413,6 +1413,7 @@
       selectedEvent: null,
       whatIfQuestions: [],
       selectedWhatIf: null,
+      selectedWhatIfTechs: [],
       consequences: null,
       strategicPriorities: [],
       strategicNotes: '',
@@ -1942,7 +1943,7 @@ RISK/TENSION:
 ${archetypeContext?.risk || ''}
 
 SECTOR KNOWLEDGE (Dutch Ministry of Justice and Security - JenV):
-${filteredSectorData.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
+${filteredSectorData.map(s => `- [${s.category || 'General'}] ${s.title}: ${s.content}`).join('\n') || 'Focus on justice, security, and law enforcement.'}
 
 OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
 `;
@@ -2125,6 +2126,56 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       }
     }
 
+    // Phase 2: Fetch ALL applications + ALL key concepts for 3 selected parent_techs
+    async function fetchTechKnowledgeForWhatIf(parentTechs = []) {
+      debugLog(`Fetching tech knowledge for What-If (applications + key concepts): ${parentTechs.join(', ')}`);
+      try {
+        const validTechs = parentTechs.filter(t => t && t.trim());
+        if (validTechs.length === 0) {
+          debugLog('No technologies selected, returning empty array');
+          return [];
+        }
+
+        const { data, error } = await supabaseClient
+          .from('technology_knowledge')
+          .select('*')
+          .in('parent_tech', validTechs)
+          .in('category', ['applications', 'key concepts']);
+
+        if (error) throw error;
+        debugLog(`What-If tech knowledge fetched: ${data?.length || 0} items (applications + key concepts)`);
+        return data || [];
+      } catch (error) {
+        debugLog(`Error fetching What-If tech knowledge: ${error.message}`);
+        return [];
+      }
+    }
+
+    // Phase 3: Fetch ALL applications + ELSA + critical materials + key concepts for 2 selected parent_techs
+    async function fetchTechKnowledgeForConsequences(parentTechs = []) {
+      debugLog(`Fetching tech knowledge for Consequences (full context): ${parentTechs.join(', ')}`);
+      try {
+        const validTechs = parentTechs.filter(t => t && t.trim());
+        if (validTechs.length === 0) {
+          debugLog('No technologies selected, returning empty array');
+          return [];
+        }
+
+        const { data, error } = await supabaseClient
+          .from('technology_knowledge')
+          .select('*')
+          .in('parent_tech', validTechs)
+          .in('category', ['applications', 'ELSA', 'critical materials', 'key concepts']);
+
+        if (error) throw error;
+        debugLog(`Consequences tech knowledge fetched: ${data?.length || 0} items (full context)`);
+        return data || [];
+      } catch (error) {
+        debugLog(`Error fetching Consequences tech knowledge: ${error.message}`);
+        return [];
+      }
+    }
+
     async function generateWhatIfQuestions() {
       // Get selections
       const techQuantum = document.getElementById('select-tech-quantum').value;
@@ -2165,11 +2216,12 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       try {
         // Fetch data from Supabase (filter tech knowledge by selected parent_techs)
+        // Phase 2: ALL applications + ALL key concepts for 3 selected techs
         const selectedTechs = [techQuantum, tech2, tech3];
         const [promptData, sectorData, techData] = await Promise.all([
           fetchPrompt('whatif_generation'),
           fetchSectorInfo(),
-          fetchTechnologyKnowledge(selectedTechs)
+          fetchTechKnowledgeForWhatIf(selectedTechs)
         ]);
 
         // Build prompt
@@ -2282,7 +2334,7 @@ ${formatTechDataForPrompt(techData)}
 ───────────────────────────────────────────────────────
 
 SECTOR KNOWLEDGE (JenV):
-${sectorData?.slice(0, 15).map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
+${sectorData?.map(s => `- [${s.category || 'General'}] ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
 
 OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
 `;
@@ -2423,12 +2475,18 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       const customInput = document.getElementById('input-custom-whatif').value.trim();
 
       let selectedQuestion = null;
+      let selectedTechs = null;
 
       if (customInput) {
         selectedQuestion = customInput;
+        // For custom questions, use all 3 selected technologies
+        selectedTechs = AppState.selectedTechnologies || [];
       } else if (selectedRadio) {
         const index = parseInt(selectedRadio.value);
-        selectedQuestion = AppState.whatIfQuestions[index]?.text;
+        const questionObj = AppState.whatIfQuestions[index];
+        selectedQuestion = questionObj?.text;
+        // Get the 2 techs from the selected question
+        selectedTechs = questionObj?.techs || [];
       }
 
       if (!selectedQuestion) {
@@ -2437,7 +2495,9 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       }
 
       AppState.selectedWhatIf = selectedQuestion;
+      AppState.selectedWhatIfTechs = selectedTechs;
       debugLog(`Selected what-if: ${selectedQuestion}`);
+      debugLog(`Selected what-if techs: ${selectedTechs?.join(', ')}`);
 
       // Navigate to Phase 3 and generate consequences
       goToPhase(3);
@@ -2461,11 +2521,16 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       resultEl.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="loading-spinner"></span><br><br>${t('generating_consequences')}</div>`;
 
       try {
-        // Fetch data from Supabase (filter tech knowledge by selected parent_techs)
+        // Fetch data from Supabase
+        // Phase 3: ALL applications + ELSA + critical materials + key concepts
+        // Only for the 2 techs from the selected what-if question (or all 3 for custom questions)
+        const techsForConsequences = AppState.selectedWhatIfTechs || AppState.selectedTechnologies || [];
+        debugLog(`Fetching tech knowledge for consequences: ${techsForConsequences.join(', ')}`);
+
         const [promptData, sectorData, techData] = await Promise.all([
           fetchPrompt('consequence_generation'),
           fetchSectorInfo(),
-          fetchTechnologyKnowledge(AppState.selectedTechnologies || [])
+          fetchTechKnowledgeForConsequences(techsForConsequences)
         ]);
 
         // Build prompt
@@ -2539,7 +2604,7 @@ ${formatTechDataForPrompt(techData)}
 ───────────────────────────────────────────────────────
 
 SECTOR KNOWLEDGE (JenV):
-${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
+${sectorData?.map(s => `- [${s.category || 'General'}] ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
 
 OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'}
 `;
@@ -2922,6 +2987,7 @@ Tech Futures Explorer - Quantum Delta NL
       AppState.selectedEvent = null;
       AppState.whatIfQuestions = [];
       AppState.selectedWhatIf = null;
+      AppState.selectedWhatIfTechs = [];
       AppState.consequences = null;
       AppState.strategicPriorities = [];
       AppState.strategicNotes = '';
@@ -3125,16 +3191,16 @@ If you cannot identify a card clearly, use null for that value.`;
           prompt = `Analyze this image of cards from a futures workshop.
 Identify 5 cards shown:
 1. QUANTUM TECHNOLOGY: Always "quantum" (this is fixed)
-2. TECHNOLOGY 2: One of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech"
-3. TECHNOLOGY 3: One of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech"
+2. TECHNOLOGY 2: One of "AGI", "Neuro tech", "biotech", "Robotics", "Climate tech"
+3. TECHNOLOGY 3: One of "AGI", "Neuro tech", "biotech", "Robotics", "Climate tech"
 4. ACTOR: One of "criminal_networks", "foreign_states", "big_tech", "research_institutions", "ngos", "citizens", "journalists", "startups", "insurance_companies"
 5. TRIGGER EVENT: One of "major_breakthrough", "security_breach", "regulatory_shift", "talent_exodus", "international_treaty", "maturity_tipping_point", "loss_of_control", "public_scandal", "market_collapse"
 
 Respond in JSON format only:
 {
   "quantum_tech": "quantum",
-  "tech_2": one of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech",
-  "tech_3": one of "Neuro tech", "AGI", "Climate tech", "Robotics", "Space tech",
+  "tech_2": one of "AGI", "Neuro tech", "biotech", "Robotics", "Climate tech",
+  "tech_3": one of "AGI", "Neuro tech", "biotech", "Robotics", "Climate tech",
   "actor": one of the actor values,
   "event": one of the event values,
   "confidence": "high", "medium", or "low"
