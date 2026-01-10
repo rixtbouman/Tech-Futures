@@ -21,9 +21,11 @@
     :root {
       /* Core Colors */
       --black: #000000;
-      --blue: #0000FF;
-      --red: #FF0000;
+      --blue: #2563EB;
       --white: #FFFFFF;
+
+      /* Accent Colors */
+      --error: #9333EA;
 
       /* Background Colors */
       --bg-page: #F5F5F5;
@@ -1426,7 +1428,7 @@
           </div>
 
           <!-- Error message -->
-          <p id="phase4-error" class="body-text controller-only" style="color: red; text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
+          <p id="phase4-error" class="body-text controller-only" style="color: var(--error); text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
             Vul minimaal 2 inzichten in
           </p>
 
@@ -1449,7 +1451,7 @@
           <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1.5rem;">
             <label class="small-label" data-i18n="team_name_label">Wat is de naam van jullie team van Futuristen?</label>
             <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
-            <p id="team-name-error" class="body-text" style="color: red; margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in om te exporteren</p>
+            <p id="team-name-error" class="body-text" style="color: var(--error); margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in om te exporteren</p>
           </div>
 
           <!-- Session Summary -->
@@ -1457,7 +1459,7 @@
             <p class="small-label" data-i18n="session_summary">Sessie Samenvatting</p>
 
             <!-- 1. Foundation: Binary choices + Archetype -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
               <p class="small-label" style="color: var(--blue);" data-i18n="section_foundation">DE BASIS</p>
               <div style="margin-top: 0.5rem;">
                 <p class="body-text" style="margin-bottom: 0.25rem;"><strong data-i18n="label_resources">Resources:</strong> <span id="summary-resources"></span></p>
@@ -1468,14 +1470,14 @@
             </div>
 
             <!-- 2. The World: Full scenario -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
               <p class="small-label" style="color: var(--magenta);" data-i18n="section_world">DE WERELD</p>
               <p class="body-text" id="summary-scenario" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto;"></p>
             </div>
 
             <!-- 3. The Disruption: Technologies + Actor + Trigger -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--red);" data-i18n="section_disruption">DE DISRUPTIE</p>
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
+              <p class="small-label" style="color: var(--magenta);" data-i18n="section_disruption">DE DISRUPTIE</p>
               <div style="margin-top: 0.5rem;">
                 <p class="body-text" style="margin-bottom: 0.25rem;"><strong data-i18n="label_technologies">Technologies:</strong> <span id="summary-techs"></span></p>
                 <p class="body-text" style="margin-bottom: 0.25rem;"><strong>Actor:</strong> <span id="summary-actor"></span></p>
@@ -1484,23 +1486,23 @@
             </div>
 
             <!-- 4. The Provocation: All 3 what-if questions -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
               <p class="small-label" style="color: var(--blue);" data-i18n="section_provocation">DE PROVOCATIE</p>
               <div id="summary-whatif-questions" style="margin-top: 0.5rem;"></div>
-              <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--black);">
+              <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #D1D5DB;">
                 <p class="body-text" style="font-weight: 700;" data-i18n="selected_question">Gekozen vraag:</p>
                 <p class="body-text" id="summary-selected-whatif" style="margin-top: 0.25rem; font-style: italic;"></p>
               </div>
             </div>
 
             <!-- 5. Consequences -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
               <p class="small-label" style="color: var(--magenta);" data-i18n="section_consequences">DE CONSEQUENTIES</p>
               <div id="summary-consequences" style="margin-top: 0.5rem; max-height: 250px; overflow-y: auto;"></div>
             </div>
 
             <!-- 6. The Strategy: Strategic insights -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid #E5E7EB;">
               <p class="small-label" style="color: var(--blue);" data-i18n="section_strategy">DE STRATEGIE</p>
               <div id="summary-insights" style="margin-top: 0.5rem;"></div>
             </div>
