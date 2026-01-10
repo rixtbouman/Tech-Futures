@@ -1933,6 +1933,8 @@
       } else if (phase === 3) {
         // Show consequences if they exist
         if (AppState.consequences) {
+          const consequencesResult = document.getElementById('consequences-result');
+          if (consequencesResult) consequencesResult.style.display = 'block';
           document.getElementById('consequences-text').innerHTML = formatConsequencesOutput(AppState.consequences);
         }
       }
@@ -2177,21 +2179,43 @@
     function handleRealtimeUpdate(newData) {
       if (AppState.role !== 'viewer') return; // Controllers don't receive updates
 
-      if (newData.app_state) {
-        const previousPhase = AppState.currentPhase;
+      debugLog('Realtime update received:', JSON.stringify(newData).substring(0, 500));
+      debugLog('Has consequences:', !!newData.app_state?.consequences);
+      debugLog('Current phase from DB:', newData.current_phase);
+
+      // Parse app_state if it's a string (JSONB might come as string)
+      let appStateData = newData.app_state;
+      if (typeof appStateData === 'string') {
+        try {
+          appStateData = JSON.parse(appStateData);
+        } catch (e) {
+          debugLog('Error parsing app_state:', e.message);
+          return;
+        }
+      }
+
+      if (appStateData) {
+        const previousPhase = parseInt(AppState.currentPhase) || 1;
+        const newPhase = parseInt(newData.current_phase) || parseInt(appStateData.currentPhase) || 1;
 
         // Update AppState with new data, preserving viewer role
-        Object.assign(AppState, newData.app_state);
+        Object.assign(AppState, appStateData);
         AppState.role = 'viewer';
         AppState.groupCode = newData.group_code;
+        AppState.currentPhase = newPhase;
 
         // Update UI if phase changed
-        if (newData.current_phase !== previousPhase) {
-          goToPhase(newData.current_phase);
+        if (newPhase !== previousPhase) {
+          debugLog(`Phase changed from ${previousPhase} to ${newPhase}`);
+          goToPhase(newPhase);
         }
 
         // Update displayed content
         updateViewerDisplay();
+
+        // Always reinitialize current phase to ensure content is shown
+        if (newPhase === 4) initPhase4();
+        if (newPhase === 5) initPhase5();
 
         debugLog('Viewer state updated from realtime');
       }
@@ -2281,10 +2305,15 @@
         if (selectedWhatIfEl) selectedWhatIfEl.textContent = whatIfDisplay;
       }
 
-      // Update consequences
+      // Update consequences - ensure visibility
       if (AppState.consequences) {
+        const consequencesResult = document.getElementById('consequences-result');
         const consequencesEl = document.getElementById('consequences-text');
-        if (consequencesEl) consequencesEl.innerHTML = formatConsequencesOutput(AppState.consequences);
+        if (consequencesResult) consequencesResult.style.display = 'block';
+        if (consequencesEl) {
+          consequencesEl.innerHTML = formatConsequencesOutput(AppState.consequences);
+          debugLog('Viewer: consequences updated');
+        }
       }
 
       // Update strategic insights - show in viewer display div
@@ -2300,9 +2329,10 @@
         }
       }
 
-      // Update summary if on phase 5
-      if (AppState.currentPhase === 5) {
+      // Update summary if on phase 5 (use parseInt for type safety)
+      if (parseInt(AppState.currentPhase) === 5) {
         initPhase5();
+        debugLog('Viewer: Phase 5 summary initialized');
       }
 
       // Update team name if present
