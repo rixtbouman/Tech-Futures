@@ -1256,46 +1256,64 @@
           <div class="card-header">
             <span class="label" data-i18n="phase5_title">Fase 5: Export & Opslaan</span>
           </div>
-          <p class="body-text" data-i18n="phase5_intro">
-            Bekijk de volledige sessie samenvatting en exporteer of sla op voor later gebruik.
-          </p>
+
+          <!-- Team Name Input (Required) -->
+          <div class="card" style="background: var(--bg-blue); margin-top: 1.5rem;">
+            <label class="small-label" data-i18n="team_name_label">Wat is de naam van jullie team van Futuristen?</label>
+            <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
+            <p id="team-name-error" class="body-text" style="color: red; margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in om te exporteren</p>
+          </div>
 
           <!-- Session Summary -->
-          <div id="session-summary" class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+          <div id="session-summary" class="card" style="background: var(--bg-grey); margin-top: 1rem;">
             <p class="small-label" data-i18n="session_summary">Sessie Samenvatting</p>
 
-            <!-- Archetype & Scenario -->
+            <!-- 1. Foundation: Binary choices + Archetype -->
             <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--blue);">ARCHETYPE</p>
-              <p class="sub-headline" id="summary-archetype"></p>
-              <p class="body-text" id="summary-nuance" style="margin-top: 0.25rem; font-size: 0.875rem; opacity: 0.8;"></p>
-            </div>
-
-            <!-- Scenario Preview -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--magenta);">SCENARIO</p>
-              <p class="body-text" id="summary-scenario" style="margin-top: 0.5rem; max-height: 150px; overflow-y: auto;"></p>
-            </div>
-
-            <!-- What-If Question -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--blue);">WHAT-IF</p>
-              <p class="body-text" id="summary-whatif" style="margin-top: 0.5rem;"></p>
-            </div>
-
-            <!-- Technologies & Context -->
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--red);">CONTEXT</p>
+              <p class="small-label" style="color: var(--blue);" data-i18n="section_foundation">DE BASIS</p>
               <div style="margin-top: 0.5rem;">
-                <p class="body-text" style="margin-bottom: 0.25rem;"><strong>Technologies:</strong> <span id="summary-techs"></span></p>
+                <p class="body-text" style="margin-bottom: 0.25rem;"><strong data-i18n="label_resources">Resources:</strong> <span id="summary-resources"></span></p>
+                <p class="body-text" style="margin-bottom: 0.25rem;"><strong data-i18n="label_system">System:</strong> <span id="summary-system"></span></p>
+                <p class="body-text" style="margin-bottom: 0.5rem;"><strong data-i18n="label_values">Values:</strong> <span id="summary-values"></span></p>
+                <p class="body-text"><strong data-i18n="label_archetype">Archetype:</strong> <span id="summary-archetype"></span></p>
+              </div>
+            </div>
+
+            <!-- 2. The World: Full scenario -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--magenta);" data-i18n="section_world">DE WERELD</p>
+              <p class="body-text" id="summary-scenario" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto;"></p>
+            </div>
+
+            <!-- 3. The Disruption: Technologies + Actor + Trigger -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--red);" data-i18n="section_disruption">DE DISRUPTIE</p>
+              <div style="margin-top: 0.5rem;">
+                <p class="body-text" style="margin-bottom: 0.25rem;"><strong data-i18n="label_technologies">Technologies:</strong> <span id="summary-techs"></span></p>
                 <p class="body-text" style="margin-bottom: 0.25rem;"><strong>Actor:</strong> <span id="summary-actor"></span></p>
                 <p class="body-text"><strong>Trigger:</strong> <span id="summary-trigger"></span></p>
               </div>
             </div>
 
-            <!-- Strategic Insights -->
+            <!-- 4. The Provocation: All 3 what-if questions -->
             <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--magenta);" data-i18n="strategic_insights_label">STRATEGISCHE INZICHTEN</p>
+              <p class="small-label" style="color: var(--blue);" data-i18n="section_provocation">DE PROVOCATIE</p>
+              <div id="summary-whatif-questions" style="margin-top: 0.5rem;"></div>
+              <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--black);">
+                <p class="body-text" style="font-weight: 700;" data-i18n="selected_question">Gekozen vraag:</p>
+                <p class="body-text" id="summary-selected-whatif" style="margin-top: 0.25rem; font-style: italic;"></p>
+              </div>
+            </div>
+
+            <!-- 5. Consequences -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--magenta);" data-i18n="section_consequences">DE CONSEQUENTIES</p>
+              <div id="summary-consequences" style="margin-top: 0.5rem; max-height: 250px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- 6. The Strategy: Strategic insights -->
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
+              <p class="small-label" style="color: var(--blue);" data-i18n="section_strategy">DE STRATEGIE</p>
               <div id="summary-insights" style="margin-top: 0.5rem;"></div>
             </div>
           </div>
@@ -1316,10 +1334,6 @@
           <!-- Save to Database -->
           <div class="card" style="background: var(--bg-magenta); margin-top: 1rem;">
             <p class="small-label" data-i18n="save_session">Sessie Opslaan</p>
-            <div style="margin-top: 0.75rem;">
-              <label class="small-label" data-i18n="session_name">Sessie Naam</label>
-              <input type="text" id="input-session-name" class="btn" placeholder="Geef een naam aan deze sessie..." style="width: 100%; margin-top: 0.5rem; text-transform: none;">
-            </div>
             <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="saveSession()" id="btn-save-session" data-i18n="save_to_database">
               Opslaan in Database
             </button>
@@ -1418,6 +1432,7 @@
       selectedWhatIfTechs: [],
       consequences: null,
       strategicInsights: [],
+      teamName: '',
       savedSessionId: null
     };
 
@@ -1489,14 +1504,26 @@
         continue_phase5: 'Verder naar Export',
         // Phase 5
         phase5_title: 'Fase 5: Export & Opslaan',
-        phase5_intro: 'Bekijk de volledige sessie samenvatting en exporteer of sla op voor later gebruik.',
+        team_name_label: 'Wat is de naam van jullie team van Futuristen?',
+        team_name_placeholder: 'Team naam...',
+        team_name_required: 'Vul een teamnaam in om te exporteren',
         session_summary: 'Sessie Samenvatting',
-        strategic_insights_label: 'STRATEGISCHE INZICHTEN',
+        section_foundation: 'DE BASIS',
+        section_world: 'DE WERELD',
+        section_disruption: 'DE DISRUPTIE',
+        section_provocation: 'DE PROVOCATIE',
+        section_consequences: 'DE CONSEQUENTIES',
+        section_strategy: 'DE STRATEGIE',
+        label_resources: 'Resources:',
+        label_system: 'System:',
+        label_values: 'Values:',
+        label_archetype: 'Archetype:',
+        label_technologies: 'Technologieën:',
+        selected_question: 'Gekozen vraag:',
         export_options: 'Export Opties',
         export_pdf: 'Download PDF',
         copy_summary: 'Kopieer Tekst',
         save_session: 'Sessie Opslaan',
-        session_name: 'Sessie Naam',
         save_to_database: 'Opslaan in Database',
         start_new: 'Start Nieuwe Sessie',
         copied_success: 'Gekopieerd naar klembord!',
@@ -1561,14 +1588,26 @@
         continue_phase5: 'Continue to Export',
         // Phase 5
         phase5_title: 'Phase 5: Export & Save',
-        phase5_intro: 'Review the full session summary and export or save for later use.',
+        team_name_label: 'What is the name of your team of Futurists?',
+        team_name_placeholder: 'Team name...',
+        team_name_required: 'Enter a team name to export',
         session_summary: 'Session Summary',
-        strategic_insights_label: 'STRATEGIC INSIGHTS',
+        section_foundation: 'THE FOUNDATION',
+        section_world: 'THE WORLD',
+        section_disruption: 'THE DISRUPTION',
+        section_provocation: 'THE PROVOCATION',
+        section_consequences: 'THE CONSEQUENCES',
+        section_strategy: 'THE STRATEGY',
+        label_resources: 'Resources:',
+        label_system: 'System:',
+        label_values: 'Values:',
+        label_archetype: 'Archetype:',
+        label_technologies: 'Technologies:',
+        selected_question: 'Selected question:',
         export_options: 'Export Options',
         export_pdf: 'Download PDF',
         copy_summary: 'Copy Text',
         save_session: 'Save Session',
-        session_name: 'Session Name',
         save_to_database: 'Save to Database',
         start_new: 'Start New Session',
         copied_success: 'Copied to clipboard!',
@@ -2662,31 +2701,63 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     function initPhase5() {
       debugLog('Initializing Phase 5...');
 
-      // Populate summary
       const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
 
+      // Restore team name if exists
+      document.getElementById('input-team-name').value = AppState.teamName || '';
+      document.getElementById('team-name-error').style.display = 'none';
+
+      // 1. Foundation: Binary choices + Archetype
+      document.getElementById('summary-resources').textContent =
+        AppState.archetypeContext?.axis_a || document.getElementById('select-resources')?.value || '-';
+      document.getElementById('summary-system').textContent =
+        AppState.archetypeContext?.axis_b || document.getElementById('select-system')?.value || '-';
+      document.getElementById('summary-values').textContent =
+        AppState.archetypeContext?.axis_d || document.getElementById('select-values')?.value || '-';
       document.getElementById('summary-archetype').textContent =
-        AppState.archetypeContext?.scenario_name || AppState.archetype || '-';
+        `${AppState.archetypeContext?.scenario_name || ''} (${AppState.archetypeContext?.archetype || ''})`;
 
-      document.getElementById('summary-nuance').textContent =
-        AppState.archetypeContext?.archetype || '';
+      // 2. The World: Full scenario
+      document.getElementById('summary-scenario').textContent = AppState.scenario || '-';
 
-      document.getElementById('summary-scenario').textContent =
-        (AppState.scenario || '-').substring(0, 500) + (AppState.scenario?.length > 500 ? '...' : '');
-
-      document.getElementById('summary-whatif').textContent =
-        AppState.selectedWhatIf || '-';
-
+      // 3. The Disruption: Technologies + Actor + Trigger
       document.getElementById('summary-techs').textContent =
         AppState.selectedTechnologies.map(formatTech).join(', ') || '-';
-
       document.getElementById('summary-actor').textContent =
         formatTech(AppState.selectedActor) || '-';
-
       document.getElementById('summary-trigger').textContent =
         formatTech(AppState.selectedEvent) || '-';
 
-      // Strategic insights
+      // 4. The Provocation: All 3 what-if questions + selected
+      const whatIfContainer = document.getElementById('summary-whatif-questions');
+      if (AppState.whatIfQuestions && AppState.whatIfQuestions.length > 0) {
+        whatIfContainer.innerHTML = AppState.whatIfQuestions.map((q, i) => {
+          const isSelected = q.text === AppState.selectedWhatIf;
+          const techHeader = (q.techs || []).join(' + ');
+          return `
+            <div style="margin-bottom: 0.5rem; ${isSelected ? 'background: var(--bg-blue); padding: 0.5rem; border-radius: 4px;' : ''}">
+              <p class="body-text" style="font-size: 0.8rem; color: var(--blue); font-weight: 600;">${techHeader}</p>
+              <p class="body-text">${i + 1}. ${q.text || ''}</p>
+            </div>
+          `;
+        }).join('');
+      } else {
+        whatIfContainer.innerHTML = '<p class="body-text" style="opacity: 0.7;">-</p>';
+      }
+      document.getElementById('summary-selected-whatif').textContent = AppState.selectedWhatIf || '-';
+
+      // 5. Consequences
+      const consequencesEl = document.getElementById('summary-consequences');
+      if (AppState.consequences) {
+        // Simple markdown-like formatting
+        consequencesEl.innerHTML = AppState.consequences
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+      } else {
+        consequencesEl.innerHTML = '<p class="body-text" style="opacity: 0.7;">-</p>';
+      }
+
+      // 6. The Strategy: Strategic insights
       const insightsEl = document.getElementById('summary-insights');
       if (AppState.strategicInsights && AppState.strategicInsights.length > 0) {
         insightsEl.innerHTML = AppState.strategicInsights.map((insight, i) =>
@@ -2702,46 +2773,65 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     function buildExportText() {
       const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
       const lang = AppState.language;
+      const teamName = AppState.teamName || document.getElementById('input-team-name')?.value || '';
+
+      // Format all 3 what-if questions
+      const whatIfQuestionsText = AppState.whatIfQuestions && AppState.whatIfQuestions.length > 0
+        ? AppState.whatIfQuestions.map((q, i) => {
+            const techHeader = (q.techs || []).join(' + ');
+            const isSelected = q.text === AppState.selectedWhatIf;
+            return `${i + 1}. [${techHeader}] ${q.text}${isSelected ? ' ← ' + (lang === 'nl' ? 'GEKOZEN' : 'SELECTED') : ''}`;
+          }).join('\n')
+        : '-';
 
       let text = `
 ═══════════════════════════════════════════════════════════════
 TECH FUTURES EXPLORER - ${lang === 'nl' ? 'SESSIE RAPPORT' : 'SESSION REPORT'}
 ═══════════════════════════════════════════════════════════════
-
-${lang === 'nl' ? 'SCENARIO' : 'SCENARIO'}: ${AppState.archetypeContext?.scenario_name || '-'}
-${lang === 'nl' ? 'ARCHETYPE' : 'ARCHETYPE'}: ${AppState.archetypeContext?.archetype || AppState.archetype || '-'}
+${lang === 'nl' ? 'Team' : 'Team'}: ${teamName}
+${lang === 'nl' ? 'Datum' : 'Date'}: ${new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-US')}
 
 ───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'SCENARIO' : 'SCENARIO'}
+1. ${lang === 'nl' ? 'DE BASIS' : 'THE FOUNDATION'}
+───────────────────────────────────────────────────────────────
+Resources: ${AppState.archetypeContext?.axis_a || '-'}
+System: ${AppState.archetypeContext?.axis_b || '-'}
+Values: ${AppState.archetypeContext?.axis_d || '-'}
+Archetype: ${AppState.archetypeContext?.scenario_name || '-'} (${AppState.archetypeContext?.archetype || '-'})
+
+───────────────────────────────────────────────────────────────
+2. ${lang === 'nl' ? 'DE WERELD' : 'THE WORLD'}
 ───────────────────────────────────────────────────────────────
 ${AppState.scenario || '-'}
 
 ───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'TECHNOLOGIEËN & CONTEXT' : 'TECHNOLOGIES & CONTEXT'}
+3. ${lang === 'nl' ? 'DE DISRUPTIE' : 'THE DISRUPTION'}
 ───────────────────────────────────────────────────────────────
 ${lang === 'nl' ? 'Technologieën' : 'Technologies'}: ${AppState.selectedTechnologies.map(formatTech).join(', ')}
 Actor: ${formatTech(AppState.selectedActor)}
 Trigger: ${formatTech(AppState.selectedEvent)}
 
 ───────────────────────────────────────────────────────────────
-WHAT-IF
+4. ${lang === 'nl' ? 'DE PROVOCATIE' : 'THE PROVOCATION'}
 ───────────────────────────────────────────────────────────────
+${whatIfQuestionsText}
+
+${lang === 'nl' ? 'Gekozen vraag' : 'Selected question'}:
 ${AppState.selectedWhatIf || '-'}
 
 ───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'CONSEQUENTIES' : 'CONSEQUENCES'}
+5. ${lang === 'nl' ? 'DE CONSEQUENTIES' : 'THE CONSEQUENCES'}
 ───────────────────────────────────────────────────────────────
 ${AppState.consequences || '-'}
 
 ───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'STRATEGISCHE INZICHTEN' : 'STRATEGIC INSIGHTS'}
+6. ${lang === 'nl' ? 'DE STRATEGIE' : 'THE STRATEGY'}
 ───────────────────────────────────────────────────────────────
 ${AppState.strategicInsights && AppState.strategicInsights.length > 0 ?
         AppState.strategicInsights.map((insight, i) => `${i + 1}. ${insight}`).join('\n') :
         (lang === 'nl' ? 'Geen inzichten ingevuld' : 'No insights provided')}
 
 ═══════════════════════════════════════════════════════════════
-${lang === 'nl' ? 'Gegenereerd op' : 'Generated on'}: ${new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-US')}
 Tech Futures Explorer - Quantum Delta NL
 ═══════════════════════════════════════════════════════════════
 `;
@@ -2749,7 +2839,28 @@ Tech Futures Explorer - Quantum Delta NL
       return text.trim();
     }
 
+    function validateAndSaveTeamName() {
+      const teamNameInput = document.getElementById('input-team-name');
+      const teamName = teamNameInput?.value.trim() || '';
+      const errorEl = document.getElementById('team-name-error');
+
+      if (!teamName) {
+        errorEl.style.display = 'block';
+        teamNameInput.focus();
+        return false;
+      }
+
+      errorEl.style.display = 'none';
+      AppState.teamName = teamName;
+      return true;
+    }
+
     async function copyToClipboard() {
+      // Validate team name first
+      if (!validateAndSaveTeamName()) {
+        return;
+      }
+
       const text = buildExportText();
 
       try {
@@ -2770,6 +2881,11 @@ Tech Futures Explorer - Quantum Delta NL
     }
 
     function exportToPDF() {
+      // Validate team name first
+      if (!validateAndSaveTeamName()) {
+        return;
+      }
+
       debugLog('Generating PDF...');
 
       // Create a printable version
@@ -2814,14 +2930,15 @@ Tech Futures Explorer - Quantum Delta NL
     }
 
     async function saveSession() {
-      const sessionName = document.getElementById('input-session-name').value.trim();
-      const statusEl = document.getElementById('save-status');
-      const btnEl = document.getElementById('btn-save-session');
-
-      if (!sessionName) {
-        statusEl.innerHTML = `<p class="status-message error">${AppState.language === 'nl' ? 'Voer een sessie naam in' : 'Enter a session name'}</p>`;
+      // Validate team name first
+      if (!validateAndSaveTeamName()) {
+        document.getElementById('save-status').innerHTML =
+          `<p class="status-message error">${t('team_name_required')}</p>`;
         return;
       }
+
+      const statusEl = document.getElementById('save-status');
+      const btnEl = document.getElementById('btn-save-session');
 
       btnEl.disabled = true;
       btnEl.innerHTML = `<span class="loading-spinner"></span>`;
@@ -2829,20 +2946,24 @@ Tech Futures Explorer - Quantum Delta NL
 
       try {
         const sessionData = {
-          name: sessionName,
+          team_name: AppState.teamName,
           language: AppState.language,
-          archetype_id: AppState.archetype,
+          axis_a: AppState.archetypeContext?.axis_a || document.getElementById('select-resources')?.value,
+          axis_b: AppState.archetypeContext?.axis_b || document.getElementById('select-system')?.value,
+          axis_d: AppState.archetypeContext?.axis_d || document.getElementById('select-values')?.value,
           scenario_name: AppState.archetypeContext?.scenario_name,
           archetype_name: AppState.archetypeContext?.archetype,
           scenario: AppState.scenario,
           technologies: AppState.selectedTechnologies,
           actor: AppState.selectedActor,
           trigger_event: AppState.selectedEvent,
-          whatif_question: AppState.selectedWhatIf,
+          whatif_questions: AppState.whatIfQuestions,
+          selected_whatif: AppState.selectedWhatIf,
           consequences: AppState.consequences,
-          strategic_insights: AppState.strategicInsights,
-          created_at: new Date().toISOString()
+          strategic_insights: AppState.strategicInsights
         };
+
+        debugLog('Saving session data:', JSON.stringify(sessionData));
 
         const { data, error } = await supabaseClient
           .from('sessions')
@@ -2879,6 +3000,7 @@ Tech Futures Explorer - Quantum Delta NL
       AppState.selectedWhatIfTechs = [];
       AppState.consequences = null;
       AppState.strategicInsights = [];
+      AppState.teamName = '';
       AppState.savedSessionId = null;
 
       // Reset form elements
@@ -2893,7 +3015,7 @@ Tech Futures Explorer - Quantum Delta NL
       document.getElementById('insight-1').value = '';
       document.getElementById('insight-2').value = '';
       document.getElementById('insight-3').value = '';
-      document.getElementById('input-session-name').value = '';
+      document.getElementById('input-team-name').value = '';
 
       // Hide result sections
       document.getElementById('archetype-result').style.display = 'none';
