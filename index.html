@@ -1203,44 +1203,47 @@
         </div>
       </section>
 
-      <!-- Phase 4: Strategic Focus -->
+      <!-- Phase 4: Strategic Insights -->
       <section id="phase-4" class="phase-content" style="display: none;">
         <div class="card">
           <button class="back-button" onclick="goToPhase(3)">← Back</button>
           <div class="card-header">
-            <span class="label" data-i18n="phase4_title">Fase 4: Strategische Focus</span>
+            <span class="label" data-i18n="phase4_title">Fase 4: Strategische Inzichten</span>
           </div>
-          <p class="body-text" data-i18n="phase4_intro">
-            Selecteer de belangrijkste consequenties om strategisch te bespreken. Markeer items die aandacht vereisen.
+
+          <!-- Reflective Question -->
+          <p class="body-text" style="font-style: italic; margin-top: 1rem;" data-i18n="phase4_question">
+            Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: wat zijn de kern punten die je over zal dragen?
           </p>
 
-          <!-- Consequence Selection -->
-          <div id="strategic-consequences" class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
-            <p class="small-label" data-i18n="select_strategic">Selecteer strategische focuspunten</p>
-            <div id="consequence-items" style="margin-top: 1rem;">
-              <!-- Populated dynamically -->
+          <!-- Strategic Insights Input -->
+          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+            <p class="small-label" data-i18n="strategic_insights">Strategische Inzichten</p>
+            <p class="body-text" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;" data-i18n="min_insights_hint">Vul minimaal 2 inzichten in</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 700; color: var(--blue);">1.</span>
+                <input type="text" id="insight-1" class="btn" style="flex: 1; text-transform: none;" data-i18n-placeholder="insight_placeholder" placeholder="inzicht van vandaag">
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 700; color: var(--blue);">2.</span>
+                <input type="text" id="insight-2" class="btn" style="flex: 1; text-transform: none;" data-i18n-placeholder="insight_placeholder" placeholder="inzicht van vandaag">
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 700; color: var(--blue);">3.</span>
+                <input type="text" id="insight-3" class="btn" style="flex: 1; text-transform: none;" data-i18n-placeholder="insight_placeholder" placeholder="inzicht van vandaag">
+              </div>
             </div>
           </div>
 
-          <!-- Strategic Notes - shown after selection -->
-          <div id="strategic-notes-section" class="card" style="background: var(--bg-blue); margin-top: 1rem; display: none;">
-            <p class="small-label" data-i18n="strategic_notes">Strategische Notities</p>
-            <textarea id="input-strategic-notes" class="btn" placeholder="Notities voor de strategie discussie..." style="width: 100%; height: 120px; margin-top: 0.5rem; resize: vertical; text-transform: none;"></textarea>
-          </div>
-
-          <!-- Summary of selected items -->
-          <div id="strategic-summary" class="card" style="background: var(--bg-magenta); margin-top: 1rem; display: none;">
-            <p class="small-label" data-i18n="strategic_summary">Geselecteerde Prioriteiten</p>
-            <div id="strategic-summary-list" style="margin-top: 0.5rem;"></div>
-          </div>
-
-          <!-- Prompt to select - shown when no selection -->
-          <p id="phase4-select-prompt" class="body-text" style="text-align: center; color: #666; margin-top: 1.5rem;" data-i18n="select_focus_prompt">
-            Klik op de items hierboven om strategische focuspunten te selecteren
+          <!-- Error message -->
+          <p id="phase4-error" class="body-text" style="color: red; text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
+            Vul minimaal 2 inzichten in
           </p>
 
-          <!-- Continue button - hidden until selection -->
-          <button id="phase4-continue-btn" class="btn btn-primary" style="margin-top: 1rem; width: 100%; display: none;" onclick="goToPhase(5)" data-i18n="continue_phase5">
+          <!-- Continue button -->
+          <button id="phase4-continue-btn" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="proceedToPhase5()" data-i18n="continue_phase5">
             Verder naar Export
           </button>
         </div>
@@ -1290,11 +1293,10 @@
               </div>
             </div>
 
-            <!-- Strategic Priorities -->
+            <!-- Strategic Insights -->
             <div style="margin-top: 1rem; padding: 1rem; background: var(--white); border: 1px solid var(--black);">
-              <p class="small-label" style="color: var(--magenta);">STRATEGISCHE PRIORITEITEN</p>
-              <div id="summary-priorities" style="margin-top: 0.5rem;"></div>
-              <div id="summary-notes" style="margin-top: 0.5rem; font-style: italic;"></div>
+              <p class="small-label" style="color: var(--magenta);" data-i18n="strategic_insights_label">STRATEGISCHE INZICHTEN</p>
+              <div id="summary-insights" style="margin-top: 0.5rem;"></div>
             </div>
           </div>
 
@@ -1415,8 +1417,7 @@
       selectedWhatIf: null,
       selectedWhatIfTechs: [],
       consequences: null,
-      strategicPriorities: [],
-      strategicNotes: '',
+      strategicInsights: [],
       savedSessionId: null
     };
 
@@ -1479,18 +1480,18 @@
         generating_consequences: 'Consequenties genereren...',
         continue_phase4: 'Verder naar Fase 4',
         // Phase 4
-        phase4_title: 'Fase 4: Strategische Focus',
-        phase4_intro: 'Selecteer de belangrijkste consequenties om strategisch te bespreken. Markeer items die aandacht vereisen.',
-        select_strategic: 'Selecteer strategische focuspunten',
-        select_focus_prompt: 'Klik op de items hierboven om strategische focuspunten te selecteren',
-        strategic_notes: 'Strategische Notities',
-        strategic_summary: 'Geselecteerde Prioriteiten',
+        phase4_title: 'Fase 4: Strategische Inzichten',
+        phase4_question: 'Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: wat zijn de kern punten die je over zal dragen?',
+        strategic_insights: 'Strategische Inzichten',
+        min_insights_hint: 'Vul minimaal 2 inzichten in',
+        min_insights_error: 'Vul minimaal 2 inzichten in',
+        insight_placeholder: 'inzicht van vandaag',
         continue_phase5: 'Verder naar Export',
-        no_consequences: 'Geen consequenties beschikbaar. Ga terug naar Fase 3.',
         // Phase 5
         phase5_title: 'Fase 5: Export & Opslaan',
         phase5_intro: 'Bekijk de volledige sessie samenvatting en exporteer of sla op voor later gebruik.',
         session_summary: 'Sessie Samenvatting',
+        strategic_insights_label: 'STRATEGISCHE INZICHTEN',
         export_options: 'Export Opties',
         export_pdf: 'Download PDF',
         copy_summary: 'Kopieer Tekst',
@@ -1501,7 +1502,7 @@
         copied_success: 'Gekopieerd naar klembord!',
         save_success: 'Sessie opgeslagen!',
         save_error: 'Fout bij opslaan',
-        no_priorities: 'Geen prioriteiten geselecteerd',
+        no_insights: 'Geen inzichten ingevuld',
         pdf_generating: 'PDF genereren...',
         // Camera
         scan_cards_phase1: '📷 Scan Kaarten',
@@ -1551,18 +1552,18 @@
         generating_consequences: 'Generating consequences...',
         continue_phase4: 'Continue to Phase 4',
         // Phase 4
-        phase4_title: 'Phase 4: Strategic Focus',
-        phase4_intro: 'Select the key consequences for strategic discussion. Mark items requiring attention.',
-        select_strategic: 'Select strategic focus points',
-        select_focus_prompt: 'Click on items above to select strategic focus points',
-        strategic_notes: 'Strategic Notes',
-        strategic_summary: 'Selected Priorities',
+        phase4_title: 'Phase 4: Strategic Insights',
+        phase4_question: 'Imagine you\'re briefing a colleague tomorrow on the most interesting insights from this session: what are the key points you would pass along?',
+        strategic_insights: 'Strategic Insights',
+        min_insights_hint: 'Fill in at least 2 insights',
+        min_insights_error: 'Please fill in at least 2 insights',
+        insight_placeholder: 'insight from today',
         continue_phase5: 'Continue to Export',
-        no_consequences: 'No consequences available. Go back to Phase 3.',
         // Phase 5
         phase5_title: 'Phase 5: Export & Save',
         phase5_intro: 'Review the full session summary and export or save for later use.',
         session_summary: 'Session Summary',
+        strategic_insights_label: 'STRATEGIC INSIGHTS',
         export_options: 'Export Options',
         export_pdf: 'Download PDF',
         copy_summary: 'Copy Text',
@@ -1573,7 +1574,7 @@
         copied_success: 'Copied to clipboard!',
         save_success: 'Session saved!',
         save_error: 'Error saving',
-        no_priorities: 'No priorities selected',
+        no_insights: 'No insights provided',
         pdf_generating: 'Generating PDF...',
         // Camera
         scan_cards_phase1: '📷 Scan Cards',
@@ -2613,138 +2614,45 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     }
 
     // ================================
-    // Phase 4: Strategic Focus
+    // Phase 4: Strategic Insights
     // ================================
 
     function initPhase4() {
       debugLog('Initializing Phase 4...');
 
-      // Parse consequences into selectable items with source sections
-      const consequences = AppState.consequences || '';
-      const items = parseConsequencesForSelection(consequences);
+      // Restore any existing insights
+      const insights = AppState.strategicInsights || [];
+      document.getElementById('insight-1').value = insights[0] || '';
+      document.getElementById('insight-2').value = insights[1] || '';
+      document.getElementById('insight-3').value = insights[2] || '';
 
-      const container = document.getElementById('consequence-items');
+      // Hide error message
+      document.getElementById('phase4-error').style.display = 'none';
 
-      if (items.length === 0) {
-        container.innerHTML = `<p class="body-text">${t('no_consequences')}</p>`;
+      debugLog('Phase 4 initialized');
+    }
+
+    function proceedToPhase5() {
+      // Collect insights
+      const insight1 = document.getElementById('insight-1').value.trim();
+      const insight2 = document.getElementById('insight-2').value.trim();
+      const insight3 = document.getElementById('insight-3').value.trim();
+
+      const insights = [insight1, insight2, insight3].filter(i => i.length > 0);
+
+      // Validate minimum 2 insights
+      if (insights.length < 2) {
+        document.getElementById('phase4-error').style.display = 'block';
+        debugLog('Phase 4 validation failed: minimum 2 insights required');
         return;
       }
 
-      let html = '';
-      items.forEach((item, i) => {
-        html += `
-          <div class="priority-item" onclick="togglePriority(${i})">
-            <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
-              <input type="checkbox" id="priority-${i}" value="${i}" onchange="updateStrategicSummary()" style="margin-top: 0.25rem; flex-shrink: 0;">
-              <div class="priority-text">${item.text || item}</div>
-            </label>
-          </div>
-        `;
-      });
+      // Store insights
+      AppState.strategicInsights = insights;
+      debugLog(`Strategic insights saved: ${insights.length} items`);
 
-      container.innerHTML = html;
-
-      // Store parsed items for later reference
-      AppState.parsedConsequences = items;
-
-      debugLog(`Phase 4 initialized with ${items.length} consequence items`);
-    }
-
-    function parseConsequencesForSelection(text) {
-      if (!text) return [];
-
-      const items = [];
-      const lines = text.split('\n');
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-
-        // Skip empty lines and headers
-        if (!trimmed) continue;
-        if (trimmed.startsWith('#')) continue;
-        if (trimmed.startsWith('**') && trimmed.endsWith('**')) continue;
-        if (trimmed === trimmed.toUpperCase() && trimmed.length > 3) continue;
-        if (trimmed.endsWith(':')) continue;
-
-        // Extract bullet points and numbered items
-        if (trimmed.match(/^[-•]\s/) || trimmed.match(/^\d+[.)]\s/) || trimmed.startsWith('* ')) {
-          const content = trimmed
-            .replace(/^[-•*]\s*/, '')
-            .replace(/^\d+[.)]\s*/, '')
-            .replace(/\*\*([^*]+)\*\*/g, '$1')
-            .replace(/\*([^*]+)\*/g, '$1')
-            .trim();
-
-          if (content.length > 15) {
-            items.push({ text: content });
-          }
-        }
-      }
-
-      return items.slice(0, 15);
-    }
-
-    function togglePriority(index) {
-      const checkbox = document.getElementById(`priority-${index}`);
-      if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-        updateStrategicSummary();
-      }
-    }
-
-    function updateStrategicSummary() {
-      const selected = [];
-      const checkboxes = document.querySelectorAll('#consequence-items input[type="checkbox"]:checked');
-
-      checkboxes.forEach(cb => {
-        const index = parseInt(cb.value);
-        if (AppState.parsedConsequences && AppState.parsedConsequences[index]) {
-          selected.push(AppState.parsedConsequences[index]);
-        }
-      });
-
-      AppState.strategicPriorities = selected;
-
-      const summaryEl = document.getElementById('strategic-summary');
-      const summaryList = document.getElementById('strategic-summary-list');
-      const notesSection = document.getElementById('strategic-notes-section');
-      const selectPrompt = document.getElementById('phase4-select-prompt');
-      const continueBtn = document.getElementById('phase4-continue-btn');
-
-      if (selected.length > 0) {
-        // Show summary, notes, and continue button
-        summaryEl.style.display = 'block';
-        summaryList.innerHTML = selected.map(s => {
-          const text = s.text || s;
-          return `<p class="body-text" style="margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid var(--blue);">${text}</p>`;
-        }).join('');
-
-        if (notesSection) notesSection.style.display = 'block';
-        if (selectPrompt) selectPrompt.style.display = 'none';
-        if (continueBtn) continueBtn.style.display = 'block';
-
-        // Update priority item visual state
-        document.querySelectorAll('.priority-item').forEach((item, i) => {
-          const checkbox = item.querySelector('input[type="checkbox"]');
-          if (checkbox?.checked) {
-            item.classList.add('selected');
-          } else {
-            item.classList.remove('selected');
-          }
-        });
-      } else {
-        // Hide summary, notes, and continue button
-        summaryEl.style.display = 'none';
-        if (notesSection) notesSection.style.display = 'none';
-        if (selectPrompt) selectPrompt.style.display = 'block';
-        if (continueBtn) continueBtn.style.display = 'none';
-
-        document.querySelectorAll('.priority-item').forEach(item => {
-          item.classList.remove('selected');
-        });
-      }
-
-      debugLog(`Strategic priorities updated: ${selected.length} items selected`);
+      // Navigate to Phase 5
+      goToPhase(5);
     }
 
     // ================================
@@ -2753,9 +2661,6 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
     function initPhase5() {
       debugLog('Initializing Phase 5...');
-
-      // Save strategic notes
-      AppState.strategicNotes = document.getElementById('input-strategic-notes')?.value || '';
 
       // Populate summary
       const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
@@ -2781,22 +2686,14 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       document.getElementById('summary-trigger').textContent =
         formatTech(AppState.selectedEvent) || '-';
 
-      // Strategic priorities
-      const prioritiesEl = document.getElementById('summary-priorities');
-      if (AppState.strategicPriorities.length > 0) {
-        prioritiesEl.innerHTML = AppState.strategicPriorities.map(p =>
-          `<p class="body-text" style="margin-bottom: 0.25rem;">• ${p}</p>`
+      // Strategic insights
+      const insightsEl = document.getElementById('summary-insights');
+      if (AppState.strategicInsights && AppState.strategicInsights.length > 0) {
+        insightsEl.innerHTML = AppState.strategicInsights.map((insight, i) =>
+          `<p class="body-text" style="margin-bottom: 0.25rem;">${i + 1}. ${insight}</p>`
         ).join('');
       } else {
-        prioritiesEl.innerHTML = `<p class="body-text" style="opacity: 0.7;">${t('no_priorities')}</p>`;
-      }
-
-      // Notes
-      const notesEl = document.getElementById('summary-notes');
-      if (AppState.strategicNotes) {
-        notesEl.innerHTML = `<p class="body-text">"${AppState.strategicNotes}"</p>`;
-      } else {
-        notesEl.innerHTML = '';
+        insightsEl.innerHTML = `<p class="body-text" style="opacity: 0.7;">${t('no_insights')}</p>`;
       }
 
       debugLog('Phase 5 summary populated');
@@ -2837,18 +2734,11 @@ ${lang === 'nl' ? 'CONSEQUENTIES' : 'CONSEQUENCES'}
 ${AppState.consequences || '-'}
 
 ───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'STRATEGISCHE PRIORITEITEN' : 'STRATEGIC PRIORITIES'}
+${lang === 'nl' ? 'STRATEGISCHE INZICHTEN' : 'STRATEGIC INSIGHTS'}
 ───────────────────────────────────────────────────────────────
-${AppState.strategicPriorities.length > 0 ?
-        AppState.strategicPriorities.map((p, i) => `${i + 1}. ${p}`).join('\n') :
-        (lang === 'nl' ? 'Geen prioriteiten geselecteerd' : 'No priorities selected')}
-
-${AppState.strategicNotes ? `
-───────────────────────────────────────────────────────────────
-${lang === 'nl' ? 'NOTITIES' : 'NOTES'}
-───────────────────────────────────────────────────────────────
-${AppState.strategicNotes}
-` : ''}
+${AppState.strategicInsights && AppState.strategicInsights.length > 0 ?
+        AppState.strategicInsights.map((insight, i) => `${i + 1}. ${insight}`).join('\n') :
+        (lang === 'nl' ? 'Geen inzichten ingevuld' : 'No insights provided')}
 
 ═══════════════════════════════════════════════════════════════
 ${lang === 'nl' ? 'Gegenereerd op' : 'Generated on'}: ${new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-US')}
@@ -2950,8 +2840,7 @@ Tech Futures Explorer - Quantum Delta NL
           trigger_event: AppState.selectedEvent,
           whatif_question: AppState.selectedWhatIf,
           consequences: AppState.consequences,
-          strategic_priorities: AppState.strategicPriorities,
-          strategic_notes: AppState.strategicNotes,
+          strategic_insights: AppState.strategicInsights,
           created_at: new Date().toISOString()
         };
 
@@ -2989,8 +2878,7 @@ Tech Futures Explorer - Quantum Delta NL
       AppState.selectedWhatIf = null;
       AppState.selectedWhatIfTechs = [];
       AppState.consequences = null;
-      AppState.strategicPriorities = [];
-      AppState.strategicNotes = '';
+      AppState.strategicInsights = [];
       AppState.savedSessionId = null;
 
       // Reset form elements
@@ -3002,7 +2890,9 @@ Tech Futures Explorer - Quantum Delta NL
       document.getElementById('select-actor').value = '';
       document.getElementById('select-event').value = '';
       document.getElementById('input-custom-whatif').value = '';
-      document.getElementById('input-strategic-notes').value = '';
+      document.getElementById('insight-1').value = '';
+      document.getElementById('insight-2').value = '';
+      document.getElementById('insight-3').value = '';
       document.getElementById('input-session-name').value = '';
 
       // Hide result sections
