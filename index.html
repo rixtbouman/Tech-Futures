@@ -2291,52 +2291,77 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     }
 
     function parseWhatIfResponse(response) {
-      // Try to extract questions from the response
-      const questions = [];
-      const lines = response.split('\n');
+      debugLog('Parsing what-if response...');
 
-      let currentQuestion = null;
-      let currentMeta = {};
+      // Get selected technologies for tech headers
+      const [techQuantum, tech2, tech3] = AppState.selectedTechnologies || ['Quantum', '', ''];
+      const formatTech = (t) => t ? t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
 
-      for (const line of lines) {
-        const trimmed = line.trim();
+      // Define tech combinations for each question position
+      const techCombinations = [
+        ['Quantum', formatTech(tech2)],           // Q1: Quantum + Tech 2
+        ['Quantum', formatTech(tech3)],           // Q2: Quantum + Tech 3
+        ['Quantum', formatTech(tech2) || formatTech(tech3)]  // Q3: Quantum + one of them
+      ];
 
-        // Look for "Question X" or "What if" patterns
-        if (trimmed.match(/^(Question\s*\d|What if)/i) || trimmed.startsWith('What if')) {
-          if (currentQuestion) {
-            questions.push({ text: currentQuestion, ...currentMeta });
-          }
-          currentQuestion = trimmed.replace(/^Question\s*\d[:\s]*/i, '');
-          currentMeta = {};
-        } else if (trimmed.startsWith('- Impact Domain:')) {
-          currentMeta.impactDomain = trimmed.replace('- Impact Domain:', '').trim();
-        } else if (trimmed.startsWith('- Value Tension:')) {
-          currentMeta.valueTension = trimmed.replace('- Value Tension:', '').trim();
-        } else if (currentQuestion && trimmed && !trimmed.startsWith('-') && !trimmed.startsWith('Impact') && !trimmed.startsWith('Value')) {
-          // Continue the question if it spans multiple lines
-          if (!currentQuestion.endsWith('?')) {
-            currentQuestion += ' ' + trimmed;
+      let extractedTexts = [];
+
+      // Method 1: Split on numbered patterns (1. / 2. / 3. or 1) / 2) / 3))
+      const numberedPattern = /(?:^|\n)\s*(?:\*\*)?(\d)[.)]\*?\*?\s*/g;
+      const parts = response.split(/(?:^|\n)\s*(?:\*\*)?[1-3][.)]\*?\*?\s*/);
+
+      // Filter out empty parts and take only parts that look like questions
+      for (let i = 1; i < parts.length && extractedTexts.length < 3; i++) {
+        let text = parts[i].trim();
+        // Remove markdown formatting
+        text = text.replace(/\*\*/g, '');
+        // Take up to the first question mark or first line if no question mark
+        const questionMatch = text.match(/^[^?]+\?/);
+        if (questionMatch) {
+          extractedTexts.push(questionMatch[0].trim());
+        } else {
+          const firstLine = text.split('\n')[0].trim();
+          if (firstLine.length > 10) {
+            extractedTexts.push(firstLine);
           }
         }
       }
 
-      // Add the last question
-      if (currentQuestion) {
-        questions.push({ text: currentQuestion, ...currentMeta });
+      // Method 2: Fallback - look for "What if" or "Wat als" patterns
+      if (extractedTexts.length === 0) {
+        debugLog('Using What-if pattern fallback...');
+        const whatIfPattern = /(?:What if|Wat als)[^?]*\?/gi;
+        const matches = response.match(whatIfPattern);
+        if (matches) {
+          extractedTexts = matches.slice(0, 3).map(m => m.trim());
+        }
       }
 
-      // If parsing failed, just split by double newlines
-      if (questions.length === 0) {
+      // Method 3: Last resort - split by double newlines
+      if (extractedTexts.length === 0) {
+        debugLog('Using double-newline fallback...');
         const parts = response.split(/\n\n+/);
-        parts.forEach((part, i) => {
+        for (const part of parts) {
           const cleaned = part.trim();
-          if (cleaned.toLowerCase().includes('what if') || cleaned.includes('?')) {
-            questions.push({ text: cleaned });
+          if (cleaned.includes('?') && cleaned.length > 20) {
+            extractedTexts.push(cleaned.split('?')[0] + '?');
+            if (extractedTexts.length >= 3) break;
           }
+        }
+      }
+
+      // Build final questions array with exactly 3 questions
+      const questions = [];
+      for (let i = 0; i < 3; i++) {
+        questions.push({
+          id: i + 1,
+          text: extractedTexts[i] || `Question ${i + 1} could not be parsed from response.`,
+          techs: techCombinations[i].filter(t => t)
         });
       }
 
-      return questions.slice(0, 3); // Return max 3 questions
+      debugLog(`parseWhatIfResponse: extracted ${extractedTexts.length} questions`);
+      return questions;
     }
 
     function displayWhatIfQuestions(questions) {
@@ -2347,23 +2372,18 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         return;
       }
 
-      // Get selected technologies for bold highlighting
-      const techs = (AppState.selectedTechnologies || []).map(t =>
-        t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-      );
-
-      const lang = AppState.language;
-      const questionLabel = lang === 'nl' ? 'Vraag' : 'Question';
-
       let html = '';
       questions.forEach((q, i) => {
-        // Parse question text and make technology names bold
+        // Build tech header from question's techs array
+        const techHeader = (q.techs || []).join(' + ');
+
+        // Clean question text - remove markdown
         let questionText = (q.text || '')
-          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+          .replace(/\*\*/g, '')
+          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '$1');
 
         // Make technology names bold in the question text
-        techs.forEach(tech => {
+        (q.techs || []).forEach(tech => {
           if (tech) {
             const regex = new RegExp(`(${tech})`, 'gi');
             questionText = questionText.replace(regex, '<strong>$1</strong>');
@@ -2375,11 +2395,8 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
               <input type="radio" name="whatif-selection" value="${i}" style="margin-top: 0.35rem; flex-shrink: 0;">
               <div style="flex: 1;">
+                <div class="whatif-tech-header" style="font-weight: 700; color: #0000FF; margin-bottom: 0.5rem; font-size: 0.9rem;">${techHeader}</div>
                 <div class="whatif-question">${questionText}</div>
-                <div class="whatif-meta">
-                  ${q.impactDomain ? `<span class="whatif-tag"><strong>Domain:</strong> ${q.impactDomain}</span>` : ''}
-                  ${q.valueTension ? `<span class="whatif-tag"><strong>Value Tension:</strong> ${q.valueTension}</span>` : ''}
-                </div>
               </div>
             </label>
           </div>
