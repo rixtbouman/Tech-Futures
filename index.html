@@ -2201,7 +2201,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     // Format technology knowledge data for prompts (grouped by parent_tech)
     function formatTechDataForPrompt(techData) {
       if (!techData || techData.length === 0) {
-        return 'Use general knowledge about the selected technologies.';
+        return '⚠️ WARNING: Technology knowledge data unavailable. Output may be less specific.';
       }
 
       // Group by parent_tech
@@ -2265,8 +2265,21 @@ TRIGGER EVENT: ${formatTech(event)}
 ARCHETYPE CONTEXT: ${AppState.archetypeContext?.scenario_name || AppState.archetype}
 ${AppState.archetypeContext?.description || ''}
 
-TECHNOLOGY KNOWLEDGE:
+═══════════════════════════════════════════════════════
+⚠️ CRITICAL: TECHNOLOGY KNOWLEDGE BASE
+═══════════════════════════════════════════════════════
+The following contains verified, curated information about the selected
+technologies. Your response MUST be grounded in this data.
+
+DO NOT use general knowledge or assumptions.
+DO reference specific applications, ELSA implications, and key concepts listed below.
+
 ${formatTechDataForPrompt(techData)}
+
+───────────────────────────────────────────────────────
+✓ VERIFICATION: Your response must reference at least 1 specific
+  item from EACH technology category listed above.
+───────────────────────────────────────────────────────
 
 SECTOR KNOWLEDGE (JenV):
 ${sectorData?.slice(0, 15).map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
@@ -2492,8 +2505,21 @@ SELECTED TECHNOLOGIES:
 ACTOR: ${formatTech(AppState.selectedActor)}
 TRIGGER: ${formatTech(AppState.selectedEvent)}
 
-TECHNOLOGY KNOWLEDGE:
+═══════════════════════════════════════════════════════
+⚠️ CRITICAL: TECHNOLOGY KNOWLEDGE BASE
+═══════════════════════════════════════════════════════
+The following contains verified, curated information about the selected
+technologies. Your response MUST be grounded in this data.
+
+DO NOT use general knowledge or assumptions.
+DO reference specific applications, ELSA implications, and key concepts listed below.
+
 ${formatTechDataForPrompt(techData)}
+
+───────────────────────────────────────────────────────
+✓ VERIFICATION: Your response must reference at least 1 specific
+  item from EACH technology category listed above.
+───────────────────────────────────────────────────────
 
 SECTOR KNOWLEDGE (JenV):
 ${sectorData?.map(s => `- ${s.title}: ${s.content}`).join('\n') || 'Dutch Ministry of Justice and Security'}
