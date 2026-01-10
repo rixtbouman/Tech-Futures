@@ -36,10 +36,10 @@
       --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
       --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
 
-      /* Border Radius */
-      --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      /* Border Radius - Soft & Modern */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
 
       /* Typography */
       --font-mono: 'Roboto Mono', monospace;
@@ -240,6 +240,33 @@
     .phase-dot.completed {
       background: var(--blue);
       opacity: 0.5;
+    }
+
+    /* ================================
+       Viewer Mode - Hide Controller Elements
+       ================================ */
+    body.viewer-mode .controller-only {
+      display: none !important;
+    }
+
+    body.viewer-mode .viewer-content {
+      display: block !important;
+    }
+
+    /* Show insights as read-only text for viewers */
+    body.viewer-mode .insight-display {
+      display: block;
+      padding: 0.75rem;
+      background: var(--bg-content);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.5rem;
+      min-height: 2.5rem;
+    }
+
+    body.viewer-mode input[type="text"],
+    body.viewer-mode textarea,
+    body.viewer-mode select {
+      display: none !important;
     }
 
     /* ================================
@@ -1157,8 +1184,8 @@
             Selecteer de 3 binaire keuzes om het basisscenario te bepalen.
           </p>
 
-          <!-- Card Selection -->
-          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+          <!-- Card Selection - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-grey); margin-top: 1.5rem;">
             <!-- Scan Cards Button -->
             <button class="btn scan-button" onclick="openCamera('phase1')" data-i18n="scan_cards_phase1">
               📷 Scan Cards
@@ -1208,7 +1235,7 @@
           <div id="scenario-result" class="card" style="display: none; background: var(--bg-magenta); margin-top: 1rem;">
             <p class="small-label" data-i18n="generated_scenario">Gegenereerd Scenario</p>
             <div class="body-text" id="scenario-text" style="margin-top: 1rem; white-space: pre-line;"></div>
-            <button class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="goToPhase(2)" data-i18n="continue_phase2">
+            <button class="btn btn-primary controller-only" style="margin-top: 1.5rem; width: 100%;" onclick="goToPhase(2)" data-i18n="continue_phase2">
               Verder naar Fase 2
             </button>
           </div>
@@ -1218,16 +1245,16 @@
       <!-- Phase 2: Disruption Introduction -->
       <section id="phase-2" class="phase-content" style="display: none;">
         <div class="card">
-          <button class="back-button" onclick="goToPhase(1)">← Back</button>
+          <button class="back-button controller-only" onclick="goToPhase(1)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase2_title">Fase 2: Disruptie</span>
           </div>
-          <p class="body-text" data-i18n="phase2_intro">
+          <p class="body-text controller-only" data-i18n="phase2_intro">
             Selecteer technologieën, een actor en een trigger om what-if vragen te genereren.
           </p>
 
-          <!-- Technology Selection -->
-          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+          <!-- Technology Selection - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-grey); margin-top: 1.5rem;">
             <!-- Scan Cards Button -->
             <button class="btn scan-button" onclick="openCamera('phase2')" data-i18n="scan_cards_phase2">
               📷 Scan All Cards (Tech + Actor + Event)
@@ -1314,13 +1341,13 @@
             <p class="small-label" data-i18n="whatif_questions">What-If Vragen</p>
             <div id="whatif-questions-list" style="margin-top: 1rem;"></div>
 
-            <!-- Custom What-If Input -->
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--black);">
+            <!-- Custom What-If Input - Controller Only -->
+            <div class="controller-only" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--black);">
               <p class="small-label" data-i18n="or_custom_whatif">Of voer een eigen vraag in:</p>
               <textarea id="input-custom-whatif" class="btn" placeholder="What if..." style="width: 100%; height: 80px; margin-top: 0.5rem; resize: vertical; text-transform: none;"></textarea>
             </div>
 
-            <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="proceedToPhase3()" id="btn-proceed-phase3" data-i18n="continue_phase3">
+            <button class="btn btn-primary controller-only" style="margin-top: 1rem; width: 100%;" onclick="proceedToPhase3()" id="btn-proceed-phase3" data-i18n="continue_phase3">
               Verder met geselecteerde vraag
             </button>
           </div>
@@ -1330,7 +1357,7 @@
       <!-- Phase 3: Consequences -->
       <section id="phase-3" class="phase-content" style="display: none;">
         <div class="card">
-          <button class="back-button" onclick="goToPhase(2)">← Back</button>
+          <button class="back-button controller-only" onclick="goToPhase(2)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase3_title">Fase 3: Consequenties</span>
           </div>
@@ -1352,7 +1379,7 @@
             </div>
           </div>
 
-          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="goToPhase(4)" data-i18n="continue_phase4">
+          <button class="btn btn-primary controller-only" style="margin-top: 1rem; width: 100%;" onclick="goToPhase(4)" data-i18n="continue_phase4">
             Verder naar Fase 4
           </button>
         </div>
@@ -1361,18 +1388,18 @@
       <!-- Phase 4: Strategic Insights -->
       <section id="phase-4" class="phase-content" style="display: none;">
         <div class="card">
-          <button class="back-button" onclick="goToPhase(3)">← Back</button>
+          <button class="back-button controller-only" onclick="goToPhase(3)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase4_title">Fase 4: Strategische Inzichten</span>
           </div>
 
-          <!-- Reflective Question -->
-          <p class="body-text" style="font-style: italic; margin-top: 1rem;" data-i18n="phase4_question">
+          <!-- Reflective Question - Controller Only -->
+          <p class="body-text controller-only" style="font-style: italic; margin-top: 1rem;" data-i18n="phase4_question">
             Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: wat zijn de kern punten die je over zal dragen?
           </p>
 
-          <!-- Strategic Insights Input -->
-          <div class="card" style="background: var(--bg-grey); margin-top: 1.5rem;">
+          <!-- Strategic Insights Input - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-grey); margin-top: 1.5rem;">
             <p class="small-label" data-i18n="strategic_insights">Strategische Inzichten</p>
             <p class="body-text" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;" data-i18n="min_insights_hint">Vul minimaal 2 inzichten in</p>
 
@@ -1392,13 +1419,19 @@
             </div>
           </div>
 
+          <!-- Strategic Insights Display - Viewer Only -->
+          <div id="insights-viewer-display" class="card" style="background: var(--bg-grey); margin-top: 1.5rem; display: none;">
+            <p class="small-label" data-i18n="strategic_insights">Strategische Inzichten</p>
+            <div id="insights-viewer-list" style="margin-top: 1rem;"></div>
+          </div>
+
           <!-- Error message -->
-          <p id="phase4-error" class="body-text" style="color: red; text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
+          <p id="phase4-error" class="body-text controller-only" style="color: red; text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
             Vul minimaal 2 inzichten in
           </p>
 
           <!-- Continue button -->
-          <button id="phase4-continue-btn" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="proceedToPhase5()" data-i18n="continue_phase5">
+          <button id="phase4-continue-btn" class="btn btn-primary controller-only" style="margin-top: 1.5rem; width: 100%;" onclick="proceedToPhase5()" data-i18n="continue_phase5">
             Verder naar Export
           </button>
         </div>
@@ -1407,13 +1440,13 @@
       <!-- Phase 5: Export -->
       <section id="phase-5" class="phase-content" style="display: none;">
         <div class="card">
-          <button class="back-button" onclick="goToPhase(4)">← Back</button>
+          <button class="back-button controller-only" onclick="goToPhase(4)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase5_title">Fase 5: Export & Opslaan</span>
           </div>
 
-          <!-- Team Name Input (Required) -->
-          <div class="card" style="background: var(--bg-blue); margin-top: 1.5rem;">
+          <!-- Team Name Input (Required) - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1.5rem;">
             <label class="small-label" data-i18n="team_name_label">Wat is de naam van jullie team van Futuristen?</label>
             <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
             <p id="team-name-error" class="body-text" style="color: red; margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in om te exporteren</p>
@@ -1473,8 +1506,8 @@
             </div>
           </div>
 
-          <!-- Export Options -->
-          <div class="card" style="background: var(--bg-blue); margin-top: 1rem;">
+          <!-- Export Options - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1rem;">
             <p class="small-label" data-i18n="export_options">Export Opties</p>
             <div class="mobile-grid-2" style="margin-top: 1rem;">
               <button class="btn btn-secondary" onclick="exportToPDF()" data-i18n="export_pdf">
@@ -1486,8 +1519,8 @@
             </div>
           </div>
 
-          <!-- Save to Database -->
-          <div class="card" style="background: var(--bg-magenta); margin-top: 1rem;">
+          <!-- Save to Database - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-magenta); margin-top: 1rem;">
             <p class="small-label" data-i18n="save_session">Sessie Opslaan</p>
             <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="saveSession()" id="btn-save-session" data-i18n="save_to_database">
               Opslaan in Database
@@ -1495,8 +1528,8 @@
             <div id="save-status" style="margin-top: 0.75rem;"></div>
           </div>
 
-          <!-- New Session Button -->
-          <button class="btn" style="margin-top: 1.5rem; width: 100%;" onclick="startNewSession()" data-i18n="start_new">
+          <!-- New Session Button - Controller Only -->
+          <button class="btn controller-only" style="margin-top: 1.5rem; width: 100%;" onclick="startNewSession()" data-i18n="start_new">
             Start Nieuwe Sessie
           </button>
         </div>
@@ -2071,11 +2104,23 @@
         codeBadge.style.display = 'inline-block';
         document.getElementById('viewer-badge').style.display = 'inline-block';
 
-        // Apply viewer restrictions
-        applyViewerRestrictions();
+        // Enable viewer mode (hides controller-only elements via CSS)
+        document.body.classList.add('viewer-mode');
+
+        // Hide debug button for viewers
+        const debugBtn = document.querySelector('button[onclick="showDebugInfo()"]');
+        if (debugBtn) debugBtn.style.display = 'none';
 
         // Update display with current state
         updateViewerDisplay();
+
+        // Auto-scroll to current phase content
+        setTimeout(() => {
+          const currentPhaseEl = document.getElementById(`phase-${AppState.currentPhase || 1}`);
+          if (currentPhaseEl) {
+            currentPhaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
 
         debugLog(`Viewer joined session with code: ${code}`);
       } catch (error) {
@@ -2227,19 +2272,31 @@
         displayWhatIfQuestions(AppState.whatIfQuestions);
       }
 
+      // Update selected what-if display (Phase 3) - FIX for custom what-if
+      if (AppState.selectedWhatIf) {
+        const whatIfDisplay = (AppState.selectedWhatIf || '')
+          .replace(/\*\*([^*]+)\*\*/g, '$1')
+          .replace(/\*([^*]+)\*/g, '$1');
+        const selectedWhatIfEl = document.getElementById('selected-whatif-display');
+        if (selectedWhatIfEl) selectedWhatIfEl.textContent = whatIfDisplay;
+      }
+
       // Update consequences
       if (AppState.consequences) {
         const consequencesEl = document.getElementById('consequences-text');
         if (consequencesEl) consequencesEl.innerHTML = formatConsequencesOutput(AppState.consequences);
       }
 
-      // Update strategic insights
-      if (AppState.strategicInsights) {
-        for (let i = 0; i < 3; i++) {
-          const input = document.getElementById(`insight-${i + 1}`);
-          if (input && AppState.strategicInsights[i]) {
-            input.value = AppState.strategicInsights[i];
-          }
+      // Update strategic insights - show in viewer display div
+      if (AppState.strategicInsights && AppState.strategicInsights.length > 0) {
+        const viewerDisplay = document.getElementById('insights-viewer-display');
+        const viewerList = document.getElementById('insights-viewer-list');
+
+        if (viewerDisplay && viewerList) {
+          viewerDisplay.style.display = 'block';
+          viewerList.innerHTML = AppState.strategicInsights.map((insight, i) =>
+            `<p class="body-text" style="margin-bottom: 0.5rem;"><strong style="color: var(--blue);">${i + 1}.</strong> ${insight}</p>`
+          ).join('');
         }
       }
 
@@ -2252,6 +2309,12 @@
       if (AppState.teamName) {
         const teamNameInput = document.getElementById('input-team-name');
         if (teamNameInput) teamNameInput.value = AppState.teamName;
+      }
+
+      // Auto-scroll to current phase content
+      const currentPhaseEl = document.getElementById(`phase-${AppState.currentPhase}`);
+      if (currentPhaseEl) {
+        currentPhaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
 
@@ -2466,7 +2529,13 @@
 
       } catch (error) {
         debugLog(`Scenario generation error: ${error.message}`);
-        scenarioTextEl.innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+        scenarioTextEl.innerHTML = `
+          <div class="status-message error">
+            <p style="margin-bottom: 0.75rem;">Error: ${error.message}</p>
+            <button class="btn btn-primary" onclick="determineArchetype()" style="padding: 0.5rem 1rem;">
+              Probeer Opnieuw / Try Again
+            </button>
+          </div>`;
       }
     }
 
@@ -2832,7 +2901,13 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       } catch (error) {
         debugLog(`What-if generation error: ${error.message}`);
-        document.getElementById('whatif-questions-list').innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+        document.getElementById('whatif-questions-list').innerHTML = `
+          <div class="status-message error">
+            <p style="margin-bottom: 0.75rem;">Error: ${error.message}</p>
+            <button class="btn btn-primary" onclick="generateWhatIfQuestions()" style="padding: 0.5rem 1rem;">
+              Probeer Opnieuw / Try Again
+            </button>
+          </div>`;
       } finally {
         btnEl.disabled = false;
         btnEl.textContent = t('generate_whatif');
@@ -3146,7 +3221,13 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       } catch (error) {
         debugLog(`Consequence generation error: ${error.message}`);
-        resultEl.innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+        resultEl.innerHTML = `
+          <div class="status-message error">
+            <p style="margin-bottom: 0.75rem;">Error: ${error.message}</p>
+            <button class="btn btn-primary" onclick="generateConsequences()" style="padding: 0.5rem 1rem;">
+              Probeer Opnieuw / Try Again
+            </button>
+          </div>`;
       }
     }
 
@@ -3639,6 +3720,17 @@ Tech Futures Explorer - Quantum Delta NL
       // Hide header badges
       document.getElementById('group-code-badge').style.display = 'none';
       document.getElementById('viewer-badge').style.display = 'none';
+
+      // Remove viewer mode class
+      document.body.classList.remove('viewer-mode');
+
+      // Show debug button again
+      const debugBtn = document.querySelector('button[onclick="showDebugInfo()"]');
+      if (debugBtn) debugBtn.style.display = '';
+
+      // Hide insights viewer display
+      const insightsViewerDisplay = document.getElementById('insights-viewer-display');
+      if (insightsViewerDisplay) insightsViewerDisplay.style.display = 'none';
 
       // Go to start screen
       showScreen('screen-start');
