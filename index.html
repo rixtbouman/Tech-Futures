@@ -410,6 +410,102 @@
     }
 
     /* ================================
+       Role Selection (Controller/Viewer)
+       ================================ */
+    .role-selection,
+    .language-selection,
+    .viewer-join {
+      display: none;
+    }
+
+    .role-selection.active,
+    .language-selection.active,
+    .viewer-join.active {
+      display: block;
+    }
+
+    .role-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+
+    @media (min-width: 480px) {
+      .role-buttons {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .role-btn {
+      padding: 1.25rem 2rem;
+      font-size: 0.875rem;
+      background: var(--white);
+      color: var(--blue);
+      border: 2px solid var(--blue);
+      min-width: 180px;
+    }
+
+    .role-btn:hover {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .role-btn.primary {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .role-btn.primary:hover {
+      background: #0000DD;
+    }
+
+    .group-code-display {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.5rem;
+      color: var(--blue);
+      background: var(--bg-blue);
+      padding: 1rem 2rem;
+      border-radius: var(--radius-sm);
+      margin: 1.5rem 0;
+      display: inline-block;
+    }
+
+    .group-code-input {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      text-align: center;
+      letter-spacing: 0.3rem;
+      text-transform: uppercase;
+      padding: 1rem;
+      border: 2px solid var(--blue);
+      border-radius: var(--radius-sm);
+      width: 200px;
+      margin: 1rem 0;
+    }
+
+    .group-code-input:focus {
+      outline: none;
+      border-color: #0000DD;
+    }
+
+    .back-link {
+      color: var(--blue);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    .back-link:hover {
+      color: #0000DD;
+    }
+
+    /* ================================
        Status/Loading States
        ================================ */
     .status-message {
@@ -946,7 +1042,7 @@
   <div class="superposition-bg"></div>
 
   <!-- ================================
-       Start Screen (Language Selection)
+       Start Screen (Role & Language Selection)
        ================================ -->
   <div id="screen-start" class="screen active">
     <div class="start-content">
@@ -955,16 +1051,71 @@
       <p class="sub-headline" style="margin-bottom: 2rem;">
         Emerging Technologies Futures Exploration Tool
       </p>
-      <p class="body-text" id="start-description">
-        Verken hoe opkomende technologieën kunnen samenkomen en impact hebben op de samenleving.
-      </p>
-      <div class="language-buttons">
-        <button class="btn language-btn" onclick="startSession('nl')">
-          Nederlands
-        </button>
-        <button class="btn language-btn" onclick="startSession('en')">
-          English
-        </button>
+
+      <!-- Step 1: Role Selection -->
+      <div id="role-selection" class="role-selection active">
+        <p class="body-text" data-i18n="role_description">
+          Kies je rol in de workshop sessie.
+        </p>
+        <div class="role-buttons">
+          <button class="btn role-btn primary" onclick="selectRole('controller')" data-i18n="role_controller">
+            Start Sessie
+          </button>
+          <button class="btn role-btn" onclick="selectRole('viewer')" data-i18n="role_viewer">
+            Join Sessie
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2a: Language Selection (Controller) -->
+      <div id="language-selection" class="language-selection">
+        <p class="body-text" data-i18n="start_description">
+          Verken hoe opkomende technologieën kunnen samenkomen en impact hebben op de samenleving.
+        </p>
+        <div class="language-buttons">
+          <button class="btn language-btn" onclick="startAsController('nl')">
+            Nederlands
+          </button>
+          <button class="btn language-btn" onclick="startAsController('en')">
+            English
+          </button>
+        </div>
+        <span class="back-link" onclick="backToRoleSelection()" data-i18n="back">← Terug</span>
+      </div>
+
+      <!-- Step 2b: Join with Code (Viewer) -->
+      <div id="viewer-join" class="viewer-join">
+        <p class="body-text" data-i18n="viewer_description">
+          Voer de groepscode in om de sessie te volgen.
+        </p>
+        <input type="text"
+               id="group-code-input"
+               class="group-code-input"
+               placeholder="ABC12"
+               maxlength="5"
+               oninput="this.value = this.value.toUpperCase()">
+        <div id="viewer-error" class="status-message error" style="display: none;">
+          Code niet gevonden
+        </div>
+        <div style="margin-top: 1rem;">
+          <button class="btn role-btn primary" onclick="joinAsViewer()" data-i18n="join_session">
+            Join Sessie
+          </button>
+        </div>
+        <span class="back-link" onclick="backToRoleSelection()" data-i18n="back">← Terug</span>
+      </div>
+
+      <!-- Controller: Show Group Code after creation -->
+      <div id="controller-code-display" class="language-selection">
+        <p class="body-text" data-i18n="share_code">
+          Deel deze code met je teamleden:
+        </p>
+        <div class="group-code-display" id="display-group-code">-----</div>
+        <div style="margin-top: 1rem;">
+          <button class="btn role-btn primary" onclick="proceedToMainScreen()" data-i18n="continue">
+            Doorgaan
+          </button>
+        </div>
       </div>
 
       <!-- Connection Status -->
@@ -988,7 +1139,11 @@
         <div class="phase-dot" data-phase="4" title="Phase 4: Strategy"></div>
         <div class="phase-dot" data-phase="5" title="Phase 5: Export"></div>
       </div>
-      <button class="btn" onclick="showDebugInfo()" data-i18n="debug">Debug</button>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span id="group-code-badge" style="display: none; font-family: var(--font-mono); font-size: 0.75rem; background: var(--bg-blue); color: var(--blue); padding: 0.25rem 0.5rem; border-radius: 4px;"></span>
+        <span id="viewer-badge" style="display: none; font-size: 0.7rem; background: var(--bg-grey); padding: 0.25rem 0.5rem; border-radius: 4px;">VIEW ONLY</span>
+        <button class="btn" onclick="showDebugInfo()" data-i18n="debug">Debug</button>
+      </div>
     </header>
 
     <main class="container">
@@ -1418,6 +1573,11 @@
     // Global State
     // ================================
     const AppState = {
+      // Real-time sync
+      role: null,           // 'controller' | 'viewer' | null
+      groupCode: null,      // e.g., 'K7X2M'
+
+      // Session data
       language: 'nl',
       currentPhase: 1,
       sessionId: null,
@@ -1435,6 +1595,27 @@
       teamName: '',
       savedSessionId: null
     };
+
+    // Realtime channel reference
+    let realtimeChannel = null;
+
+    // Debounce utility for typed inputs
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Debounced sync function (500ms delay)
+    const debouncedSync = debounce(() => {
+      syncStateToDatabase();
+    }, 500);
 
     // ================================
     // Supabase Client
@@ -1538,7 +1719,17 @@
         camera_error: 'Camera niet beschikbaar',
         analyzing_cards: 'Kaarten analyseren...',
         card_scan_failed: 'Kaarten niet herkend, probeer opnieuw',
-        cards_detected: 'Kaarten gedetecteerd!'
+        cards_detected: 'Kaarten gedetecteerd!',
+        // Real-time sync
+        role_description: 'Kies je rol in de workshop sessie.',
+        role_controller: 'Start Sessie',
+        role_viewer: 'Join Sessie',
+        start_description: 'Verken hoe opkomende technologieën kunnen samenkomen en impact hebben op de samenleving.',
+        viewer_description: 'Voer de groepscode in om de sessie te volgen.',
+        join_session: 'Join Sessie',
+        share_code: 'Deel deze code met je teamleden:',
+        continue: 'Doorgaan',
+        back: '← Terug'
       },
       en: {
         phase1_title: 'Phase 1: Scenario Foundation',
@@ -1622,7 +1813,17 @@
         camera_error: 'Camera not available',
         analyzing_cards: 'Analyzing cards...',
         card_scan_failed: 'Cards not recognized, please try again',
-        cards_detected: 'Cards detected!'
+        cards_detected: 'Cards detected!',
+        // Real-time sync
+        role_description: 'Choose your role in the workshop session.',
+        role_controller: 'Start Session',
+        role_viewer: 'Join Session',
+        start_description: 'Explore how emerging technologies can converge and impact society.',
+        viewer_description: 'Enter the group code to follow the session.',
+        join_session: 'Join Session',
+        share_code: 'Share this code with your team members:',
+        continue: 'Continue',
+        back: '← Back'
       }
     };
 
@@ -1707,12 +1908,354 @@
       if (phase === 4) initPhase4();
       if (phase === 5) initPhase5();
 
+      // Sync phase change to database for viewers (only if controller)
+      syncStateToDatabase();
+
       debugLog(`Navigated to Phase ${phase}`);
     }
 
     // ================================
-    // Session Management
+    // Session Management & Real-time Sync
     // ================================
+
+    // Generate random 5-character group code
+    function generateGroupCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude confusing chars: I,O,0,1
+      let code = '';
+      for (let i = 0; i < 5; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    // Check if group code exists in database
+    async function checkGroupCodeExists(code) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('live_sessions')
+          .select('group_code')
+          .eq('group_code', code)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+          throw error;
+        }
+        return !!data;
+      } catch (error) {
+        debugLog(`Error checking group code: ${error.message}`);
+        return false;
+      }
+    }
+
+    // Generate unique group code (retry if exists)
+    async function generateUniqueGroupCode() {
+      let code = generateGroupCode();
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      while (await checkGroupCodeExists(code) && attempts < maxAttempts) {
+        code = generateGroupCode();
+        attempts++;
+      }
+
+      if (attempts >= maxAttempts) {
+        throw new Error('Could not generate unique group code');
+      }
+
+      return code;
+    }
+
+    // Role selection UI navigation
+    function selectRole(role) {
+      document.getElementById('role-selection').classList.remove('active');
+
+      if (role === 'controller') {
+        document.getElementById('language-selection').classList.add('active');
+      } else {
+        document.getElementById('viewer-join').classList.add('active');
+      }
+    }
+
+    function backToRoleSelection() {
+      document.getElementById('language-selection').classList.remove('active');
+      document.getElementById('viewer-join').classList.remove('active');
+      document.getElementById('controller-code-display').classList.remove('active');
+      document.getElementById('viewer-error').style.display = 'none';
+      document.getElementById('role-selection').classList.add('active');
+    }
+
+    // Start session as Controller
+    async function startAsController(language) {
+      try {
+        AppState.role = 'controller';
+        AppState.language = language;
+
+        // Generate unique group code
+        const groupCode = await generateUniqueGroupCode();
+        AppState.groupCode = groupCode;
+
+        // Create live session in database
+        const { error } = await supabaseClient
+          .from('live_sessions')
+          .insert({
+            group_code: groupCode,
+            current_phase: 1,
+            app_state: AppState
+          });
+
+        if (error) throw error;
+
+        // Subscribe to channel for this group
+        subscribeToChannel(groupCode);
+
+        // Show the group code to controller
+        document.getElementById('display-group-code').textContent = groupCode;
+        document.getElementById('language-selection').classList.remove('active');
+        document.getElementById('controller-code-display').classList.add('active');
+
+        debugLog(`Controller session started with code: ${groupCode}`);
+      } catch (error) {
+        debugLog(`Error starting controller session: ${error.message}`);
+        alert('Error starting session: ' + error.message);
+      }
+    }
+
+    // Join session as Viewer
+    async function joinAsViewer() {
+      const codeInput = document.getElementById('group-code-input');
+      const code = codeInput.value.toUpperCase().trim();
+      const errorDiv = document.getElementById('viewer-error');
+
+      if (code.length !== 5) {
+        errorDiv.textContent = 'Voer een 5-karakter code in';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      try {
+        // Check if session exists
+        const { data, error } = await supabaseClient
+          .from('live_sessions')
+          .select('*')
+          .eq('group_code', code)
+          .single();
+
+        if (error || !data) {
+          errorDiv.textContent = 'Code niet gevonden';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        // Set viewer state
+        AppState.role = 'viewer';
+        AppState.groupCode = code;
+
+        // Load the current state from the session
+        if (data.app_state) {
+          Object.assign(AppState, data.app_state);
+          AppState.role = 'viewer'; // Ensure viewer role is preserved
+          AppState.groupCode = code;
+        }
+
+        // Subscribe to channel for real-time updates
+        subscribeToChannel(code);
+
+        // Update UI and go to main screen
+        updateUILanguage();
+        showScreen('screen-main');
+        goToPhase(AppState.currentPhase || 1);
+
+        // Show badges for viewer
+        const codeBadge = document.getElementById('group-code-badge');
+        codeBadge.textContent = code;
+        codeBadge.style.display = 'inline-block';
+        document.getElementById('viewer-badge').style.display = 'inline-block';
+
+        // Apply viewer restrictions
+        applyViewerRestrictions();
+
+        // Update display with current state
+        updateViewerDisplay();
+
+        debugLog(`Viewer joined session with code: ${code}`);
+      } catch (error) {
+        debugLog(`Error joining session: ${error.message}`);
+        errorDiv.textContent = 'Fout bij verbinden';
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    // Proceed to main screen (for Controller after seeing code)
+    function proceedToMainScreen() {
+      updateUILanguage();
+      showScreen('screen-main');
+
+      // Show group code badge for controller
+      if (AppState.groupCode) {
+        const badge = document.getElementById('group-code-badge');
+        badge.textContent = AppState.groupCode;
+        badge.style.display = 'inline-block';
+      }
+
+      debugLog('Controller proceeding to main screen');
+    }
+
+    // Subscribe to Supabase Realtime channel
+    function subscribeToChannel(groupCode) {
+      // Unsubscribe from any existing channel
+      if (realtimeChannel) {
+        supabaseClient.removeChannel(realtimeChannel);
+      }
+
+      // Subscribe to changes for this group
+      realtimeChannel = supabaseClient
+        .channel(`live_session_${groupCode}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'live_sessions',
+            filter: `group_code=eq.${groupCode}`
+          },
+          (payload) => {
+            debugLog('Received realtime update:', payload);
+            handleRealtimeUpdate(payload.new);
+          }
+        )
+        .subscribe((status) => {
+          debugLog(`Realtime subscription status: ${status}`);
+        });
+    }
+
+    // Handle incoming realtime updates (for Viewers)
+    function handleRealtimeUpdate(newData) {
+      if (AppState.role !== 'viewer') return; // Controllers don't receive updates
+
+      if (newData.app_state) {
+        const previousPhase = AppState.currentPhase;
+
+        // Update AppState with new data, preserving viewer role
+        Object.assign(AppState, newData.app_state);
+        AppState.role = 'viewer';
+        AppState.groupCode = newData.group_code;
+
+        // Update UI if phase changed
+        if (newData.current_phase !== previousPhase) {
+          goToPhase(newData.current_phase);
+        }
+
+        // Update displayed content
+        updateViewerDisplay();
+
+        debugLog('Viewer state updated from realtime');
+      }
+    }
+
+    // Sync state to database (called by Controller)
+    async function syncStateToDatabase() {
+      if (AppState.role !== 'controller' || !AppState.groupCode) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('live_sessions')
+          .update({
+            current_phase: AppState.currentPhase,
+            app_state: AppState,
+            updated_at: new Date().toISOString()
+          })
+          .eq('group_code', AppState.groupCode);
+
+        if (error) throw error;
+        debugLog('State synced to database');
+      } catch (error) {
+        debugLog(`Error syncing state: ${error.message}`);
+      }
+    }
+
+    // Apply restrictions for Viewer role
+    function applyViewerRestrictions() {
+      // Disable all interactive elements for viewers
+      const interactiveElements = document.querySelectorAll(
+        'button:not(.back-button), select, input, .card-option'
+      );
+
+      interactiveElements.forEach(el => {
+        // Don't disable navigation/back buttons
+        if (!el.classList.contains('back-button') &&
+            !el.closest('#debug-panel') &&
+            el.id !== 'btn-new-session') {
+          el.disabled = true;
+          el.style.pointerEvents = 'none';
+          el.style.opacity = '0.7';
+        }
+      });
+
+      debugLog('Viewer restrictions applied');
+    }
+
+    // Update viewer display with current state
+    function updateViewerDisplay() {
+      // Update archetype display
+      if (AppState.archetypeContext) {
+        const archetypeEl = document.getElementById('archetype-result');
+        if (archetypeEl) archetypeEl.style.display = 'block';
+
+        const displayName = AppState.archetypeContext.scenario_name || AppState.archetypeContext.archetype;
+        const summary = getFirstSentence(AppState.archetypeContext.description);
+
+        const nameEl = document.getElementById('archetype-name');
+        const nuanceEl = document.getElementById('archetype-nuance');
+        const summaryEl = document.getElementById('archetype-summary');
+
+        if (nameEl) nameEl.textContent = displayName;
+        if (nuanceEl) nuanceEl.textContent = AppState.archetypeContext.archetype;
+        if (summaryEl) summaryEl.textContent = summary;
+      }
+
+      // Update scenario display
+      if (AppState.scenario) {
+        const scenarioEl = document.getElementById('scenario-result');
+        const scenarioTextEl = document.getElementById('scenario-text');
+        if (scenarioEl) scenarioEl.style.display = 'block';
+        if (scenarioTextEl) scenarioTextEl.innerHTML = formatScenarioWithSections(AppState.scenario);
+      }
+
+      // Update what-if questions
+      if (AppState.whatIfQuestions && AppState.whatIfQuestions.length > 0) {
+        document.getElementById('whatif-result').style.display = 'block';
+        displayWhatIfQuestions(AppState.whatIfQuestions);
+      }
+
+      // Update consequences
+      if (AppState.consequences) {
+        const consequencesEl = document.getElementById('consequences-text');
+        if (consequencesEl) consequencesEl.innerHTML = formatConsequencesOutput(AppState.consequences);
+      }
+
+      // Update strategic insights
+      if (AppState.strategicInsights) {
+        for (let i = 0; i < 3; i++) {
+          const input = document.getElementById(`insight-${i + 1}`);
+          if (input && AppState.strategicInsights[i]) {
+            input.value = AppState.strategicInsights[i];
+          }
+        }
+      }
+
+      // Update summary if on phase 5
+      if (AppState.currentPhase === 5) {
+        initPhase5();
+      }
+
+      // Update team name if present
+      if (AppState.teamName) {
+        const teamNameInput = document.getElementById('input-team-name');
+        if (teamNameInput) teamNameInput.value = AppState.teamName;
+      }
+    }
+
+    // Legacy function for backwards compatibility
     async function startSession(language) {
       AppState.language = language;
       updateUILanguage();
@@ -1915,6 +2458,9 @@
 
         // Format the scenario for display with styled sections
         scenarioTextEl.innerHTML = formatScenarioWithSections(scenario);
+
+        // Sync to database for viewers
+        syncStateToDatabase();
 
         debugLog('Scenario generated successfully');
 
@@ -2279,6 +2825,9 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         // Display questions with radio buttons
         displayWhatIfQuestions(questions);
 
+        // Sync to database for viewers
+        syncStateToDatabase();
+
         debugLog(`Generated ${questions.length} what-if questions`);
 
       } catch (error) {
@@ -2539,6 +3088,9 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       debugLog(`Selected what-if: ${selectedQuestion}`);
       debugLog(`Selected what-if techs: ${selectedTechs?.join(', ')}`);
 
+      // Sync to database for viewers
+      syncStateToDatabase();
+
       // Navigate to Phase 3 and generate consequences
       goToPhase(3);
       generateConsequences();
@@ -2586,6 +3138,9 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
         // Format and display with styled sections
         resultEl.innerHTML = formatConsequencesOutput(response);
+
+        // Sync to database for viewers
+        syncStateToDatabase();
 
         debugLog('Consequences generated successfully');
 
@@ -2665,6 +3220,22 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       document.getElementById('insight-2').value = insights[1] || '';
       document.getElementById('insight-3').value = insights[2] || '';
 
+      // Add event listeners for debounced sync (only for controller)
+      if (AppState.role === 'controller') {
+        ['insight-1', 'insight-2', 'insight-3'].forEach(id => {
+          const input = document.getElementById(id);
+          input.oninput = () => {
+            // Update AppState and trigger debounced sync
+            AppState.strategicInsights = [
+              document.getElementById('insight-1').value.trim(),
+              document.getElementById('insight-2').value.trim(),
+              document.getElementById('insight-3').value.trim()
+            ].filter(i => i.length > 0);
+            debouncedSync();
+          };
+        });
+      }
+
       // Hide error message
       document.getElementById('phase4-error').style.display = 'none';
 
@@ -2689,6 +3260,9 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       // Store insights
       AppState.strategicInsights = insights;
       debugLog(`Strategic insights saved: ${insights.length} items`);
+
+      // Sync to database for viewers
+      syncStateToDatabase();
 
       // Navigate to Phase 5
       goToPhase(5);
@@ -2765,6 +3339,14 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         ).join('');
       } else {
         insightsEl.innerHTML = `<p class="body-text" style="opacity: 0.7;">${t('no_insights')}</p>`;
+      }
+
+      // Add debounced sync for team name input (only for controller)
+      if (AppState.role === 'controller') {
+        document.getElementById('input-team-name').oninput = (e) => {
+          AppState.teamName = e.target.value.trim();
+          debouncedSync();
+        };
       }
 
       debugLog('Phase 5 summary populated');
@@ -2986,8 +3568,29 @@ Tech Futures Explorer - Quantum Delta NL
       }
     }
 
-    function startNewSession() {
-      // Reset AppState
+    async function startNewSession() {
+      // Cleanup realtime subscription and live session
+      if (realtimeChannel) {
+        supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+
+      // Delete live session if controller
+      if (AppState.role === 'controller' && AppState.groupCode) {
+        try {
+          await supabaseClient
+            .from('live_sessions')
+            .delete()
+            .eq('group_code', AppState.groupCode);
+          debugLog('Live session deleted');
+        } catch (error) {
+          debugLog(`Error deleting live session: ${error.message}`);
+        }
+      }
+
+      // Reset AppState including real-time fields
+      AppState.role = null;
+      AppState.groupCode = null;
       AppState.currentPhase = 1;
       AppState.archetype = null;
       AppState.archetypeContext = null;
@@ -3016,6 +3619,7 @@ Tech Futures Explorer - Quantum Delta NL
       document.getElementById('insight-2').value = '';
       document.getElementById('insight-3').value = '';
       document.getElementById('input-team-name').value = '';
+      document.getElementById('group-code-input').value = '';
 
       // Hide result sections
       document.getElementById('archetype-result').style.display = 'none';
@@ -3024,6 +3628,17 @@ Tech Futures Explorer - Quantum Delta NL
       document.getElementById('save-status').innerHTML = '';
       document.getElementById('team-name-error').style.display = 'none';
       document.getElementById('phase4-error').style.display = 'none';
+
+      // Reset start screen to role selection
+      document.getElementById('role-selection').classList.add('active');
+      document.getElementById('language-selection').classList.remove('active');
+      document.getElementById('viewer-join').classList.remove('active');
+      document.getElementById('controller-code-display').classList.remove('active');
+      document.getElementById('viewer-error').style.display = 'none';
+
+      // Hide header badges
+      document.getElementById('group-code-badge').style.display = 'none';
+      document.getElementById('viewer-badge').style.display = 'none';
 
       // Go to start screen
       showScreen('screen-start');
