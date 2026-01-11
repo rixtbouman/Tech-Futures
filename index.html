@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Futures Explorer - Quantum Delta NL</title>
+  <title>Futures Explorer - Centre for Quantum and Society</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -700,9 +700,10 @@
       margin-bottom: var(--space-md);
       background: var(--white);
       color: var(--blue);
-      font-size: 0.875rem;
-      padding: var(--space-md);
-      border: 1px dashed var(--blue);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: var(--space-lg) var(--space-md);
+      border: 2px dashed var(--blue);
       border-radius: var(--radius-md);
     }
 
@@ -717,7 +718,7 @@
       align-items: center;
       gap: var(--space-md);
       margin: var(--space-md) 0;
-      color: #999;
+      color: var(--blue);
     }
 
     .scan-divider::before,
@@ -725,12 +726,14 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: #DDD;
+      background: var(--blue);
+      opacity: 0.3;
     }
 
     .scan-divider span {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 500;
       text-transform: uppercase;
     }
 
@@ -1075,7 +1078,7 @@
        ================================ -->
   <div id="screen-start" class="screen active">
     <div class="start-content">
-      <p class="label">Quantum Delta NL</p>
+      <p class="label">Centre for Quantum and Society</p>
       <h1 class="headline" style="margin: 1rem 0;">Futures Explorer</h1>
       <p class="sub-headline" style="margin-bottom: 2rem;">
         Exploration of Emerging Technologies
@@ -1251,7 +1254,7 @@
           <div class="card-header">
             <span class="label" data-i18n="phase2_title">Fase 2: Disruptie</span>
           </div>
-          <p class="body-text controller-only" data-i18n="phase2_intro">
+          <p class="body-text" data-i18n="phase2_intro">
             Selecteer technologieën, een actor en een trigger om what-if vragen te genereren.
           </p>
 
@@ -1396,7 +1399,7 @@
           </div>
 
           <!-- Reflective Question - Controller Only -->
-          <p class="body-text controller-only" style="font-style: italic; margin-top: 1rem;" data-i18n="phase4_question">
+          <p class="body-text" style="font-style: italic; margin-top: 1rem;" data-i18n="phase4_question">
             Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: wat zijn de kern punten die je over zal dragen?
           </p>
 
@@ -1427,6 +1430,12 @@
             <div id="insights-viewer-list" style="margin-top: 1rem;"></div>
           </div>
 
+          <!-- Team Name Input - Controller Only -->
+          <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1.5rem;">
+            <label class="small-label" data-i18n="team_name_phase4">Tot slot: bedenk een leuke naam voor jullie team die de essentie van de discussie weergeeft.</label>
+            <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
+          </div>
+
           <!-- Error message -->
           <p id="phase4-error" class="body-text controller-only" style="color: var(--error); text-align: center; margin-top: 1rem; display: none;" data-i18n="min_insights_error">
             Vul minimaal 2 inzichten in
@@ -1445,13 +1454,6 @@
           <button class="back-button controller-only" onclick="goToPhase(4)">← Back</button>
           <div class="card-header">
             <span class="label" data-i18n="phase5_title">Fase 5: Export & Opslaan</span>
-          </div>
-
-          <!-- Team Name Input (Required) - Controller Only -->
-          <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1.5rem;">
-            <label class="small-label" data-i18n="team_name_label">Wat is de naam van jullie team van Futuristen?</label>
-            <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
-            <p id="team-name-error" class="body-text" style="color: var(--error); margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in om te exporteren</p>
           </div>
 
           <!-- Session Summary -->
@@ -1521,17 +1523,21 @@
             </div>
           </div>
 
-          <!-- Save to Database - Controller Only -->
-          <div class="card controller-only" style="background: var(--bg-magenta); margin-top: 1rem;">
-            <p class="small-label" data-i18n="save_session">Sessie Opslaan</p>
-            <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="saveSession()" id="btn-save-session" data-i18n="save_to_database">
-              Opslaan in Database
-            </button>
-            <div id="save-status" style="margin-top: 0.75rem;"></div>
-          </div>
+          <!-- End Session Button - Controller Only -->
+          <button class="btn btn-primary controller-only" style="margin-top: 1.5rem; width: 100%;" onclick="endSession()" data-i18n="end_session">
+            Sessie Beëindigen
+          </button>
+        </div>
+      </section>
 
-          <!-- New Session Button - Controller Only -->
-          <button class="btn controller-only" style="margin-top: 1.5rem; width: 100%;" onclick="startNewSession()" data-i18n="start_new">
+      <!-- Session Complete Screen -->
+      <section id="screen-complete" class="phase-content" style="display: none;">
+        <div class="card" style="text-align: center; padding: 3rem 2rem;">
+          <p class="label" style="color: var(--blue); margin-bottom: 1rem;">✓</p>
+          <h2 class="headline" style="margin-bottom: 1.5rem;" data-i18n="session_complete">
+            Sessie voltooid. Bedankt voor het delen van jullie perspectieven over de toekomst.
+          </h2>
+          <button class="btn btn-primary" style="margin-top: 1rem;" onclick="startNewSession()" data-i18n="start_new">
             Start Nieuwe Sessie
           </button>
         </div>
@@ -1674,7 +1680,7 @@
     const translations = {
       nl: {
         phase1_title: 'Fase 1: Scenario Basis',
-        phase1_intro: 'Selecteer de 3 binaire keuzes om het basisscenario te bepalen.',
+        phase1_intro: 'Bespreek de 3 keuzekaarten en bepaal hoe jullie de toekomst voor je zien.',
         card_resources: 'Resources',
         card_system: 'System',
         card_values: 'Values',
@@ -1699,7 +1705,7 @@
         select_event: 'Trigger Event',
         generate_whatif: 'Genereer What-If Vragen',
         generating_whatif: 'What-if vragen genereren...',
-        whatif_questions: 'What-If Vragen',
+        whatif_questions: 'Selecteer een What-if vraag of voer een eigen vraag in',
         or_custom_whatif: 'Of voer een eigen vraag in:',
         continue_phase3: 'Verder met geselecteerde vraag',
         select_whatif_error: 'Selecteer een what-if vraag of voer een eigen vraag in',
@@ -1712,8 +1718,8 @@
         continue_phase4: 'Verder naar Fase 4',
         // Phase 4
         phase4_title: 'Fase 4: Strategische Inzichten',
-        phase4_question: 'Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: wat zijn de kern punten die je over zal dragen?',
-        strategic_insights: 'Strategische Inzichten',
+        phase4_question: 'Stel dat je morgen een collega bijpraat over de meest interessante inzichten van deze sessie: welke drie punten noem je dan?',
+        strategic_insights: 'Inzichten',
         min_insights_hint: 'Vul minimaal 2 inzichten in',
         min_insights_error: 'Vul minimaal 2 inzichten in',
         insight_placeholder: 'inzicht van vandaag',
@@ -1727,7 +1733,7 @@
         section_foundation: 'DE BASIS',
         section_world: 'DE WERELD',
         section_disruption: 'DE DISRUPTIE',
-        section_provocation: 'DE PROVOCATIE',
+        section_provocation: 'DRIE WHAT-IF VRAGEN',
         section_consequences: 'DE CONSEQUENTIES',
         section_strategy: 'DE STRATEGIE',
         label_resources: 'Resources:',
@@ -1764,11 +1770,15 @@
         join_session: 'Join Sessie',
         share_code: 'Deel deze code met je teamleden:',
         continue: 'Doorgaan',
-        back: '← Terug'
+        back: '← Terug',
+        team_name_phase4: 'Tot slot: bedenk een leuke naam voor jullie team die de essentie van de discussie weergeeft.',
+        end_session: 'Sessie Beëindigen',
+        session_complete: 'Sessie voltooid. Bedankt voor het delen van jullie perspectieven over de toekomst.',
+        viewer_info: 'Je kunt zien wat er gegenereerd wordt, maar alleen de controller kan knoppen bedienen en invoer doen.'
       },
       en: {
         phase1_title: 'Phase 1: Scenario Foundation',
-        phase1_intro: 'Select the 3 binary choices to determine the base scenario.',
+        phase1_intro: 'Discuss the 3 decision cards and determine how you envision the future.',
         card_resources: 'Resources',
         card_system: 'System',
         card_values: 'Values',
@@ -1793,7 +1803,7 @@
         select_event: 'Trigger Event',
         generate_whatif: 'Generate What-If Questions',
         generating_whatif: 'Generating what-if questions...',
-        whatif_questions: 'What-If Questions',
+        whatif_questions: 'Select one of the three what-if questions or enter your own question',
         or_custom_whatif: 'Or enter your own question:',
         continue_phase3: 'Continue with selected question',
         select_whatif_error: 'Select a what-if question or enter your own',
@@ -1806,8 +1816,8 @@
         continue_phase4: 'Continue to Phase 4',
         // Phase 4
         phase4_title: 'Phase 4: Strategic Insights',
-        phase4_question: 'Imagine you\'re briefing a colleague tomorrow on the most interesting insights from this session: what are the key points you would pass along?',
-        strategic_insights: 'Strategic Insights',
+        phase4_question: 'Imagine you\'re catching up with a colleague tomorrow about the most interesting insights from this session: which three points would you share?',
+        strategic_insights: 'Insights',
         min_insights_hint: 'Fill in at least 2 insights',
         min_insights_error: 'Please fill in at least 2 insights',
         insight_placeholder: 'insight from today',
@@ -1821,7 +1831,7 @@
         section_foundation: 'THE FOUNDATION',
         section_world: 'THE WORLD',
         section_disruption: 'THE DISRUPTION',
-        section_provocation: 'THE PROVOCATION',
+        section_provocation: 'THREE WHAT-IF QUESTIONS',
         section_consequences: 'THE CONSEQUENCES',
         section_strategy: 'THE STRATEGY',
         label_resources: 'Resources:',
@@ -1858,7 +1868,11 @@
         join_session: 'Join Session',
         share_code: 'Share this code with your team members:',
         continue: 'Continue',
-        back: '← Back'
+        back: '← Back',
+        team_name_phase4: 'Finally: come up with a fun team name that captures the essence of your discussion.',
+        end_session: 'End Session',
+        session_complete: 'Session complete. Thank you for sharing your perspectives about the future.',
+        viewer_info: 'You can view what is generated, but only the controller can control buttons and input.'
       }
     };
 
@@ -2126,12 +2140,32 @@
           }
         }, 100);
 
+        // Show viewer info message
+        showViewerInfoMessage();
+
         debugLog(`Viewer joined session with code: ${code}`);
       } catch (error) {
         debugLog(`Error joining session: ${error.message}`);
         errorDiv.textContent = 'Fout bij verbinden';
         errorDiv.style.display = 'block';
       }
+    }
+
+    // Show viewer info message as a temporary notification
+    function showViewerInfoMessage() {
+      const message = t('viewer_info');
+      const notification = document.createElement('div');
+      notification.className = 'status-message';
+      notification.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--bg-blue); color: var(--black); padding: 1rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); max-width: 90%; text-align: center;';
+      notification.innerHTML = `<p class="body-text" style="margin: 0;">${message}</p>`;
+      document.body.appendChild(notification);
+
+      // Remove after 5 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 5000);
     }
 
     // Proceed to main screen (for Controller after seeing code)
@@ -3020,7 +3054,7 @@ The following contains verified, curated information about the selected
 technologies. Your response MUST be grounded in this data.
 
 DO NOT use general knowledge or assumptions.
-DO reference specific applications, ELSA implications, and key concepts listed below.
+DO reference specific applications, ethical/legal/societal implications, and key concepts listed below.
 
 ${formatTechDataForPrompt(techData)}
 
@@ -3269,7 +3303,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
       const basePrompt = promptData?.prompt_text || `
 Generate consequences for the selected what-if question, including 2nd and 3rd order effects,
-new technology applications, ELSA implications, and who wins/loses.
+new technology applications, ethical/legal/societal implications, and who wins/loses.
 Write in ${AppState.language === 'nl' ? 'Dutch' : 'English'}.
       `;
 
@@ -3302,7 +3336,7 @@ The following contains verified, curated information about the selected
 technologies. Your response MUST be grounded in this data.
 
 DO NOT use general knowledge or assumptions.
-DO reference specific applications, ELSA implications, and key concepts listed below.
+DO reference specific applications, ethical/legal/societal implications, and key concepts listed below.
 
 ${formatTechDataForPrompt(techData)}
 
@@ -3355,7 +3389,7 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       debugLog('Phase 4 initialized');
     }
 
-    function proceedToPhase5() {
+    async function proceedToPhase5() {
       // Collect insights
       const insight1 = document.getElementById('insight-1').value.trim();
       const insight2 = document.getElementById('insight-2').value.trim();
@@ -3374,6 +3408,15 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       AppState.strategicInsights = insights;
       debugLog(`Strategic insights saved: ${insights.length} items`);
 
+      // Collect team name from Phase 4
+      const teamNameInput = document.getElementById('input-team-name');
+      if (teamNameInput) {
+        AppState.teamName = teamNameInput.value.trim();
+      }
+
+      // Auto-save session to database
+      await saveSession();
+
       // Sync to database for viewers
       syncStateToDatabase();
 
@@ -3389,10 +3432,6 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       debugLog('Initializing Phase 5...');
 
       const formatTech = (t) => t?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
-
-      // Restore team name if exists
-      document.getElementById('input-team-name').value = AppState.teamName || '';
-      document.getElementById('team-name-error').style.display = 'none';
 
       // 1. Foundation: Binary choices + Archetype
       document.getElementById('summary-resources').textContent =
@@ -3454,15 +3493,18 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
         insightsEl.innerHTML = `<p class="body-text" style="opacity: 0.7;">${t('no_insights')}</p>`;
       }
 
-      // Add debounced sync for team name input (only for controller)
-      if (AppState.role === 'controller') {
-        document.getElementById('input-team-name').oninput = (e) => {
-          AppState.teamName = e.target.value.trim();
-          debouncedSync();
-        };
-      }
-
       debugLog('Phase 5 summary populated');
+    }
+
+    // End session and show completion screen
+    function endSession() {
+      // Hide all phases
+      document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
+      // Show completion screen
+      document.getElementById('screen-complete').style.display = 'block';
+      // Sync final state for viewers
+      syncStateToDatabase();
+      debugLog('Session ended');
     }
 
     function buildExportText() {
@@ -3507,7 +3549,7 @@ Actor: ${formatTech(AppState.selectedActor)}
 Trigger: ${formatTech(AppState.selectedEvent)}
 
 ───────────────────────────────────────────────────────────────
-4. ${lang === 'nl' ? 'DE PROVOCATIE' : 'THE PROVOCATION'}
+4. ${lang === 'nl' ? 'DRIE WHAT-IF VRAGEN' : 'THREE WHAT-IF QUESTIONS'}
 ───────────────────────────────────────────────────────────────
 ${whatIfQuestionsText}
 
@@ -3527,7 +3569,7 @@ ${AppState.strategicInsights && AppState.strategicInsights.length > 0 ?
         (lang === 'nl' ? 'Geen inzichten ingevuld' : 'No insights provided')}
 
 ═══════════════════════════════════════════════════════════════
-Futures Explorer - Quantum Delta NL
+Futures Explorer - Centre for Quantum and Society
 ═══════════════════════════════════════════════════════════════
 `;
 
