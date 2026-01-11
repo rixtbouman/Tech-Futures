@@ -1739,7 +1739,7 @@
         section_disruption: 'DE DISRUPTIE',
         section_provocation: 'DRIE WHAT-IF VRAGEN',
         section_consequences: 'DE CONSEQUENTIES',
-        section_strategy: 'DE STRATEGIE',
+        section_strategy: 'INZICHTEN',
         label_resources: 'Resources:',
         label_system: 'System:',
         label_values: 'Values:',
@@ -1837,7 +1837,7 @@
         section_disruption: 'THE DISRUPTION',
         section_provocation: 'THREE WHAT-IF QUESTIONS',
         section_consequences: 'THE CONSEQUENCES',
-        section_strategy: 'THE STRATEGY',
+        section_strategy: 'INSIGHTS',
         label_resources: 'Resources:',
         label_system: 'System:',
         label_values: 'Values:',
@@ -2223,6 +2223,13 @@
         AppState.role = 'viewer';
         AppState.groupCode = newData.group_code;
         AppState.currentPhase = newPhase;
+
+        // Check if session has ended - show end screen for viewers
+        if (appStateData.sessionEnded) {
+          showEndScreen();
+          debugLog('Viewer: Session ended by controller');
+          return;
+        }
 
         // Update UI if phase changed
         if (newPhase !== previousPhase) {
@@ -3499,13 +3506,24 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
 
     // End session and show completion screen
     function endSession() {
+      // Set session ended flag
+      AppState.sessionEnded = true;
+
       // Hide all phases
       document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
       // Show completion screen
       document.getElementById('screen-complete').style.display = 'block';
-      // Sync final state for viewers
+
+      // Sync final state for viewers (so they see the end screen too)
       syncStateToDatabase();
       debugLog('Session ended');
+    }
+
+    // Show end screen (used by viewers when controller ends session)
+    function showEndScreen() {
+      document.querySelectorAll('.phase-content').forEach(p => p.style.display = 'none');
+      document.getElementById('screen-complete').style.display = 'block';
+      debugLog('End screen displayed');
     }
 
     function buildExportText() {
@@ -3563,7 +3581,7 @@ ${AppState.selectedWhatIf || '-'}
 ${AppState.consequences || '-'}
 
 ───────────────────────────────────────────────────────────────
-6. ${lang === 'nl' ? 'DE STRATEGIE' : 'THE STRATEGY'}
+6. ${lang === 'nl' ? 'INZICHTEN' : 'INSIGHTS'}
 ───────────────────────────────────────────────────────────────
 ${AppState.strategicInsights && AppState.strategicInsights.length > 0 ?
         AppState.strategicInsights.map((insight, i) => `${i + 1}. ${insight}`).join('\n') :
