@@ -1120,6 +1120,9 @@
         <p class="body-text" data-i18n="viewer_description">
           Voer de groepscode in om de sessie te volgen.
         </p>
+        <p class="body-text" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;" data-i18n="viewer_info">
+          Je kunt zien wat er gegenereerd wordt, maar alleen de controller kan knoppen bedienen en invoer doen.
+        </p>
         <input type="text"
                id="group-code-input"
                class="group-code-input"
@@ -1434,6 +1437,7 @@
           <div class="card controller-only" style="background: var(--bg-blue); margin-top: 1.5rem;">
             <label class="small-label" data-i18n="team_name_phase4">Tot slot: bedenk een leuke naam voor jullie team die de essentie van de discussie weergeeft.</label>
             <input type="text" id="input-team-name" class="btn" data-i18n-placeholder="team_name_placeholder" placeholder="Team naam..." style="width: 100%; margin-top: 0.75rem; text-transform: none;">
+            <p id="team-name-error" class="body-text" style="color: var(--error); margin-top: 0.5rem; display: none;" data-i18n="team_name_required">Vul een teamnaam in</p>
           </div>
 
           <!-- Error message -->
@@ -2140,32 +2144,12 @@
           }
         }, 100);
 
-        // Show viewer info message
-        showViewerInfoMessage();
-
         debugLog(`Viewer joined session with code: ${code}`);
       } catch (error) {
         debugLog(`Error joining session: ${error.message}`);
         errorDiv.textContent = 'Fout bij verbinden';
         errorDiv.style.display = 'block';
       }
-    }
-
-    // Show viewer info message as a temporary notification
-    function showViewerInfoMessage() {
-      const message = t('viewer_info');
-      const notification = document.createElement('div');
-      notification.className = 'status-message';
-      notification.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--bg-blue); color: var(--black); padding: 1rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); max-width: 90%; text-align: center;';
-      notification.innerHTML = `<p class="body-text" style="margin: 0;">${message}</p>`;
-      document.body.appendChild(notification);
-
-      // Remove after 5 seconds
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-      }, 5000);
     }
 
     // Proceed to main screen (for Controller after seeing code)
@@ -3390,6 +3374,10 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
     }
 
     async function proceedToPhase5() {
+      // Hide previous errors
+      document.getElementById('phase4-error').style.display = 'none';
+      document.getElementById('team-name-error').style.display = 'none';
+
       // Collect insights
       const insight1 = document.getElementById('insight-1').value.trim();
       const insight2 = document.getElementById('insight-2').value.trim();
@@ -3408,14 +3396,27 @@ OUTPUT LANGUAGE: ${AppState.language === 'nl' ? 'Dutch (Nederlands)' : 'English'
       AppState.strategicInsights = insights;
       debugLog(`Strategic insights saved: ${insights.length} items`);
 
-      // Collect team name from Phase 4
+      // Collect and validate team name from Phase 4
       const teamNameInput = document.getElementById('input-team-name');
-      if (teamNameInput) {
-        AppState.teamName = teamNameInput.value.trim();
+      const teamName = teamNameInput?.value.trim() || '';
+
+      if (!teamName) {
+        document.getElementById('team-name-error').style.display = 'block';
+        teamNameInput?.focus();
+        debugLog('Phase 4 validation failed: team name required');
+        return;
       }
 
+      AppState.teamName = teamName;
+      debugLog(`Team name saved: ${teamName}`);
+
       // Auto-save session to database
-      await saveSession();
+      const saved = await saveSession();
+      if (saved) {
+        debugLog('Session saved successfully before Phase 5');
+      } else {
+        debugLog('Session save failed, but continuing to Phase 5');
+      }
 
       // Sync to database for viewers
       syncStateToDatabase();
@@ -3667,19 +3668,12 @@ Futures Explorer - Centre for Quantum and Society
     }
 
     async function saveSession() {
-      // Validate team name first
-      if (!validateAndSaveTeamName()) {
-        document.getElementById('save-status').innerHTML =
-          `<p class="status-message error">${t('team_name_required')}</p>`;
-        return;
+      // Team name should already be in AppState from proceedToPhase5
+      // Just validate it exists
+      if (!AppState.teamName) {
+        debugLog('Save failed: No team name');
+        return false;
       }
-
-      const statusEl = document.getElementById('save-status');
-      const btnEl = document.getElementById('btn-save-session');
-
-      btnEl.disabled = true;
-      btnEl.innerHTML = `<span class="loading-spinner"></span>`;
-      statusEl.innerHTML = '';
 
       try {
         const sessionData = {
@@ -3710,16 +3704,12 @@ Futures Explorer - Centre for Quantum and Society
         if (error) throw error;
 
         AppState.savedSessionId = data?.[0]?.id;
-
-        statusEl.innerHTML = `<p class="status-message success">✓ ${t('save_success')} (ID: ${AppState.savedSessionId || 'saved'})</p>`;
         debugLog(`Session saved with ID: ${AppState.savedSessionId}`);
+        return true;
 
       } catch (error) {
         debugLog(`Save error: ${error.message}`);
-        statusEl.innerHTML = `<p class="status-message error">${t('save_error')}: ${error.message}</p>`;
-      } finally {
-        btnEl.disabled = false;
-        btnEl.textContent = t('save_to_database');
+        return false;
       }
     }
 
